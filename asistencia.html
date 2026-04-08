@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Asistencia — Power BI DIDEMO/CREDIDEMO</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #F0F2F5; color: #222; }
+
+  .page { max-width: 960px; margin: 32px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.10); overflow: hidden; }
+
+  /* Header banner */
+  .banner { background: linear-gradient(135deg, #1B3A6B 0%, #2C4FA3 100%); padding: 36px 40px 28px; color: #fff; }
+  .banner h1 { font-size: 28px; font-weight: 700; letter-spacing: .5px; }
+  .banner h2 { font-size: 15px; font-weight: 400; opacity: .85; margin-top: 6px; }
+  .banner .sub { font-size: 13px; opacity: .65; margin-top: 4px; }
+
+  /* Stats bar */
+  .stats { display: flex; gap: 0; border-bottom: 3px solid #C0392B; }
+  .stat { flex: 1; padding: 16px 20px; text-align: center; border-right: 1px solid #e8e8e8; }
+  .stat:last-child { border-right: none; }
+  .stat .num { font-size: 26px; font-weight: 700; color: #1B3A6B; }
+  .stat .lbl { font-size: 11px; color: #888; margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; }
+
+  /* Legend */
+  .legend { display: flex; gap: 20px; padding: 14px 32px; background: #FAFAFA; border-bottom: 1px solid #eee; font-size: 12px; color: #555; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }
+  .dot.p { background: #D6F0E0; border: 1px solid #7DC99A; }
+  .dot.f { background: #FAE5E5; border: 1px solid #E88; }
+
+  /* Table */
+  .wrap { padding: 0 0 32px; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #1B3A6B; color: #fff; font-size: 12px; font-weight: 700; padding: 12px 10px; text-align: center; letter-spacing: .3px; position: sticky; top: 0; z-index: 2; }
+  thead th:nth-child(2) { text-align: left; padding-left: 16px; }
+  tbody tr:nth-child(even) { background: #F7F8FB; }
+  tbody tr:hover { background: #EEF2FF; transition: background .15s; }
+  tbody td { font-size: 13px; padding: 10px 10px; border-bottom: 1px solid #EBEBEB; vertical-align: middle; }
+  tbody td:first-child { text-align: center; color: #AAA; font-size: 12px; width: 44px; }
+  tbody td:nth-child(2) { padding-left: 16px; font-weight: 500; }
+  tbody td:nth-child(3), tbody td:nth-child(4) { text-align: center; width: 140px; }
+
+  .badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .3px; }
+  .badge.p { background: #D6F0E0; color: #1A7A3F; }
+  .badge.f { background: #FAE5E5; color: #C0392B; }
+
+  tfoot td { font-weight: 700; font-size: 13px; background: #1B3A6B; color: #fff; padding: 11px 10px; text-align: center; }
+  tfoot td:nth-child(2) { text-align: right; padding-right: 16px; letter-spacing: .3px; }
+
+  /* Footer */
+  .foot { padding: 16px 32px; background: #F7F7F7; border-top: 1px solid #eee; font-size: 11px; color: #AAA; text-align: right; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; }
+    thead th { background: #1B3A6B !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge.p { background: #D6F0E0 !important; print-color-adjust: exact; }
+    .badge.f { background: #FAE5E5 !important; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="banner">
+    <h1>Control de Asistencia — Capacitación Power BI</h1>
+    <h2>DIDEMO / CREDIDEMO &nbsp;·&nbsp; Honduras</h2>
+    <div class="sub">Clases virtuales: 06 y 07 de abril de 2026 &nbsp;·&nbsp; Microsoft Teams</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num">39</div><div class="lbl">Participantes totales</div></div>
+    <div class="stat"><div class="num">31</div><div class="lbl">Clase 01 — Presentes</div></div>
+    <div class="stat"><div class="num">39</div><div class="lbl">Clase 02 — Presentes</div></div>
+    <div class="stat"><div class="num">2h 15m / 2h 10m</div><div class="lbl">Duración Clase 01 / 02</div></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot p"></span>Presente</span>
+    <span><span class="dot f"></span>Falta</span>
+  </div>
+
+  <div class="wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th style="text-align:left;padding-left:16px">Nombre del Participante</th>
+        <th>Clase 01<br><span style="font-weight:400;font-size:11px">06 Abr 2026</span></th>
+        <th>Clase 02<br><span style="font-weight:400;font-size:11px">07 Abr 2026</span></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+    <tfoot>
+      <tr>
+        <td></td>
+        <td style="text-align:right;padding-right:16px">Total asistentes:</td>
+        <td>31 / 39</td>
+        <td>39 / 39</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+
+  <div class="foot">Elaborado por: Irene Sinclair &nbsp;·&nbsp; Tegucigalpa, Honduras &nbsp;·&nbsp; Abril 2026</div>
+</div>
+
+<script>
+const participants = [
+  ["José Ruben Chinchilla Suazo", true, true],
+  ["Osman Omar Mejia Figueroa", true, true],
+  ["Kevin Josué", true, true],
+  ["Dilcia Melisa Vasquez Lopez", true, true],
+  ["Arely Esperanza Rodriguez Ruiz", true, true],
+  ["Cinthia Dinora Brito Hernandez", true, true],
+  ["Celvyn Ernesto Aguilar Lopez", true, true],
+  ["Amy Elizabeth Escalante Rodriguez", true, true],
+  ["Angela Victoria Penman Lazo", true, true],
+  ["Jorge Escober", true, true],
+  ["Maira Zuniga", true, true],
+  ["Doris Midence", true, true],
+  ["Allan Gerardo Mejía Silva", true, true],
+  ["Fanny Gissela Montoya Garcia", true, true],
+  ["Joel Fernando Mejia Flores", true, true],
+  ["Wilson Leonel Dominguez Mejia", true, true],
+  ["Alexis Ismael Erazo Mayorga", true, true],
+  ["Jose Roberto Padilla Eveline", true, true],
+  ["Rodolfo Castiglioni Alvarado", true, true],
+  ["Rafael Mauricio Zepeda", true, true],
+  ["Helen Gissel Aguilar Álvarez", true, true],
+  ["Santos Cisneros Dubon", true, true],
+  ["Diana Carolina Vallejo Osorio", true, true],
+  ["Marcia Elena Aguilar Rodriguez", true, true],
+  ["Jose Gerardo Ochoa", true, true],
+  ["Bessy Yamileth Salgado Torres", true, true],
+  ["Sayra Mireya Castellanos Portillo", true, true],
+  ["Blanca Michell Aguilar Irias", true, true],
+  ["Jhensy Marisol Diaz Banegas", true, true],
+  ["Oscar Manrique Ferrufino Cardenas", true, true],
+  ["Oscar Henrrique Alvarado Lopez", false, true],
+  ["Juan Ramon Ramirez Carranza", false, true],
+  ["Oscar Alvarado", false, true],
+  ["Yoselin Katerine Padilla Cruz", false, true],
+  ["Anderlin Martinez", false, true],
+  ["Jose Geovany Gutierrez Ramirez", false, true],
+  ["Johan Jaszir Maldonado Ortiz", false, true],
+  ["Angel Fernando Maradiaga Carcamo", false, true],
+];
+
+const tbody = document.getElementById('tbody');
+participants.forEach(([name, d1, d2], i) => {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${i+1}</td>
+    <td>${name}</td>
+    <td><span class="badge ${d1?'p':'f'}">${d1?'✓ Presente':'✗ Falta'}</span></td>
+    <td><span class="badge ${d2?'p':'f'}">${d2?'✓ Presente':'✗ Falta'}</span></td>
+  `;
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
