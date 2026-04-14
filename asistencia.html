@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Asistencia — Power BI DIDEMO/CREDIDEMO</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #F0F2F5; color: #222; }
+
+  .page { max-width: 1100px; margin: 32px auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,.10); overflow: hidden; }
+
+  .banner { background: linear-gradient(135deg, #1B3A6B 0%, #2C4FA3 100%); padding: 32px 40px 24px; color: #fff; }
+  .banner h1 { font-size: 24px; font-weight: 700; letter-spacing: .5px; }
+  .banner h2 { font-size: 13px; font-weight: 400; opacity: .85; margin-top: 5px; }
+  .banner .sub { font-size: 11px; opacity: .65; margin-top: 4px; }
+
+  .stats { display: flex; border-bottom: 3px solid #C0392B; flex-wrap: wrap; }
+  .stat { flex: 1; min-width: 100px; padding: 12px 8px; text-align: center; border-right: 1px solid #e8e8e8; }
+  .stat:last-child { border-right: none; }
+  .stat .num { font-size: 22px; font-weight: 700; color: #1B3A6B; }
+  .stat .lbl { font-size: 9px; color: #888; margin-top: 3px; text-transform: uppercase; letter-spacing: .4px; }
+
+  .legend { display: flex; gap: 16px; align-items: center; padding: 10px 24px; background: #FAFAFA; border-bottom: 1px solid #eee; font-size: 11px; color: #555; flex-wrap: wrap; }
+  .dot { display: inline-block; width: 11px; height: 11px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .dot.p { background: #D6F0E0; border: 1px solid #7DC99A; }
+  .dot.f { background: #FAE5E5; border: 1px solid #E88; }
+  .note { font-size: 10px; color: #999; margin-left: auto; }
+
+  .wrap { padding: 0 0 28px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 750px; }
+  thead th { background: #1B3A6B; color: #fff; font-size: 11px; font-weight: 700; padding: 11px 6px; text-align: center; letter-spacing: .3px; position: sticky; top: 0; z-index: 2; }
+  thead th:nth-child(2) { text-align: left; padding-left: 14px; min-width: 220px; }
+  tbody tr:nth-child(even) { background: #F7F8FB; }
+  tbody tr:hover { background: #EEF2FF; transition: background .12s; }
+  tbody td { font-size: 12px; padding: 8px 6px; border-bottom: 1px solid #EBEBEB; vertical-align: middle; }
+  tbody td:first-child { text-align: center; color: #AAA; font-size: 11px; width: 36px; }
+  tbody td:nth-child(2) { padding-left: 14px; font-weight: 500; }
+  tbody td:nth-child(n+3) { text-align: center; min-width: 100px; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: .3px; white-space: nowrap; }
+  .badge.p { background: #D6F0E0; color: #1A7A3F; }
+  .badge.f { background: #FAE5E5; color: #C0392B; }
+
+  tfoot td { font-weight: 700; font-size: 12px; background: #1B3A6B; color: #fff; padding: 10px 6px; text-align: center; }
+  tfoot td:nth-child(2) { text-align: right; padding-right: 14px; }
+
+  .foot { padding: 12px 24px; background: #F7F7F7; border-top: 1px solid #eee; font-size: 10px; color: #AAA; text-align: right; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; border-radius: 0; }
+    thead th, tfoot td { background: #1B3A6B !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge.p { background: #D6F0E0 !important; print-color-adjust: exact; }
+    .badge.f { background: #FAE5E5 !important; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="banner">
+    <h1>Control de Asistencia — Capacitación Power BI</h1>
+    <h2>DIDEMO / CREDIDEMO &nbsp;·&nbsp; Honduras</h2>
+    <div class="sub">Clases virtuales: 06, 07, 08, 09, 10 y 13 de abril de 2026 &nbsp;·&nbsp; Microsoft Teams</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="num" id="statTotal">—</div><div class="lbl">Participantes totales</div></div>
+    <div class="stat"><div class="num" id="statD1">—</div><div class="lbl">Clase 01 · 06 Abr</div></div>
+    <div class="stat"><div class="num" id="statD2">—</div><div class="lbl">Clase 02 · 07 Abr</div></div>
+    <div class="stat"><div class="num" id="statD3">—</div><div class="lbl">Clase 03 · 08 Abr</div></div>
+    <div class="stat"><div class="num" id="statD4">—</div><div class="lbl">Clase 04 · 09 Abr</div></div>
+    <div class="stat"><div class="num" id="statD5">—</div><div class="lbl">Clase 05 · 10 Abr</div></div>
+    <div class="stat"><div class="num" id="statD6">—</div><div class="lbl">Clase 06 · 13 Abr</div></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot p"></span>Presente</span>
+    <span><span class="dot f"></span>Falta</span>
+    <span class="note">* Mínimo 1 hora de permanencia para registrar asistencia</span>
+  </div>
+
+  <div class="wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th style="text-align:left;padding-left:14px">Nombre del Participante</th>
+        <th>Clase 01<br><span style="font-weight:400;font-size:9px">06 Abr</span></th>
+        <th>Clase 02<br><span style="font-weight:400;font-size:9px">07 Abr</span></th>
+        <th>Clase 03<br><span style="font-weight:400;font-size:9px">08 Abr</span></th>
+        <th>Clase 04<br><span style="font-weight:400;font-size:9px">09 Abr</span></th>
+        <th>Clase 05<br><span style="font-weight:400;font-size:9px">10 Abr</span></th>
+        <th>Clase 06<br><span style="font-weight:400;font-size:9px">13 Abr</span></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+    <tfoot id="tfoot"></tfoot>
+  </table>
+  </div>
+
+  <div class="foot">Elaborado por: Irene Sinclair &nbsp;·&nbsp; Tegucigalpa, Honduras &nbsp;·&nbsp; Abril 2026</div>
+</div>
+
+<script>
+// [nombre, d1, d2, d3, d4, d5, d6]
+// true = mínimo 60 min de permanencia registrada en Teams
+const participants = [
+  //                                          C01    C02    C03    C04    C05    C06
+  //                                        06-Abr 07-Abr 08-Abr 09-Abr 10-Abr 13-Abr
+  ["Irene Sinclair",                         true,  true,  true,  true,  true,  true ],
+  ["José Ruben Chinchilla Suazo",            true,  true,  true,  true,  true,  true ],
+  ["Osman Omar Mejia Figueroa",              true,  true,  true,  true,  true,  true ],
+  ["Kevin Josué",                            true,  true,  true,  true,  true,  true ],
+  ["Dilcia Melisa Vasquez Lopez",            true,  true,  true,  true,  false, true ],  // D5: 50m ✗
+  ["Arely Esperanza Rodriguez Ruiz",         true,  true,  true,  true,  true,  true ],
+  ["Cinthia Dinora Brito Hernandez",         true,  true,  true,  true,  true,  true ],
+  ["Celvyn Ernesto Aguilar Lopez",           true,  true,  false, true,  true,  true ],  // D3: 58m ✗
+  ["Amy Elizabeth Escalante Rodriguez",      true,  true,  true,  true,  true,  true ],
+  ["Angela Victoria Penman Lazo",            false, true,  false, false, false, false],  // D1: 57m ✗; D3-D6: no
+  ["Jorge Escober",                          true,  true,  true,  true,  true,  true ],
+  ["Maira Zuniga",                           true,  true,  true,  true,  true,  true ],
+  ["Doris Midence",                          true,  true,  true,  true,  true,  false],  // D6: no
+  ["Allan Gerardo Mejía Silva",              true,  true,  true,  true,  true,  true ],
+  ["Fanny Gissela Montoya Garcia",           true,  true,  true,  true,  true,  true ],
+  ["Joel Fernando Mejia Flores",             true,  true,  true,  true,  true,  true ],
+  ["Wilson Leonel Dominguez Mejia",          true,  true,  true,  true,  true,  true ],
+  ["Alexis Ismael Erazo Mayorga",            true,  true,  true,  true,  true,  true ],
+  ["Jose Roberto Padilla Eveline",           false, true,  false, false, false, false],  // D1: 57m ✗; D3-D6: no
+  ["Rodolfo Castiglioni Alvarado",           true,  true,  true,  true,  true,  true ],
+  ["Rafael Mauricio Zepeda",                 true,  true,  true,  true,  true,  true ],
+  ["Helen Gissel Aguilar Álvarez",           true,  true,  true,  true,  true,  true ],
+  ["Santos Cisneros Dubon",                  true,  true,  true,  true,  true,  true ],
+  ["Diana Carolina Vallejo Osorio",          true,  true,  false, false, false, false],  // D3-D6: no
+  ["Marcia Elena Aguilar Rodriguez",         true,  true,  true,  true,  true,  true ],
+  ["Jose Gerardo Ochoa",                     true,  true,  true,  true,  true,  true ],
+  ["Bessy Yamileth Salgado Torres",          true,  true,  true,  true,  true,  true ],
+  ["Sayra Mireya Castellanos Portillo",      true,  true,  true,  true,  true,  true ],
+  ["Blanca Michell Aguilar Irias",           true,  true,  true,  true,  true,  true ],
+  ["Jhensy Marisol Diaz Banegas",            true,  true,  true,  true,  true,  true ],
+  ["Oscar Manrique Ferrufino Cardenas",      false, true,  true,  true,  true,  true ],  // D1: 42m ✗
+  // incorporados D2
+  ["Oscar Henrrique Alvarado Lopez",         false, false, false, false, true,  true ],  // D2: 59s ✗; D5: 159m; D6: 133m
+  ["Juan Ramon Ramirez Carranza",            false, true,  true,  true,  true,  true ],
+  ["Oscar Alvarado",                         false, true,  true,  true,  false, false],  // D5-D6: no
+  ["Yoselin Katerine Padilla Cruz",          false, true,  true,  true,  false, false],  // D5-D6: no
+  ["Anderlin Martinez",                      false, true,  false, false, false, false],  // D3: 15m ✗; D4-D6: no
+  ["Jose Geovany Gutierrez Ramirez",         false, true,  true,  false, true,  true ],  // D4: no
+  ["Johan Jaszir Maldonado Ortiz",           false, true,  true,  true,  true,  true ],
+  ["Angel Fernando Maradiaga Carcamo",       false, true,  true,  false, true,  false],  // D4: 37m ✗; D6: no
+];
+
+const DAYS = 6;
+const tbody = document.getElementById('tbody');
+const tfoot = document.getElementById('tfoot');
+let totals = Array(DAYS).fill(0);
+
+participants.forEach(([name, ...days], i) => {
+  days.forEach((v, d) => { if (v) totals[d]++; });
+  const tr = document.createElement('tr');
+  const dayCells = days.map(d =>
+    `<td><span class="badge ${d?'p':'f'}">${d?'✓ Presente':'✗ Falta'}</span></td>`
+  ).join('');
+  tr.innerHTML = `<td>${i+1}</td><td>${name}</td>${dayCells}`;
+  tbody.appendChild(tr);
+});
+
+const n = participants.length;
+const totalCells = totals.map(t => `<td>${t} / ${n}</td>`).join('');
+tfoot.innerHTML = `<tr><td></td><td style="text-align:right;padding-right:14px">Total asistentes:</td>${totalCells}</tr>`;
+
+document.getElementById('statTotal').textContent = n;
+document.getElementById('statD1').textContent = totals[0];
+document.getElementById('statD2').textContent = totals[1];
+document.getElementById('statD3').textContent = totals[2];
+document.getElementById('statD4').textContent = totals[3];
+document.getElementById('statD5').textContent = totals[4];
+document.getElementById('statD6').textContent = totals[5];
+</script>
+</body>
+</html>
