@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análisis de Cancelados — Incorporación de Activo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f5f5;
+    --surface2: #ebebeb;
+    --border: #dddddd;
+    --text: #111111;
+    --muted: #777777;
+    --accent0: #D0021B;
+    --accent1: #F5A623;
+    --accent2: #F5A623;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    border-top: 3px solid #D0021B;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 28px 32px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .title-block h1 {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    color: var(--text);
+  }
+  .title-block p {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+  .kpi-row {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 0;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px 6px 0 0;
+    padding: 10px 18px;
+    text-align: center;
+    min-width: 130px;
+  }
+  .kpi-val { font-size: 22px; font-weight: 600; font-family: var(--mono); }
+  .kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+  .kpi.red .kpi-val { color: var(--accent0); }
+  .kpi.amber .kpi-val { color: var(--accent1); }
+  .kpi.green .kpi-val { color: var(--accent2); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .tab {
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all .15s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--text); border-bottom-color: var(--tab-color, #fff); }
+  .tab[data-tab="0"] { --tab-color: var(--accent0); }
+  .tab[data-tab="1"] { --tab-color: var(--accent1); }
+  .tab[data-tab="2"] { --tab-color: var(--accent2); }
+  .tab .badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--surface2);
+    color: var(--tab-color, var(--muted));
+  }
+
+  /* PANELS */
+  .panel { display: none; padding: 20px 32px 32px; }
+  .panel.active { display: block; }
+
+  /* SUMMARY BAR */
+  .summary {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .stat span { color: var(--muted); margin-right: 6px; }
+
+  /* SEARCH */
+  .toolbar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
+  .search-wrap { position: relative; flex: 1; max-width: 300px; }
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 12px;
+    padding: 7px 10px 7px 28px;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-wrap input:focus { border-color: #444; }
+  .search-wrap::before {
+    content: "⌕";
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
+    pointer-events: none;
+  }
+  .sort-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-family: var(--mono);
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .sort-btn:hover { color: var(--text); border-color: #999; }
+  .sort-btn.active { color: var(--text); border-color: #777; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: var(--surface2); }
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--text); }
+  th.sorted { color: var(--text); }
+  th .arr { margin-left: 4px; font-size: 9px; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.025); }
+
+  .cred { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .client-name { font-weight: 500; font-size: 12px; }
+  .sucursal-badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .moto { font-family: var(--mono); font-size: 11px; }
+  .monto { font-family: var(--mono); font-weight: 500; text-align: right; }
+  .plazo-cell { text-align: center; font-family: var(--mono); font-size: 11px; }
+  .cuotas-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 20px;
+    min-width: 36px;
+  }
+  .pill-0 { background: rgba(208,2,27,.1); color: #a80016; border: 1px solid rgba(208,2,27,.25); }
+  .pill-1 { background: rgba(245,166,35,.15); color: #b87800; border: 1px solid rgba(245,166,35,.35); }
+  .pill-2 { background: rgba(245,166,35,.1); color: #b87800; border: 1px solid rgba(245,166,35,.2); }
+  .date-cell { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .gestor-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--muted);
+  }
+  .no-gestor { color: #bbb; font-size: 11px; }
+
+  /* FOOTER */
+  .foot { margin-top: 16px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+  .hidden-row { display: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .header { padding: 20px 16px 0; }
+    .tabs { padding: 0 16px; }
+    .panel { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="title-block">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px">
+        <img src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" style="height:38px;object-fit:contain" alt="CREDIDEMO">
+      </div>
+      <h1>Cancelados — Incorporación de Activo</h1>
+      <p>Tabla JUNTO · Modelo CANCELADOS · Power BI MCP · mayo 2026</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi red">
+        <div class="kpi-val">30</div>
+        <div class="kpi-lbl">0 cuotas</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-val" id="cnt1">—</div>
+        <div class="kpi-lbl">1–5 cuotas</div>
+      </div>
+      <div class="kpi amber">
+        <div class="kpi-val" id="cnt2">—</div>
+        <div class="kpi-lbl">6–10 cuotas</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" data-tab="0">
+    0 cuotas pagadas
+    <span class="badge">30</span>
+  </div>
+  <div class="tab" data-tab="1">
+    1 – 5 cuotas
+    <span class="badge" id="tab1-badge">…</span>
+  </div>
+  <div class="tab" data-tab="2">
+    6 – 10 cuotas
+    <span class="badge" id="tab2-badge">…</span>
+  </div>
+</div>
+
+<!-- PANEL 0 -->
+<div class="panel active" id="panel-0">
+  <div class="summary" id="sum0"></div>
+  <div class="toolbar">
+    <div class="search-wrap"><input type="text" placeholder="Buscar cliente, crédito..." oninput="filterTable('tbl0', this.value)"></div>
+    <button class="sort-btn" onclick="sortTable('tbl0',4,'num')">Ordenar por monto ↕</button>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl0">
+      <thead><tr>
+        <th onclick="sortTable('tbl0',0,'str')">Crédito <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',1,'str')">Cliente <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',2,'str')">Sucursal <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',3,'str')">Marca / Modelo <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',4,'num')">Monto L <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',5,'num')">Plazo <span class="arr">↕</span></th>
+        <th>Cuotas pag.</th>
+        <th onclick="sortTable('tbl0',7,'date')">F. Otorg. <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl0',8,'date')">F. Cancelac. <span class="arr">↕</span></th>
+        <th>Gestor</th>
+      </tr></thead>
+      <tbody id="body0"></tbody>
+    </table>
+  </div>
+  <div class="foot" id="foot0"></div>
+</div>
+
+<!-- PANEL 1 -->
+<div class="panel" id="panel-1">
+  <div class="summary" id="sum1"></div>
+  <div class="toolbar">
+    <div class="search-wrap"><input type="text" placeholder="Buscar cliente, crédito..." oninput="filterTable('tbl1', this.value)"></div>
+    <button class="sort-btn" onclick="sortTable('tbl1',4,'num')">Ordenar por monto ↕</button>
+    <button class="sort-btn" onclick="sortTable('tbl1',6,'num')">Ordenar por cuotas ↕</button>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl1">
+      <thead><tr>
+        <th onclick="sortTable('tbl1',0,'str')">Crédito <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',1,'str')">Cliente <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',2,'str')">Sucursal <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',3,'str')">Marca / Modelo <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',4,'num')">Monto L <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',5,'num')">Plazo <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',6,'num')">Cuotas pag. <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',7,'date')">F. Otorg. <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl1',8,'date')">F. Cancelac. <span class="arr">↕</span></th>
+        <th>Gestor</th>
+      </tr></thead>
+      <tbody id="body1"></tbody>
+    </table>
+  </div>
+  <div class="foot" id="foot1"></div>
+</div>
+
+<!-- PANEL 2 -->
+<div class="panel" id="panel-2">
+  <div class="summary" id="sum2"></div>
+  <div class="toolbar">
+    <div class="search-wrap"><input type="text" placeholder="Buscar cliente, crédito..." oninput="filterTable('tbl2', this.value)"></div>
+    <button class="sort-btn" onclick="sortTable('tbl2',4,'num')">Ordenar por monto ↕</button>
+    <button class="sort-btn" onclick="sortTable('tbl2',6,'num')">Ordenar por cuotas ↕</button>
+  </div>
+  <div class="table-wrap">
+    <table id="tbl2">
+      <thead><tr>
+        <th onclick="sortTable('tbl2',0,'str')">Crédito <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',1,'str')">Cliente <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',2,'str')">Sucursal <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',3,'str')">Marca / Modelo <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',4,'num')">Monto L <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',5,'num')">Plazo <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',6,'num')">Cuotas pag. <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',7,'date')">F. Otorg. <span class="arr">↕</span></th>
+        <th onclick="sortTable('tbl2',8,'date')">F. Cancelac. <span class="arr">↕</span></th>
+        <th>Gestor</th>
+      </tr></thead>
+      <tbody id="body2"></tbody>
+    </table>
+  </div>
+  <div class="foot" id="foot2"></div>
+</div>
+
+<script>
+const fmtL = v => {
+  const n = parseFloat(String(v).replace(/,/g,''));
+  return isNaN(n) ? v : 'L ' + n.toLocaleString('es-HN', {minimumFractionDigits:0, maximumFractionDigits:0});
+};
+const fmtD = s => {
+  if (!s) return '—';
+  const d = new Date(s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('es-HN', {day:'2-digit', month:'2d', year:'2-digit'}).replace(/\//g,'/');
+};
+const fmtDate = s => {
+  if (!s) return '';
+  const [d,m,y] = String(s).split('/');
+  return `${y}-${m?.padStart(2,'0')}-${d?.padStart(2,'0')}`;
+};
+const parseMonto = s => parseFloat(String(s).replace(/[^0-9.]/g,''))||0;
+
+function pillClass(tab, v) {
+  if (tab === 0) return 'pill-0';
+  if (tab === 1) return 'pill-1';
+  return 'pill-2';
+}
+function cleanSuc(s) {
+  return (s||'').replace('SUCURSAL ','').replace('Sucursal ','').trim() || '—';
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const D0 = [
+  {c:"31258",n:"Angelica Maria Amador Cruz",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34850,p:24,pag:0,fo:"30/01/2024",fc:"04/02/2026",g:""},
+  {c:"22532",n:"Jose Armando Bueso Espinales",s:"Moto Market",marca:"Honda",modelo:"SD150",m:23600,p:1,pag:0,fo:"14/06/2023",fc:"21/07/2023",g:""},
+  {c:"39847",n:"Mario Velasquez Posadas",s:"Moto Market",marca:"Honda",modelo:"XBLADE",m:33400,p:24,pag:0,fo:"13/08/2024",fc:"31/10/2024",g:""},
+  {c:"42172",n:"Angie Abigail Chandias Ramos",s:"Moto Market",marca:"Honda",modelo:"CBF125MJ",m:31400,p:12,pag:0,fo:"07/11/2024",fc:"30/12/2025",g:""},
+  {c:"29983",n:"Dimas Antonio Aguilar Gonzales",s:"Subdistribuidor",marca:"Bajaj",modelo:"Pulsar200NS",m:59699,p:12,pag:0,fo:"29/12/2023",fc:"29/05/2025",g:""},
+  {c:"27367",n:"Mereyda Gisselle Molina Maldonado",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:32850,p:24,pag:0,fo:"14/10/2023",fc:"31/03/2026",g:""},
+  {c:"27902",n:"Jose Ricardo Zepeda Lopez",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:34850,p:24,pag:0,fo:"28/10/2023",fc:"27/02/2026",g:""},
+  {c:"10304",n:"Maryori Nicolle Reyes",s:"San Pedro Sula",marca:"Honda",modelo:"CGX125TF",m:40840,p:36,pag:0,fo:"26/01/2022",fc:"11/07/2025",g:"JSIERRA"},
+  {c:"1419",n:"Marbin Omar Mejia Reyes",s:"San Pedro Sula",marca:"Honda",modelo:"XR250 Tornado",m:95000,p:48,pag:0,fo:"19/11/2018",fc:"14/06/2024",g:""},
+  {c:"5225",n:"Mario Miguel Villeda Quijano",s:"San Pedro Sula",marca:"Honda",modelo:"CBF125MJ",m:30200,p:36,pag:0,fo:"10/02/2020",fc:"31/08/2023",g:"FSIERRA"},
+  {c:"7305",n:"Julio Hernandez Ramos",s:"San Pedro Sula",marca:"Honda",modelo:"CG 110",m:15990,p:12,pag:0,fo:"12/05/2021",fc:"30/04/2025",g:"PVELASQUEZ"},
+  {c:"7687",n:"Francis Lilyveth Duron Murillo",s:"Suyapa",marca:"Honda",modelo:"Navi 110",m:22950,p:18,pag:0,fo:"21/06/2021",fc:"03/11/2023",g:"ROSORTO"},
+  {c:"27242",n:"Elvin Porfirio Izaguirre Flores",s:"—",marca:"Honda",modelo:"CBF160MJ",m:50390,p:24,pag:0,fo:"10/10/2023",fc:"11/03/2026",g:""},
+  {c:"24769",n:"Josselin Estefania Gonzalez Alonzo",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:35550,p:24,pag:0,fo:"15/08/2023",fc:"04/12/2025",g:""},
+  {c:"9838",n:"Juan Jose Ramos Borjas",s:"Comayaguela",marca:"Honda",modelo:"Twister125",m:23000,p:12,pag:0,fo:"13/12/2021",fc:"21/05/2025",g:"JSIERRA"},
+  {c:"8555",n:"Cendy Yuriel Lindo Lindo",s:"Choluteca",marca:"Honda",modelo:"CBF160FSM",m:41390,p:36,pag:0,fo:"06/09/2021",fc:"28/02/2025",g:"ANAGERA"},
+  {c:"27601",n:"Ana Gabriela Valladares Guzman",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:9850,p:6,pag:0,fo:"20/10/2023",fc:"31/05/2024",g:""},
+  {c:"15344",n:"Angel Antonio Rivera Enamorado",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:34850,p:18,pag:0,fo:"04/10/2022",fc:"30/04/2024",g:""},
+  {c:"12114",n:"Maria Lurdez Lopez",s:"Comayagua",marca:"Honda",modelo:"BK-150",m:25890,p:12,pag:0,fo:"27/04/2022",fc:"21/12/2023",g:"JSALGADO"},
+  {c:"25621",n:"Jose Ribelino Lagos Meza",s:"Siguatepeque",marca:"Honda",modelo:"NVA110MNA",m:33350,p:24,pag:0,fo:"02/09/2023",fc:"28/10/2025",g:""},
+  {c:"15214",n:"Cristian Cecilio Varela Hernandez",s:"San Pedro Sula",marca:"Honda",modelo:"CB190R",m:75990,p:24,pag:0,fo:"23/09/2022",fc:"31/08/2025",g:""},
+  {c:"14021",n:"Eber Edgardo Barahona Silva",s:"Suyapa",marca:"Honda",modelo:"CG110",m:28790,p:36,pag:0,fo:"01/08/2022",fc:"25/08/2025",g:""},
+  {c:"9620",n:"Carlos Enrique Marquez Galvez",s:"Suyapa",marca:"Honda",modelo:"CBF160FSM",m:47890,p:36,pag:0,fo:"30/11/2021",fc:"04/07/2025",g:"PVELASQUEZ"},
+  {c:"10148",n:"Ada Tereza Herrera Lagos",s:"San Pedro Sula",marca:"Honda",modelo:"XR150L",m:58499,p:24,pag:0,fo:"11/01/2022",fc:"22/04/2025",g:"ROSORTO"},
+  {c:"8431",n:"Oscar Johan Torres Martinez",s:"Santa Rosa de Copan",marca:"Honda",modelo:"SCV110FKD",m:24900,p:12,pag:0,fo:"31/08/2021",fc:"27/01/2025",g:"ANAGERA"},
+  {c:"9513",n:"Marisol Morales Diaz",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:26850,p:18,pag:0,fo:"23/11/2021",fc:"30/09/2024",g:"ROSORTO"},
+  {c:"5636",n:"Lola Samuel Blucha",s:"Comayaguela",marca:"Honda",modelo:"XR150L",m:47600,p:36,pag:0,fo:"26/06/2020",fc:"09/05/2024",g:"ACASTILLO"},
+  {c:"12936",n:"Oscar Alexi Lopez Peña",s:"San Pedro Sula",marca:"Honda",modelo:"XR150L",m:56399,p:12,pag:0,fo:"06/06/2022",fc:"26/09/2023",g:"ROSORTO"},
+  {c:"2827",n:"Sindy Yulissa Banegas Reyes",s:"Comayaguela",marca:"Honda",modelo:"CB110CMH",m:24570,p:48,pag:0,fo:"18/12/2017",fc:"11/07/2023",g:"ACASTILLO"},
+  {c:"10470",n:"Carlos Edilfonzo Vasquez Diaz",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:30350,p:24,pag:0,fo:"02/02/2022",fc:"23/03/2026",g:"ACASTILLO"},
+];
+
+const D1 = [
+  {c:"37994",n:"Daylin Sirleny Martehl Hernandez",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:31900,p:6,pag:4,fo:"04/07/2024",fc:"17/03/2025",g:""},
+  {c:"45546",n:"Luis Antonio Garcia Alvarez",s:"Choluteca",marca:"Honda",modelo:"NVA110",m:32350,p:12,pag:5,fo:"26/02/2025",fc:"15/04/2026",g:""},
+  {c:"33201",n:"Scarleth Zulema Chacon Barrios",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34350,p:24,pag:3,fo:"12/03/2024",fc:"31/03/2026",g:""},
+  {c:"18623",n:"Kelvin Ernesto Lezama Paz",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNAV",m:36450,p:24,pag:4,fo:"04/02/2023",fc:"23/03/2026",g:""},
+  {c:"38563",n:"Jose Luis Lainez Cabrera",s:"Mall Premier",marca:"Honda",modelo:"NVA110",m:33900,p:18,pag:1,fo:"28/07/2024",fc:"20/03/2026",g:""},
+  {c:"35817",n:"Vilma Esperanza Valeriano Gutierrez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:34400,p:18,pag:5,fo:"20/05/2024",fc:"30/11/2025",g:""},
+  {c:"36282",n:"Glenda Yaritza Torres Lopez",s:"San Pedro Sula",marca:"Honda",modelo:"SCV125K",m:30390,p:6,pag:1,fo:"30/05/2024",fc:"21/11/2025",g:""},
+  {c:"41000",n:"Osman Alexis Benavides Martinez",s:"Subdistribuidor",marca:"Honda",modelo:"NAVI",m:25600,p:12,pag:1,fo:"16/10/2024",fc:"29/11/2025",g:""},
+  {c:"34717",n:"Juan Rubi Mancia Paz",s:"Subdistribuidor",marca:"Zmoto",modelo:"Terra 150",m:37790,p:18,pag:1,fo:"19/04/2024",fc:"18/12/2025",g:""},
+  {c:"33023",n:"Francisco Napoleon Villela Mejia",s:"Subdistribuidor",marca:"Suzuki",modelo:"GN125F",m:47390,p:18,pag:5,fo:"05/03/2024",fc:"27/01/2026",g:""},
+  {c:"31309",n:"Diany Soledad Herrera Paguada",s:"Moto Market",marca:"Honda",modelo:"NAVI",m:27750,p:12,pag:3,fo:"13/01/2024",fc:"17/09/2025",g:""},
+  {c:"31675",n:"Jared Aldair Cruz Torres",s:"Suyapa",marca:"Honda",modelo:"CG110",m:27290,p:12,pag:5,fo:"06/02/2024",fc:"20/02/2025",g:""},
+  {c:"31149",n:"Ricardo David Velasquez Medina",s:"Comayagua",marca:"Honda",modelo:"CG110",m:27290,p:24,pag:4,fo:"29/01/2024",fc:"16/02/2026",g:""},
+  {c:"43143",n:"Gabriela Gissell Padilla Rios",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110",m:27400,p:12,pag:4,fo:"12/12/2024",fc:"23/03/2026",g:""},
+  {c:"31882",n:"Felipe Santiago Ruiz Martinez",s:"Mega Mall",marca:"Honda",modelo:"CBF160FSM",m:46890,p:24,pag:4,fo:"09/02/2024",fc:"11/02/2026",g:""},
+  {c:"43266",n:"Carlos Daniel Garrido Velasquez",s:"Moto Market",marca:"Italika",modelo:"GTK125",m:8780,p:6,pag:5,fo:"13/12/2024",fc:"22/04/2026",g:""},
+  {c:"21137",n:"Darwin Efridio Rosales Padilla",s:"Subdistribuidor",marca:"KTM",modelo:"390 DUKE",m:122490,p:24,pag:2,fo:"18/04/2023",fc:"28/02/2026",g:""},
+  {c:"6120",n:"Teresa Yasmin Bonilla Membreño",s:"San Pedro Sula",marca:"Honda",modelo:"CBF160MH",m:44436,p:30,pag:1,fo:"08/10/2020",fc:"15/08/2025",g:"PVELASQUEZ"},
+  {c:"8815",n:"Juan Charles Lopez Navas",s:"Comayaguela",marca:"Honda",modelo:"WAVE110S",m:30300,p:36,pag:1,fo:"30/09/2021",fc:"30/04/2025",g:"JSIERRA"},
+  {c:"23262",n:"Juan Manuel Lopez Chavez",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNAV",m:28350,p:18,pag:1,fo:"28/06/2023",fc:"16/01/2025",g:""},
+  {c:"594",n:"Sergio Mauricio Solis Velasquez",s:"Suyapa",marca:"Honda",modelo:"CBR250RAN/CB190R",m:61655,p:48,pag:1,fo:"18/04/2018",fc:"01/10/2025",g:"EERAZO"},
+  {c:"26691",n:"Roberto Antonio Rodriguez Sierra",s:"Subdistribuidor",marca:"Zmoto",modelo:"ZM150",m:22890,p:18,pag:2,fo:"29/09/2023",fc:"19/09/2025",g:""},
+  {c:"24613",n:"Arlin Grabielly Mendez Avila",s:"Subdistribuidor",marca:"Zmoto",modelo:"SX2",m:27390,p:12,pag:3,fo:"04/08/2023",fc:"27/11/2025",g:""},
+  {c:"26137",n:"Jose Danilo Hernandez Vasquez",s:"Subdistribuidor",marca:"Zmoto",modelo:"CRX200",m:28390,p:24,pag:3,fo:"09/09/2023",fc:"29/10/2025",g:""},
+  {c:"20757",n:"Victor Manuel Carranza Arriaga",s:"La Ceiba",marca:"Honda",modelo:"NVA110MNAV",m:33350,p:24,pag:5,fo:"19/04/2023",fc:"27/08/2025",g:""},
+  {c:"22162",n:"Cristhian Armando Martinez Rivera",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNAV",m:35550,p:24,pag:3,fo:"31/05/2023",fc:"28/06/2025",g:""},
+  {c:"20573",n:"Jorge Arturo Lobo Rodriguez",s:"Juticalpa",marca:"Honda",modelo:"CB110CMH",m:35190,p:24,pag:2,fo:"04/04/2023",fc:"31/05/2025",g:""},
+  {c:"23490",n:"Iris Yesenia Lozano Portillo",s:"Mall Premier",marca:"Honda",modelo:"NVA110MNAV",m:35350,p:18,pag:2,fo:"10/07/2023",fc:"31/03/2025",g:""},
+  {c:"3008",n:"Ariel Alejandro Espinal Sarmiento",s:"Comayaguela",marca:"Honda",modelo:"CBF150ME",m:36000,p:24,pag:3,fo:"29/09/2017",fc:"30/11/2023",g:"ROSORTO"},
+  {c:"25902",n:"Roberto Gustavo Rivera Fortin",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:33850,p:24,pag:3,fo:"13/09/2023",fc:"05/12/2025",g:""},
+  {c:"9301",n:"Julio Alexis Izaguirre",s:"Comayaguela",marca:"Honda",modelo:"CBF160MH",m:38196,p:24,pag:2,fo:"05/11/2021",fc:"17/04/2024",g:"JSIERRA"},
+  {c:"5226",n:"Pedro Javier Ramirez Sanchez",s:"San Pedro Sula",marca:"Honda",modelo:"CBR250RAN",m:78900,p:36,pag:2,fo:"01/02/2020",fc:"22/09/2025",g:"ROSORTO"},
+  {c:"12822",n:"Randy Samir Sanchez Auceda",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:37950,p:24,pag:2,fo:"02/06/2022",fc:"19/09/2025",g:"JSIERRA"},
+  {c:"25605",n:"Berta Lidia Perez",s:"Subdistribuidor",marca:"Vento",modelo:"CM200EIMI",m:35090,p:24,pag:1,fo:"31/08/2023",fc:"19/09/2025",g:""},
+  {c:"14039",n:"Saira Olivia Hernandez Valladares",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:31350,p:18,pag:5,fo:"04/08/2022",fc:"30/06/2025",g:""},
+  {c:"9455",n:"Ruben Reniery Dominguez Varela",s:"Choluteca",marca:"Honda",modelo:"CB125F TWI",m:35800,p:24,pag:5,fo:"16/11/2021",fc:"30/04/2025",g:"ANAGERA"},
+  {c:"18034",n:"Jady Magely Martinez Cruz",s:"Comayaguela",marca:"Honda",modelo:"Activa 125",m:19400,p:24,pag:4,fo:"10/01/2023",fc:"27/01/2025",g:""},
+  {c:"10376",n:"Kenji Leonardo Amador Trejo",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:32550,p:12,pag:1,fo:"31/01/2022",fc:"08/12/2025",g:"ACASTILLO"},
+  {c:"22463",n:"Elvin Ariel Sorto Melgar",s:"Suyapa",marca:"Honda",modelo:"SCV110FK",m:37390,p:24,pag:3,fo:"08/06/2023",fc:"28/11/2025",g:""},
+  {c:"10913",n:"Kevin Omar Silva Varela",s:"Suyapa",marca:"Honda",modelo:"CB110CMH",m:32490,p:18,pag:2,fo:"08/03/2022",fc:"31/10/2025",g:"ANAGERA"},
+  {c:"5367",n:"Diego Jose Corrales Herrera",s:"La Ceiba",marca:"Honda",modelo:"CB190R",m:48990,p:36,pag:4,fo:"04/05/2020",fc:"30/10/2025",g:""},
+  {c:"18254",n:"Oscar Xavier Caceres Ramirez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:34350,p:24,pag:3,fo:"26/01/2023",fc:"14/08/2025",g:""},
+  {c:"19034",n:"Yesenia Elizabeth Zavala Paz",s:"Subdistribuidor",marca:"Honda",modelo:"SCV125KAC",m:35390,p:18,pag:4,fo:"18/02/2023",fc:"03/07/2025",g:""},
+  {c:"12607",n:"Raul Antonio Padilla Varela",s:"San Pedro Sula",marca:"Honda",modelo:"CG110",m:25890,p:24,pag:2,fo:"24/05/2022",fc:"12/06/2024",g:"ANAGERA"},
+  {c:"11618",n:"Moises Fernando Izaguirre Rodriguez",s:"Comayaguela",marca:"Honda",modelo:"CBF125MJ",m:42890,p:24,pag:3,fo:"07/04/2022",fc:"31/10/2025",g:"ACASTILLO"},
+  {c:"16328",n:"Isis Gisela Escobar Andrade",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:33310,p:24,pag:2,fo:"03/11/2022",fc:"31/10/2025",g:""},
+  {c:"4791",n:"Vialina Alvarez Marly",s:"Comayaguela",marca:"—",modelo:"—",m:29600,p:36,pag:2,fo:"25/11/2019",fc:"26/04/2024",g:"ACASTILLO"},
+  {c:"16411",n:"Yesy Del Carmen Mendoza Banegas",s:"Juticalpa",marca:"Honda",modelo:"NVA110MNAV",m:33050,p:24,pag:4,fo:"17/11/2022",fc:"30/12/2025",g:""},
+  {c:"26056",n:"Andrea Stephani Flores Villeda",s:"Mega Mall",marca:"Honda",modelo:"NVA110MNA",m:33550,p:24,pag:5,fo:"09/09/2023",fc:"31/10/2025",g:""},
+  {c:"13109",n:"Pedro Hernandez Valentin",s:"Comayagua",marca:"KMF",modelo:"ZX-150L",m:33490,p:12,pag:1,fo:"14/06/2022",fc:"31/07/2023",g:"ROSORTO"},
+  {c:"10787",n:"Jose Luis Aguilar Zavala",s:"Comayaguela",marca:"Zmoto",modelo:"MG150-7S",m:20790,p:36,pag:5,fo:"24/02/2022",fc:"06/10/2025",g:"JSALGADO"},
+  {c:"13256",n:"Jonathan Esau Castellanos Castellano",s:"Comayaguela",marca:"Genesis",modelo:"GSR-4",m:44890,p:24,pag:3,fo:"25/06/2022",fc:"14/08/2025",g:""},
+  {c:"15243",n:"Rosa Lidia Avila Garcia",s:"Santa Rosa de Copan",marca:"KMF",modelo:"ZX-250R",m:52990,p:18,pag:1,fo:"30/09/2022",fc:"25/04/2024",g:""},
+  {c:"4252",n:"Hitler Coban Tetam",s:"Comayaguela",marca:"—",modelo:"—",m:48600,p:36,pag:1,fo:"25/07/2019",fc:"25/03/2024",g:""},
+  {c:"20980",n:"Richar Emmanuel Giron Figueroa",s:"Subdistribuidor",marca:"Genesis",modelo:"BK-150",m:26390,p:24,pag:4,fo:"22/04/2023",fc:"18/11/2025",g:""},
+  {c:"15671",n:"Carlos Adolfo Salgado Elvir",s:"Suyapa",marca:"Honda",modelo:"CBF125MJ",m:39890,p:24,pag:3,fo:"20/10/2022",fc:"11/08/2025",g:""},
+  {c:"25494",n:"Uriel David Galeano Galeano",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:36550,p:24,pag:1,fo:"31/08/2023",fc:"20/09/2025",g:""},
+  {c:"25340",n:"Jose Karin Midence Rodriguez",s:"Comayaguela",marca:"Honda",modelo:"CBF125MJ",m:41590,p:24,pag:2,fo:"26/08/2023",fc:"31/12/2025",g:""},
+  {c:"26036",n:"Angel Asael Lopez Perez",s:"San Pedro Sula",marca:"Honda",modelo:"CBF160FSM",m:43390,p:24,pag:2,fo:"18/09/2023",fc:"18/11/2025",g:""},
+  {c:"21595",n:"Jinhong Xie",s:"Moto Market",marca:"Honda",modelo:"NVA110MNA",m:30100,p:12,pag:5,fo:"11/05/2023",fc:"21/06/2024",g:""},
+  {c:"25419",n:"Gissela Alyen Rivas Salinas",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNAV",m:31500,p:18,pag:1,fo:"10/08/2023",fc:"31/10/2025",g:""},
+  {c:"11124",n:"Bessy Lorena Carranza Euseda",s:"Comayaguela",marca:"Honda",modelo:"Activa 125",m:19400,p:12,pag:3,fo:"21/03/2022",fc:"16/08/2023",g:"ROSORTO"},
+  {c:"13674",n:"Cindy Yaquelin Valle Lopez",s:"Comayaguela",marca:"Honda",modelo:"NAVI110",m:26950,p:12,pag:3,fo:"18/07/2022",fc:"30/11/2025",g:"PVELASQUEZ"},
+  {c:"9291",n:"Yolany Waleska Dominguez Euceda",s:"Choluteca",marca:"Honda",modelo:"NVA110MNA",m:28550,p:24,pag:3,fo:"01/11/2021",fc:"30/09/2025",g:"ANAGERA"},
+  {c:"14652",n:"Laura Elizabeth Matamoros Nuñez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:32600,p:24,pag:2,fo:"02/09/2022",fc:"22/09/2025",g:"PVELASQUEZ"},
+  {c:"8445",n:"Dulce Marbella Erazo",s:"Comayagua",marca:"Honda",modelo:"NVA110MNA",m:26850,p:24,pag:5,fo:"21/08/2021",fc:"19/09/2025",g:"ACASTILLO"},
+  {c:"14117",n:"Pedro Rene Licona Sanchez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:33850,p:24,pag:5,fo:"01/08/2022",fc:"11/08/2025",g:""},
+  {c:"14125",n:"Escarleth Arely Paniagua Cerrato",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:18303,p:18,pag:4,fo:"01/08/2022",fc:"31/07/2025",g:""},
+  {c:"14779",n:"Eduardo Alejandro Avila",s:"Comayaguela",marca:"Honda",modelo:"CBF160FSM",m:46890,p:24,pag:1,fo:"02/09/2022",fc:"28/07/2025",g:""},
+  {c:"8303",n:"Jeimy Rocio Gallo Portillo",s:"San Pedro Sula",marca:"Honda",modelo:"NAVI 110",m:27850,p:24,pag:4,fo:"14/08/2021",fc:"31/03/2025",g:"JSIERRA"},
+  {c:"15983",n:"Kensy Nicols Lara Alvarado",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:32850,p:12,pag:4,fo:"31/10/2022",fc:"31/03/2025",g:""},
+  {c:"7507",n:"Maria Antonia Escalante",s:"San Pedro Sula",marca:"Honda",modelo:"NAVI 110",m:26950,p:36,pag:3,fo:"03/06/2021",fc:"31/10/2024",g:"JSIERRA"},
+  {c:"8296",n:"Elder Alexander Paz Sisnado",s:"Comayaguela",marca:"Honda",modelo:"CB110",m:28390,p:24,pag:5,fo:"21/08/2021",fc:"30/10/2024",g:"JSIERRA"},
+  {c:"13095",n:"Daniel Alejandro Duron Mejia",s:"Comayagua",marca:"Honda",modelo:"BK-50",m:21640,p:24,pag:1,fo:"21/06/2022",fc:"28/06/2024",g:"ACASTILLO"},
+  {c:"14153",n:"Melbin Daniel Ochoa Lopez",s:"Kennedy",marca:"Honda",modelo:"NVA110MNA",m:33850,p:12,pag:2,fo:"11/08/2022",fc:"25/04/2024",g:"JLRODRIGUEZ"},
+  {c:"8115",n:"Suanis Yasmin Flores Aguirre",s:"Comayaguela",marca:"Honda",modelo:"NAVI 110",m:27350,p:24,pag:4,fo:"19/07/2021",fc:"27/02/2024",g:"JSIERRA"},
+  {c:"7781",n:"Keneth Estefan Matute",s:"Suyapa",marca:"Honda",modelo:"CG110",m:18000,p:18,pag:3,fo:"15/06/2021",fc:"19/09/2023",g:"JSIERRA"},
+  {c:"5160",n:"Nidia Yamileth Ramirez Pereira",s:"Suyapa",marca:"Honda",modelo:"CB 190",m:33000,p:36,pag:1,fo:"27/01/2020",fc:"31/07/2023",g:""},
+  {c:"9330",n:"Reyna Margarita Martinez Lopez",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:27350,p:18,pag:3,fo:"05/11/2021",fc:"31/07/2023",g:"ROSORTO"},
+  {c:"6779",n:"Gabriel Alejandro Medina Flores",s:"San Pedro Sula",marca:"Honda",modelo:"CB190R",m:30485,p:18,pag:1,fo:"15/02/2021",fc:"23/05/2023",g:"PVELASQUEZ"},
+  {c:"7175",n:"Elias Castillo Mejia",s:"Comayaguela",marca:"Honda",modelo:"CB190R",m:59140,p:24,pag:5,fo:"15/04/2021",fc:"23/05/2023",g:"ACASTILLO"},
+  {c:"30003",n:"Cristopher Javier Flores Flores",s:"Comayaguela",marca:"Honda",modelo:"CG110",m:27290,p:12,pag:1,fo:"28/12/2023",fc:"10/01/2026",g:""},
+  {c:"8411",n:"Josue Francisco Valladares Montiel",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:24350,p:24,pag:1,fo:"31/08/2021",fc:"26/11/2025",g:"JSIERRA"},
+  {c:"14862",n:"Edwin Alfredo Peralta Aguilar",s:"Kennedy",marca:"Honda",modelo:"NVA110MNAV",m:33450,p:24,pag:5,fo:"19/09/2022",fc:"31/10/2025",g:""},
+  {c:"15173",n:"Arony Valladares Soto",s:"Kennedy",marca:"Honda",modelo:"CB110CMH",m:35490,p:24,pag:2,fo:"30/09/2022",fc:"31/10/2025",g:""},
+  {c:"5021",n:"Marvin Horacio Ochoa Canales",s:"Suyapa",marca:"Honda",modelo:"NAVI 110",m:23970,p:36,pag:2,fo:"06/01/2020",fc:"30/09/2025",g:"FSIERRA"},
+  {c:"15035",n:"Erick Ivan Cortes Lazo",s:"Suyapa",marca:"Honda",modelo:"SCV125KAC",m:35390,p:18,pag:2,fo:"28/09/2022",fc:"20/09/2025",g:""},
+  {c:"10394",n:"Luis Fernando Ordoñez Nuñez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:31850,p:36,pag:2,fo:"29/01/2022",fc:"19/09/2025",g:"PVELASQUEZ"},
+  {c:"3721",n:"Keyla Sarahi Solano Casco",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:25700,p:36,pag:2,fo:"16/05/2019",fc:"30/08/2025",g:"ACASTILLO"},
+  {c:"9098",n:"Deybi Oniel Ramos Garcia",s:"Choluteca",marca:"Honda",modelo:"CB110CMH",m:30390,p:36,pag:2,fo:"23/10/2021",fc:"28/08/2025",g:"ANAGERA"},
+  {c:"11703",n:"Ruth Andrea Gutierrez Portillo",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:34350,p:24,pag:2,fo:"11/04/2022",fc:"20/08/2025",g:"PVELASQUEZ"},
+  {c:"12132",n:"Raquel Suyapa Zepeda Muñoz",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:30950,p:18,pag:4,fo:"30/04/2022",fc:"11/08/2025",g:"ROSORTO"},
+  {c:"19483",n:"Eddy Javier Tejeda Hernandez",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNAV",m:35850,p:18,pag:4,fo:"04/03/2023",fc:"10/07/2025",g:""},
+  {c:"9464",n:"Otoniel Oreste Paz Escobar",s:"San Pedro Sula",marca:"Honda",modelo:"CBF160FSM",m:46526,p:18,pag:1,fo:"18/11/2021",fc:"30/06/2025",g:"JSIERRA"},
+  {c:"9562",n:"Maria Jose Molina Calderon",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:27350,p:12,pag:1,fo:"27/11/2021",fc:"23/06/2025",g:"ACASTILLO"},
+  {c:"14776",n:"Ada Victoria Zepeda Romero",s:"Comayaguela",marca:"Honda",modelo:"CBF160MJ",m:56099,p:24,pag:2,fo:"13/09/2022",fc:"12/05/2025",g:""},
+  {c:"4326",n:"Fausto Mijail Maldonado Villatoro",s:"La Ceiba",marca:"Honda",modelo:"CBF160MH",m:39200,p:36,pag:5,fo:"05/08/2019",fc:"30/04/2025",g:"ACASTILLO"},
+  {c:"7235",n:"Carlos Eduardo Soto Benavides",s:"Suyapa",marca:"Honda",modelo:"CG 110",m:14990,p:18,pag:1,fo:"04/05/2021",fc:"10/02/2025",g:"ACASTILLO"},
+  {c:"13919",n:"Leonel Alfredo Santos Martinez",s:"Kennedy",marca:"Honda",modelo:"NVA110MNA",m:32350,p:12,pag:3,fo:"30/07/2022",fc:"10/02/2025",g:"PVELASQUEZ"},
+  {c:"15294",n:"Meyvin Mauricio Canales Euceda",s:"Comayaguela",marca:"Honda",modelo:"CBF160FSM",m:36890,p:24,pag:4,fo:"04/10/2022",fc:"27/01/2025",g:""},
+  {c:"16506",n:"Tania Lizeth Perdomo Benitez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:32550,p:24,pag:4,fo:"16/11/2022",fc:"27/01/2025",g:""},
+  {c:"11361",n:"Francisco Javier Ramirez Funez",s:"San Pedro Sula",marca:"Honda",modelo:"CB190R",m:60390,p:12,pag:2,fo:"25/03/2022",fc:"06/01/2025",g:""},
+  {c:"12840",n:"Evelin Abigail Dormes Avila",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:33350,p:18,pag:2,fo:"07/06/2022",fc:"23/12/2024",g:"ACASTILLO"},
+  {c:"9935",n:"Katerin Izamar Mejia Medina",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:27350,p:24,pag:2,fo:"03/12/2021",fc:"20/12/2024",g:"PVELASQUEZ"},
+  {c:"19183",n:"Ludin Mareci Matute Colindres",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNAV",m:35850,p:18,pag:3,fo:"28/02/2023",fc:"21/11/2024",g:""},
+  {c:"10619",n:"Jerson Jonathan Reyes Rivera",s:"San Pedro Sula",marca:"Honda",modelo:"CBF160FSM",m:43190,p:24,pag:4,fo:"21/02/2022",fc:"20/11/2024",g:"ROSORTO"},
+  {c:"11091",n:"Ricardo David Alvarado Martinez",s:"Comayagua",marca:"Honda",modelo:"CG110",m:26190,p:24,pag:1,fo:"16/03/2022",fc:"28/10/2024",g:"ANAGERA"},
+  {c:"17097",n:"Brayan Nehemias Betanco Rodriguez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:32550,p:18,pag:4,fo:"12/12/2022",fc:"25/10/2024",g:""},
+  {c:"16287",n:"Loyda Mabel Valderramos Martinez",s:"Juticalpa",marca:"Honda",modelo:"CGL125",m:35390,p:12,pag:2,fo:"12/11/2022",fc:"31/08/2024",g:""},
+  {c:"4874",n:"Victor Hugo Giron Lemus",s:"Comayaguela",marca:"Honda",modelo:"NAVI",m:29100,p:24,pag:1,fo:"02/12/2019",fc:"14/08/2024",g:"ACASTILLO"},
+  {c:"17114",n:"Francisco Javier Torres Olmedo",s:"Comayagua",marca:"Honda",modelo:"NVA110MNAV",m:34350,p:18,pag:5,fo:"12/12/2022",fc:"30/07/2024",g:""},
+  {c:"9471",n:"Allison Michelle Dubon Ramrez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:26850,p:24,pag:5,fo:"18/11/2021",fc:"10/07/2024",g:"ACASTILLO"},
+  {c:"3978",n:"Gustavo Enrique Suazo Romero",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:20600,p:12,pag:3,fo:"17/06/2019",fc:"17/06/2024",g:"ACASTILLO"},
+  {c:"5434",n:"Angel Mauricio Sevilla Serpas",s:"San Pedro Sula",marca:"Honda",modelo:"CBR250RG",m:23309,p:36,pag:4,fo:"28/05/2020",fc:"31/05/2024",g:"PVELASQUEZ"},
+  {c:"9938",n:"Eris Jariel Sanchez Zuniga",s:"Comayaguela",marca:"Honda",modelo:"CBF160FSM",m:43390,p:24,pag:3,fo:"28/12/2021",fc:"31/05/2024",g:"PVELASQUEZ"},
+  {c:"11020",n:"Wendy Jackelin Mejia Medina",s:"Suyapa",marca:"Honda",modelo:"CB110CMH",m:30890,p:18,pag:3,fo:"02/03/2022",fc:"21/05/2024",g:"ANAGERA"},
+  {c:"9442",n:"Carlos Alberto Oyuela Coello",s:"Oficina Principal TGU",marca:"Honda",modelo:"CBF160FSM",m:44390,p:24,pag:1,fo:"16/11/2021",fc:"16/05/2024",g:"ACASTILLO"},
+  {c:"10293",n:"Martin Enrique Paz Bonilla",s:"San Pedro Sula",marca:"Honda",modelo:"CB110CMH",m:28390,p:24,pag:4,fo:"28/01/2022",fc:"26/04/2024",g:"ACASTILLO"},
+  {c:"9429",n:"Jomer Ariel Ocampo Ortiz",s:"La Ceiba",marca:"Honda",modelo:"CGX125TF",m:39390,p:12,pag:3,fo:"16/11/2021",fc:"25/04/2024",g:"JSIERRA"},
+  {c:"10008",n:"Melvin Javier Corrales Amador",s:"Choluteca",marca:"Honda",modelo:"CB110CMH",m:30390,p:24,pag:5,fo:"13/12/2021",fc:"25/03/2024",g:"PVELASQUEZ"},
+  {c:"18154",n:"Axell Daniel Caceres Sanchez",s:"Juticalpa",marca:"Honda",modelo:"CG110",m:27890,p:12,pag:1,fo:"23/01/2023",fc:"31/01/2024",g:""},
+  {c:"9511",n:"Katia Oneira Suazo Caceres",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:28550,p:24,pag:5,fo:"20/11/2021",fc:"21/12/2023",g:"ROSORTO"},
+  {c:"9507",n:"Elmer Eliazar Mejia Carrasco",s:"Choluteca",marca:"Honda",modelo:"XR150L",m:32899,p:12,pag:5,fo:"22/11/2021",fc:"16/12/2023",g:"PVELASQUEZ"},
+  {c:"9038",n:"Francisco Midence Colindres",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:26800,p:24,pag:2,fo:"20/10/2021",fc:"15/12/2023",g:"ACASTILLO"},
+  {c:"12550",n:"Lesly Yovania Chirinos Matute",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:35850,p:12,pag:2,fo:"27/05/2022",fc:"30/11/2023",g:"ANAGERA"},
+  {c:"8713",n:"Liz Jean Garcia Galindo",s:"Comayaguela",marca:"Honda",modelo:"XR150L",m:50399,p:24,pag:4,fo:"24/09/2021",fc:"30/10/2023",g:"ANAGERA"},
+  {c:"11793",n:"Missemelyn Dioxana Hernandez Castellanos",s:"San Pedro Sula",marca:"Honda",modelo:"SCV110FKD",m:30800,p:12,pag:4,fo:"20/04/2022",fc:"27/10/2023",g:"JSIERRA"},
+  {c:"9231",n:"Dinolea Alvarez Kuin",s:"La Ceiba",marca:"Honda",modelo:"XR150L",m:60100,p:18,pag:1,fo:"30/10/2021",fc:"19/09/2023",g:"JSIERRA"},
+  {c:"12176",n:"Rosa Esther Ramos Gonzales",s:"Comayaguela",marca:"Honda",modelo:"CB110CMH",m:28390,p:12,pag:2,fo:"02/05/2022",fc:"29/06/2023",g:"JSIERRA"},
+  {c:"3882",n:"Adiel Reinaldo Ordoñez Salgado",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:16900,p:24,pag:5,fo:"31/05/2019",fc:"13/06/2023",g:"PVELASQUEZ"},
+  {c:"5574",n:"Ninoska Esthefany Molina Cunningham",s:"La Ceiba",marca:"Honda",modelo:"XR150L",m:47500,p:24,pag:3,fo:"22/06/2020",fc:"24/05/2023",g:""},
+  {c:"4960",n:"Brayan Issac Carter Castro",s:"Comayaguela",marca:"Honda",modelo:"NAVI",m:24700,p:36,pag:2,fo:"14/12/2019",fc:"23/05/2023",g:"JPONCE"},
+  {c:"14528",n:"Brenda Cristina Herrera Funez",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:34155,p:24,pag:2,fo:"30/08/2022",fc:"31/03/2026",g:""},
+  {c:"16384",n:"Francisco Javier Salinas Ardon",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:34550,p:36,pag:1,fo:"17/11/2022",fc:"12/03/2026",g:""},
+  {c:"19958",n:"Annie Mayesi Galea Herrera",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:28350,p:18,pag:3,fo:"24/03/2023",fc:"24/02/2026",g:""},
+  {c:"11325",n:"Sindy Lilliana Flores Tejeda",s:"Subdistribuidor",marca:"Honda",modelo:"SCV125KAC",m:31390,p:24,pag:1,fo:"28/03/2022",fc:"16/02/2026",g:"JSALGADO"},
+  {c:"5192",n:"Luis Fernando Coello Sanchez",s:"Suyapa",marca:"Honda",modelo:"NAVI 110",m:25200,p:24,pag:1,fo:"17/02/2020",fc:"10/01/2026",g:"ACASTILLO"},
+  {c:"17118",n:"Angelica Eliana Lopez Discua",s:"Comayagua",marca:"Honda",modelo:"CG110",m:26890,p:36,pag:2,fo:"13/12/2022",fc:"10/01/2026",g:""},
+  {c:"11790",n:"Erick David Ortiz Diaz",s:"Suyapa",marca:"Honda",modelo:"CB110CMH",m:35890,p:36,pag:4,fo:"19/04/2022",fc:"22/11/2025",g:""},
+  {c:"13065",n:"Catherine Noelia Cruz Salgado",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34350,p:36,pag:4,fo:"17/06/2022",fc:"22/11/2025",g:"ACASTILLO"},
+  {c:"15760",n:"Kenneth Ali Suazo Varela",s:"Comayaguela",marca:"Honda",modelo:"CBF160MJ",m:56499,p:36,pag:4,fo:"27/10/2022",fc:"29/10/2025",g:""},
+];
+
+const D2 = [
+  {c:"21238",n:"Gerson Isaias Lopez Garcia",s:"Comayaguela",marca:"Honda",modelo:"CG110",m:27590,p:24,pag:10,fo:"30/04/2023",fc:"23/09/2025",g:""},
+  {c:"32607",n:"Francis Dayanara Peña Lopez",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:35350,p:24,pag:10,fo:"28/02/2024",fc:"10/04/2026",g:""},
+  {c:"38968",n:"Raul Ernesto Munguia Sandoval",s:"—",marca:"Honda",modelo:"NVA110R",m:33900,p:18,pag:10,fo:"06/08/2024",fc:"28/02/2026",g:""},
+  {c:"36140",n:"Heidi Melissa Suazo Avila",s:"Comayagua",marca:"Honda",modelo:"NVA110MNA",m:32400,p:18,pag:10,fo:"28/05/2024",fc:"30/12/2025",g:""},
+  {c:"40428",n:"Marvin Neptali Martinez Zelaya",s:"San Pedro Sula",marca:"Honda",modelo:"CD100RNR",m:22500,p:12,pag:8,fo:"24/09/2024",fc:"26/12/2025",g:""},
+  {c:"29410",n:"Allan Mauricio Carcamo",s:"Comayaguela",marca:"Honda",modelo:"CG110",m:28390,p:24,pag:10,fo:"11/12/2023",fc:"18/12/2025",g:""},
+  {c:"38614",n:"Kattlin Dayanarat Salgado Aragon",s:"—",marca:"Honda",modelo:"NAVI",m:31400,p:12,pag:9,fo:"19/07/2024",fc:"18/12/2025",g:""},
+  {c:"25004",n:"Dylan Jared Centeno Jimenez",s:"—",marca:"Honda",modelo:"NVA110MNA",m:34850,p:24,pag:8,fo:"22/08/2023",fc:"22/11/2025",g:""},
+  {c:"17672",n:"Jostin Eduardo Godoy Maradiaga",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:31850,p:18,pag:10,fo:"31/12/2022",fc:"27/01/2025",g:""},
+  {c:"12141",n:"Allan Mauricio Zelaya Lobo",s:"Comayaguela",marca:"Honda",modelo:"CBF125MJ",m:43390,p:36,pag:9,fo:"30/04/2022",fc:"12/03/2026",g:"ROSORTO"},
+  {c:"35276",n:"Wendy Carolina Lopez Vasquez",s:"Moto Market",marca:"Bajaj",modelo:"Pulsar125",m:37900,p:18,pag:9,fo:"30/04/2024",fc:"21/11/2025",g:""},
+  {c:"41081",n:"Claudia Judith Rodriguez Lopez",s:"Moto Market",marca:"TVS",modelo:"Apache-RTR-160",m:23400,p:12,pag:9,fo:"19/10/2024",fc:"07/11/2025",g:""},
+  {c:"25589",n:"Nury Marisol Ponce Ramirez",s:"Subdistribuidor",marca:"Zmoto",modelo:"SX2",m:29640,p:24,pag:9,fo:"30/08/2023",fc:"11/03/2026",g:""},
+  {c:"24825",n:"Oswaldo Galel Orellana Flores",s:"Subdistribuidor",marca:"Zmoto",modelo:"ZR150",m:24490,p:24,pag:9,fo:"01/08/2023",fc:"17/12/2025",g:""},
+  {c:"33919",n:"Maria Jessica Greham Bermudez",s:"Subdistribuidor",marca:"Zmoto",modelo:"RUNGA",m:61390,p:18,pag:10,fo:"06/03/2024",fc:"19/02/2026",g:""},
+  {c:"36493",n:"Henry Jose Batres Velasquez",s:"Subdistribuidor",marca:"Bajaj",modelo:"Boxer100ES",m:25150,p:18,pag:7,fo:"29/05/2024",fc:"31/01/2026",g:""},
+  {c:"32393",n:"Erika Johanna Garcia Fasquelle",s:"San Pedro Sula",marca:"Honda",modelo:"SCV125KAC",m:33490,p:24,pag:9,fo:"26/02/2024",fc:"22/04/2026",g:""},
+  {c:"28378",n:"Wilmer Adalberto Martinez Rodas",s:"Suyapa",marca:"Honda",modelo:"CG110",m:26590,p:18,pag:10,fo:"15/11/2023",fc:"30/01/2026",g:""},
+  {c:"19908",n:"Elsy Celena Sevilla Carcamo",s:"Juticalpa",marca:"Honda",modelo:"NVA110MNAV",m:37350,p:24,pag:6,fo:"23/03/2023",fc:"25/04/2025",g:""},
+  {c:"27974",n:"Jonatan Smit Turcios Coello",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:34350,p:12,pag:6,fo:"30/10/2023",fc:"24/04/2026",g:""},
+  {c:"28968",n:"Wilmer Alexander Osorto Estrada",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:35050,p:24,pag:10,fo:"28/11/2023",fc:"12/01/2026",g:""},
+  {c:"27711",n:"Roberto Antonio Garcia",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:37350,p:18,pag:6,fo:"18/10/2023",fc:"14/11/2025",g:""},
+  {c:"25802",n:"Juana Maria Figueroa Marin",s:"La Ceiba",marca:"Honda",modelo:"NVA110MNA",m:33350,p:24,pag:7,fo:"09/09/2023",fc:"31/10/2025",g:""},
+  {c:"56758",n:"Adonis Alexander Molina Zelaya",s:"Subdistribuidor",marca:"Honda",modelo:"CBF125MJ",m:36700,p:6,pag:6,fo:"28/01/2026",fc:"11/03/2026",g:""},
+  {c:"53963",n:"Jairo Ivan Alvarez Bustamante",s:"Subdistribuidor",marca:"Honda",modelo:"CBF125MJ",m:33700,p:6,pag:6,fo:"03/11/2025",fc:"10/04/2026",g:""},
+  {c:"18750",n:"Jorge Alberto Martinez Lopez",s:"Juticalpa",marca:"Honda",modelo:"NV110MNAV",m:34650,p:24,pag:7,fo:"10/02/2023",fc:"30/03/2025",g:""},
+  {c:"26184",n:"Axel Lenin Turcios Paz",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:33550,p:24,pag:9,fo:"22/09/2023",fc:"27/11/2025",g:""},
+  {c:"29656",n:"Ricardo Jose Carpio Lopez",s:"Olanchito",marca:"Honda",modelo:"NVA110MNA",m:34350,p:24,pag:9,fo:"19/12/2023",fc:"15/04/2026",g:""},
+  {c:"28755",n:"Oscar Omar Cardona Hernandez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:34350,p:24,pag:8,fo:"22/11/2023",fc:"30/03/2026",g:""},
+  {c:"21900",n:"Fredy Roney Amador Hernandez",s:"Subdistribuidor",marca:"Honda",modelo:"WAVE",m:24684,p:24,pag:9,fo:"22/05/2023",fc:"07/10/2025",g:""},
+  {c:"24178",n:"Olga Roxana Coello",s:"Tienda Virtual",marca:"Honda",modelo:"NVA110MNAV",m:32350,p:18,pag:10,fo:"29/07/2023",fc:"31/03/2026",g:""},
+  {c:"30300",n:"Cristhian Geovany Raudales Garcia",s:"Moto Market",marca:"Honda",modelo:"CB110",m:20050,p:18,pag:6,fo:"02/01/2024",fc:"31/12/2025",g:""},
+  {c:"7926",n:"Blanca Gabriela Alvarez Caceres",s:"Comayaguela",marca:"Honda",modelo:"CB110",m:28390,p:24,pag:7,fo:"08/07/2021",fc:"31/01/2024",g:"ANAGERA"},
+  {c:"16273",n:"Ana Rosa Vargas Sanchez",s:"Comayaguela",marca:"Honda",modelo:"NVA110M",m:36350,p:24,pag:8,fo:"12/11/2022",fc:"16/12/2024",g:""},
+  {c:"14810",n:"Fredis Antonio Lopez Varela",s:"Kennedy",marca:"Honda",modelo:"NVA110MNA",m:35550,p:24,pag:9,fo:"14/09/2022",fc:"26/11/2025",g:""},
+  {c:"571",n:"Jose Alberto Castillo Soriano",s:"Choluteca",marca:"—",modelo:"—",m:24570,p:48,pag:7,fo:"11/04/2018",fc:"25/03/2024",g:"PVELASQUEZ"},
+  {c:"22212",n:"Jorge Alberto Hernandez Andrade",s:"Subdistribuidor",marca:"Zmoto",modelo:"ZM15",m:23390,p:12,pag:8,fo:"17/05/2023",fc:"27/01/2025",g:""},
+  {c:"3012",n:"Ariel Alejandro Espinal Sarmiento",s:"Comayaguela",marca:"Honda",modelo:"XR150L",m:41000,p:24,pag:9,fo:"21/09/2017",fc:"30/11/2023",g:"ROSORTO"},
+  {c:"20097",n:"Darwin Roberto Zepeda Muñoz",s:"Comayaguela",marca:"Honda",modelo:"XR190L",m:77000,p:24,pag:9,fo:"28/03/2023",fc:"21/01/2026",g:""},
+  {c:"23932",n:"Karla Paola Alvarado Rosales",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:34450,p:24,pag:6,fo:"24/07/2023",fc:"12/01/2026",g:""},
+  {c:"28792",n:"Kevin Dazaeth Flores Amaya",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:35050,p:6,pag:6,fo:"24/11/2023",fc:"22/04/2024",g:""},
+  {c:"1766",n:"Alan Jose Mendez Banegas",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:22600,p:24,pag:9,fo:"03/12/2018",fc:"28/06/2024",g:""},
+  {c:"10904",n:"Alejandra Gisselle Sanchez Erazo",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:32350,p:24,pag:7,fo:"07/03/2022",fc:"19/09/2025",g:"ATREJO"},
+  {c:"14081",n:"Josias Asael Castro Sanabria",s:"Comayaguela",marca:"Honda",modelo:"CBF160FSM",m:47890,p:36,pag:7,fo:"06/08/2022",fc:"11/08/2025",g:"JLRODRIGUEZ"},
+  {c:"6375",n:"Marcial Cruz Cruz",s:"Comayaguela",marca:"Honda",modelo:"CBF125MJ",m:27800,p:24,pag:10,fo:"28/11/2020",fc:"18/10/2024",g:"ANAGERA"},
+  {c:"9454",n:"Henner Whualdemar Ochoa Rivera",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:24350,p:12,pag:8,fo:"17/11/2021",fc:"10/07/2024",g:"ROSORTO"},
+  {c:"2582",n:"Carlos Alberto Rubio Menendez",s:"Comayaguela",marca:"Honda",modelo:"SCV125G",m:29900,p:24,pag:9,fo:"11/11/2017",fc:"16/04/2024",g:""},
+  {c:"8757",n:"Iris Estela Sauceda Gonzalez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:26850,p:24,pag:9,fo:"22/09/2021",fc:"12/12/2023",g:"JSIERRA"},
+  {c:"7790",n:"Raul Francisco Trejo Ramos",s:"San Pedro Sula",marca:"Honda",modelo:"NAVI 110",m:27000,p:24,pag:9,fo:"24/06/2021",fc:"19/09/2023",g:"JSIERRA"},
+  {c:"5560",n:"Glabia Elizabeth Matute Yanal",s:"La Ceiba",marca:"Honda",modelo:"XR150L",m:47600,p:24,pag:6,fo:"01/06/2020",fc:"14/08/2023",g:"PVELASQUEZ"},
+  {c:"3128",n:"Rufina Bonilla",s:"Choluteca",marca:"Honda",modelo:"CBF160MH",m:41310,p:36,pag:7,fo:"30/01/2019",fc:"24/05/2023",g:"ROSORTO"},
+  {c:"1456",n:"Ivis Adalid Gutierrez Rivera",s:"Comayaguela",marca:"Honda",modelo:"CB110",m:22890,p:36,pag:10,fo:"19/11/2018",fc:"25/04/2023",g:""},
+  {c:"15552",n:"Claudia Yadira Aviles Diaz",s:"La Ceiba",marca:"Honda",modelo:"NVA110MNAV",m:32950,p:24,pag:7,fo:"18/10/2022",fc:"31/10/2025",g:""},
+  {c:"13409",n:"Javier Enrique Duron Lopez",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:34350,p:24,pag:8,fo:"29/06/2022",fc:"08/08/2024",g:""},
+  {c:"12563",n:"Juan Ramon Aguilar Peña",s:"San Pedro Sula",marca:"Honda",modelo:"CB190R",m:81490,p:24,pag:7,fo:"27/05/2022",fc:"14/06/2024",g:"PVELASQUEZ"},
+  {c:"3924",n:"Evelyn Yamileth Lopez Sanchez",s:"Suyapa",marca:"Honda",modelo:"CB110CMH",m:20910,p:24,pag:7,fo:"07/06/2019",fc:"13/06/2023",g:"ACASTILLO"},
+  {c:"6907",n:"Daury Rogelio Lagos Silva",s:"Suyapa",marca:"Honda",modelo:"CB 190R",m:44990,p:18,pag:7,fo:"05/03/2021",fc:"25/04/2023",g:"PVELASQUEZ"},
+  {c:"12888",n:"Jessyka Lisseth Torres Meza",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:33350,p:24,pag:6,fo:"09/06/2022",fc:"21/10/2025",g:"PVELASQUEZ"},
+  {c:"10093",n:"Jose Del Carmen Herrera Sanchez",s:"Choluteca",marca:"Honda",modelo:"CB125F TWI",m:38400,p:36,pag:6,fo:"05/01/2022",fc:"29/08/2025",g:"ACASTILLO"},
+  {c:"3309",n:"Miguel Rafael Godoy Sosa",s:"Suyapa",marca:"—",modelo:"—",m:21590,p:24,pag:8,fo:"28/02/2019",fc:"23/05/2023",g:"ACASTILLO"},
+  {c:"15885",n:"Lenin Humberto Isaula Castellanos",s:"Comayaguela",marca:"Haojue",modelo:"NK150",m:49890,p:18,pag:9,fo:"29/10/2022",fc:"12/06/2024",g:""},
+  {c:"16759",n:"Yehison Magdiel Rodriguez Torres",s:"Comayaguela",marca:"Yamaha",modelo:"YD110D-4",m:32390,p:24,pag:6,fo:"30/11/2022",fc:"30/01/2026",g:""},
+  {c:"16553",n:"Santos Sebastiana Guillen Alonzo",s:"Comayaguela",marca:"Bajaj",modelo:"Pulsar200NS",m:59299,p:24,pag:9,fo:"19/11/2022",fc:"28/10/2025",g:""},
+  {c:"28709",n:"Manuel Alexander Perdomo Bueso",s:"Subdistribuidor",marca:"Honda",modelo:"CB190 x2",m:32400,p:12,pag:6,fo:"17/11/2023",fc:"27/10/2025",g:""},
+  {c:"8684",n:"Elder Ivan Linares Auxume",s:"San Pedro Sula",marca:"Honda",modelo:"CB160FSM",m:39390,p:24,pag:7,fo:"23/09/2021",fc:"31/01/2024",g:"JSIERRA"},
+  {c:"8417",n:"Yohan Jose Redondo Espinal",s:"Comayaguela",marca:"Honda",modelo:"CBF160MH",m:48599,p:24,pag:9,fo:"30/08/2021",fc:"17/04/2024",g:"ANAGERA"},
+  {c:"22000",n:"Tania Maria Ortega Cantarero",s:"Mega Mall",marca:"Honda",modelo:"NVA110MNAV",m:35550,p:24,pag:7,fo:"23/05/2023",fc:"31/08/2025",g:""},
+  {c:"25301",n:"Maryory Alexandra Palma Flores",s:"Suyapa",marca:"Honda",modelo:"CG110",m:28590,p:12,pag:6,fo:"28/08/2023",fc:"31/08/2024",g:""},
+  {c:"12311",n:"Henry Alexander Rivera Fuentes",s:"Comayaguela",marca:"Honda",modelo:"CB160",m:38000,p:24,pag:8,fo:"05/05/2022",fc:"31/07/2025",g:"PVELASQUEZ"},
+  {c:"11005",n:"Yina Lizeth Zuniga Flores",s:"Comayaguela",marca:"Honda",modelo:"Activa 25",m:22400,p:24,pag:10,fo:"11/03/2022",fc:"31/10/2024",g:"ACASTILLO"},
+  {c:"10068",n:"Dennis Nahun Rodriguez Flores",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:19800,p:24,pag:6,fo:"28/12/2021",fc:"24/09/2024",g:"PVELASQUEZ"},
+  {c:"10396",n:"Estefany Valeria Lopez Pastrana",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34350,p:12,pag:7,fo:"31/01/2022",fc:"27/10/2023",g:"ANAGERA"},
+  {c:"7910",n:"Maynor Wilfredo Flores Urrea",s:"San Pedro Sula",marca:"Honda",modelo:"CG110",m:18390,p:18,pag:8,fo:"21/07/2021",fc:"27/08/2025",g:"JSIERRA"},
+  {c:"7467",n:"Karoline Irlanda Banegas Sabillon",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:23950,p:24,pag:6,fo:"31/05/2021",fc:"14/05/2025",g:"ANAGERA"},
+  {c:"6980",n:"Sandy Melisa Barahona Alvarado",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:20167,p:18,pag:6,fo:"23/03/2021",fc:"31/01/2024",g:"JSIERRA"},
+  {c:"7887",n:"Thelma Yolanda Hernandez Barrientos",s:"Suyapa",marca:"Honda",modelo:"NAVI 110",m:27350,p:24,pag:8,fo:"12/07/2021",fc:"17/01/2024",g:"JSIERRA"},
+  {c:"8280",n:"Keidy Nohemi Oseguera Zelaya",s:"Comayaguela",marca:"Honda",modelo:"CG125TF",m:34890,p:18,pag:7,fo:"14/08/2021",fc:"03/11/2023",g:"ANAGERA"},
+  {c:"10027",n:"Estanislau Cruz Zuniga",s:"Comayaguela",marca:"Honda",modelo:"CGX125TF",m:33990,p:18,pag:7,fo:"15/12/2021",fc:"31/10/2023",g:"PVELASQUEZ"},
+  {c:"8534",n:"Jose Eduardo Baca Garcia",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:27350,p:24,pag:9,fo:"03/09/2021",fc:"20/10/2023",g:"JSIERRA"},
+  {c:"8682",n:"Karla Marlen Castro Medina",s:"Comayaguela",marca:"Honda",modelo:"CB110CMH",m:30390,p:24,pag:8,fo:"23/09/2021",fc:"20/10/2023",g:"ANAGERA"},
+  {c:"9111",n:"Maria Antonia Peraza Lopez",s:"Subdistribuidor",marca:"Honda",modelo:"NVA110MNA",m:23350,p:18,pag:7,fo:"16/10/2021",fc:"20/10/2023",g:"ACASTILLO"},
+  {c:"7515",n:"Cristhiem Enmanuel Lemuz Zelaya",s:"Suyapa",marca:"Honda",modelo:"CG110",m:17990,p:24,pag:6,fo:"05/06/2021",fc:"31/07/2023",g:"PVELASQUEZ"},
+  {c:"15147",n:"Francis Jisselle Lopez Rodriguez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:34350,p:24,pag:7,fo:"30/09/2022",fc:"05/12/2025",g:""},
+  {c:"14087",n:"Mirka Celeste Flores Ponce",s:"Kennedy",marca:"Honda",modelo:"NVA110MNA",m:33850,p:24,pag:9,fo:"08/08/2022",fc:"30/10/2025",g:""},
+  {c:"8250",n:"Jonathan Alfredo Herrera Garcia",s:"Suyapa",marca:"Honda",modelo:"NAVI 110",m:24350,p:36,pag:7,fo:"10/08/2021",fc:"29/10/2025",g:"JSIERRA"},
+  {c:"17359",n:"Denis Anibal Caceres Escoto",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34550,p:24,pag:8,fo:"13/12/2022",fc:"31/08/2025",g:""},
+  {c:"18319",n:"Lilian Lorena Pino Lopez",s:"Suyapa",marca:"Honda",modelo:"NVA110MNAV",m:35350,p:24,pag:8,fo:"30/01/2023",fc:"14/08/2025",g:""},
+  {c:"6830",n:"Pamela Maria Leiva Vasquez",s:"San Pedro Sula",marca:"Honda",modelo:"NAVI 110",m:26950,p:24,pag:10,fo:"17/02/2021",fc:"21/07/2025",g:"ANAGERA"},
+  {c:"16497",n:"Danny Emilio Sanchez Urquia",s:"Comayagua",marca:"Honda",modelo:"CBF160MJ",m:56890,p:18,pag:7,fo:"21/11/2022",fc:"31/05/2025",g:""},
+  {c:"17212",n:"David Roberto Medina Almendares",s:"San Pedro Sula",marca:"Honda",modelo:"CBF160FSM",m:50390,p:24,pag:9,fo:"07/12/2022",fc:"31/05/2025",g:""},
+  {c:"9527",n:"Oscar Armando Aplicano Navarro",s:"Oficina Principal TGU",marca:"Honda",modelo:"NVA110MNA",m:27350,p:36,pag:7,fo:"25/11/2021",fc:"30/04/2025",g:"PVELASQUEZ"},
+  {c:"10618",n:"Jicsy Nicolee Rivas Velasquez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:32850,p:24,pag:9,fo:"19/02/2022",fc:"30/04/2025",g:"PVELASQUEZ"},
+  {c:"11734",n:"Hector Manuel Argueta Perez",s:"Subdistribuidor",marca:"Honda",modelo:"CBF160FSM",m:41390,p:36,pag:10,fo:"09/04/2022",fc:"28/04/2025",g:"ACASTILLO"},
+  {c:"13332",n:"Yorlin Obilder Aguirre Suazo",s:"Comayagua",marca:"Honda",modelo:"XR150L",m:59999,p:24,pag:10,fo:"29/06/2022",fc:"31/03/2025",g:"ACASTILLO"},
+  {c:"18712",n:"Jael Betsabe Medina Caballero",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNAV",m:38308,p:24,pag:6,fo:"10/02/2023",fc:"31/03/2025",g:""},
+  {c:"6452",n:"Jose Ottoman Fernandez Moncada",s:"Suyapa",marca:"Honda",modelo:"NAVI 110",m:23950,p:24,pag:9,fo:"18/12/2020",fc:"28/02/2025",g:"PVELASQUEZ"},
+  {c:"13392",n:"Ariana Isamar Sanchez Melgar",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:34050,p:18,pag:9,fo:"18/06/2022",fc:"17/02/2025",g:""},
+  {c:"9571",n:"Ronal Edgardo Maldonado Sanchez",s:"San Pedro Sula",marca:"Honda",modelo:"NVA110MNA",m:25350,p:24,pag:8,fo:"27/11/2021",fc:"31/01/2025",g:"JSIERRA"},
+  {c:"15801",n:"Maira Lucia Figueroa Martinez",s:"Juticalpa",marca:"Honda",modelo:"NVA110MNA",m:34850,p:24,pag:8,fo:"25/10/2022",fc:"27/01/2025",g:""},
+  {c:"4300",n:"Juan Carlos Colindres Irias",s:"Comayaguela",marca:"Honda",modelo:"CBF125MJ",m:35654,p:24,pag:6,fo:"08/08/2019",fc:"19/12/2024",g:"FSIERRA"},
+  {c:"15094",n:"Rene Turcios Carrillo",s:"San Pedro Sula",marca:"Honda",modelo:"CG110",m:26890,p:24,pag:9,fo:"05/09/2022",fc:"25/10/2024",g:""},
+  {c:"16729",n:"Jexy Mayella Chavarria Baires",s:"Comayagua",marca:"Honda",modelo:"NVA110MNA",m:34350,p:18,pag:8,fo:"29/11/2022",fc:"25/10/2024",g:""},
+  {c:"7376",n:"Dani Joel Palma Diaz",s:"Comayaguela",marca:"Honda",modelo:"CB190R",m:44500,p:18,pag:7,fo:"26/05/2021",fc:"31/05/2024",g:"ANAGERA"},
+  {c:"13474",n:"Iver Francisco Martinez Rivera",s:"Suyapa",marca:"Honda",modelo:"CG110",m:26690,p:18,pag:8,fo:"04/07/2022",fc:"31/05/2024",g:"JLRODRIGUEZ"},
+  {c:"189",n:"Julio Cesar Torres Navarro",s:"San Pedro Sula",marca:"Honda",modelo:"SCV125H",m:20520,p:36,pag:6,fo:"31/01/2018",fc:"23/05/2024",g:""},
+  {c:"5273",n:"Melbita Odali Mejia Romero",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:26730,p:24,pag:6,fo:"12/02/2020",fc:"16/05/2024",g:"ROSORTO"},
+  {c:"14997",n:"Nelson Nain Rodriguez Santos",s:"Santa Rosa de Copan",marca:"Honda",modelo:"CG110",m:27500,p:18,pag:8,fo:"24/09/2022",fc:"22/04/2024",g:""},
+  {c:"4480",n:"Marin Padilla Betoriano",s:"Comayaguela",marca:"Honda",modelo:"CB1 TUF",m:28800,p:36,pag:8,fo:"19/09/2019",fc:"23/12/2023",g:"ACASTILLO"},
+  {c:"10091",n:"Marcos David Pino Sanchez",s:"Comayagua",marca:"Honda",modelo:"NVA110MNA",m:31350,p:12,pag:7,fo:"05/01/2022",fc:"12/12/2023",g:"PVELASQUEZ"},
+  {c:"3341",n:"Douglas Samael Centeno Andino",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:16200,p:24,pag:9,fo:"05/03/2019",fc:"07/11/2023",g:"ACASTILLO"},
+  {c:"8955",n:"Carlos Roberto Montalvan Rodriguez",s:"Comayaguela",marca:"Honda",modelo:"CB110CMH",m:30390,p:24,pag:6,fo:"12/10/2021",fc:"27/10/2023",g:"PVELASQUEZ"},
+  {c:"5143",n:"Tania Elizabeth Godoy Estrada",s:"Comayaguela",marca:"Honda",modelo:"NAVI",m:26700,p:24,pag:6,fo:"31/01/2020",fc:"12/09/2023",g:""},
+  {c:"22",n:"Jose Ilario Leonardo Avila",s:"San Pedro Sula",marca:"Honda",modelo:"CGL125",m:26500,p:36,pag:10,fo:"17/01/2018",fc:"31/07/2023",g:""},
+  {c:"1816",n:"Jorge Luis Moncada Aleman",s:"Suyapa",marca:"Honda",modelo:"NVA110KNA",m:22590,p:24,pag:6,fo:"29/12/2018",fc:"29/06/2023",g:"ACASTILLO"},
+  {c:"4631",n:"Amilcar Gonzales Ikins",s:"La Ceiba",marca:"Honda",modelo:"XR 150",m:46850,p:36,pag:6,fo:"19/10/2019",fc:"13/06/2023",g:"ACASTILLO"},
+  {c:"5048",n:"Darlin Josue Martinez",s:"Choluteca",marca:"Honda",modelo:"CBF 160",m:43559,p:24,pag:10,fo:"17/01/2020",fc:"30/04/2023",g:"EERAZO"},
+  {c:"1218",n:"Gefri Gesiel Amaya Gonzales",s:"Suyapa",marca:"Honda",modelo:"CB190R",m:34200,p:24,pag:9,fo:"04/09/2018",fc:"25/04/2023",g:"ACASTILLO"},
+  {c:"4155",n:"Jose Javier Zeron Avila",s:"Comayaguela",marca:"Honda",modelo:"NVA110KNA",m:23600,p:24,pag:6,fo:"20/07/2019",fc:"16/02/2026",g:"FSIERRA"},
+  {c:"11142",n:"Hector Josue Castro Alvarado",s:"Suyapa",marca:"Honda",modelo:"CBF160FSM",m:44390,p:36,pag:10,fo:"21/03/2022",fc:"24/01/2026",g:""},
+  {c:"4783",n:"Rafael Torres Castro",s:"Choluteca",marca:"Honda",modelo:"CB 125",m:35990,p:36,pag:7,fo:"27/11/2019",fc:"30/12/2025",g:"ACASTILLO"},
+  {c:"6425",n:"Paola Alejandra Sanchez",s:"Comayaguela",marca:"Honda",modelo:"NAVI 110",m:25450,p:18,pag:8,fo:"02/12/2020",fc:"23/12/2025",g:"ACASTILLO"},
+  {c:"10553",n:"Cindy Pamela Aguilar Gonzalez",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNA",m:29350,p:36,pag:7,fo:"15/02/2022",fc:"04/12/2025",g:"ROSORTO"},
+  {c:"16126",n:"Katherine Iveth Rojas Reyes",s:"Comayaguela",marca:"Honda",modelo:"NVA110MNAV",m:34850,p:36,pag:6,fo:"01/11/2022",fc:"30/11/2025",g:""},
+  {c:"9181",n:"Angel Gabriel Gonzalez Amador",s:"Suyapa",marca:"Honda",modelo:"NVA110MNA",m:27350,p:24,pag:8,fo:"27/10/2021",fc:"31/10/2025",g:"ACASTILLO"},
+];
+
+// ── RENDER ─────────────────────────────────────────────────────────────────────
+
+function buildRow(r, tabIdx) {
+  const pc = pillClass(tabIdx, r.pag);
+  const gTag = r.g ? `<span class="gestor-tag">${r.g}</span>` : `<span class="no-gestor">—</span>`;
+  return `<tr>
+    <td class="cred">${r.c}</td>
+    <td class="client-name">${r.n}</td>
+    <td><span class="sucursal-badge">${r.s}</span></td>
+    <td class="moto">${r.marca} ${r.modelo}</td>
+    <td class="monto">${fmtL(r.m)}</td>
+    <td class="plazo-cell">${r.p} m</td>
+    <td style="text-align:center"><span class="cuotas-pill ${pc}">${r.pag}</span></td>
+    <td class="date-cell">${r.fo}</td>
+    <td class="date-cell">${r.fc}</td>
+    <td>${gTag}</td>
+  </tr>`;
+}
+
+function buildSummary(data, tabIdx) {
+  const total = data.length;
+  const monto = data.reduce((a,r) => a + parseMonto(r.m), 0);
+  const color = tabIdx === 0 ? 'var(--accent0)' : tabIdx === 1 ? 'var(--accent1)' : 'var(--accent2)';
+  return `<div class="stat"><span>Créditos</span><strong style="color:${color}">${total}</strong></div>
+    <div class="stat"><span>Monto total</span><strong style="color:${color}">L ${monto.toLocaleString('es-HN',{maximumFractionDigits:0})}</strong></div>`;
+}
+
+[D0, D1, D2].forEach((data, ti) => {
+  document.getElementById('body'+ti).innerHTML = data.sort((a,b)=>b.m-a.m).map(r => buildRow(r, ti)).join('');
+  document.getElementById('sum'+ti).innerHTML = buildSummary(data, ti);
+  const foot = `${data.length} registros · L ${data.reduce((a,r)=>a+parseMonto(r.m),0).toLocaleString('es-HN',{maximumFractionDigits:0})} en monto total`;
+  document.getElementById('foot'+ti).textContent = foot;
+});
+
+// Update badge counts
+document.getElementById('tab1-badge').textContent = D1.length;
+document.getElementById('tab2-badge').textContent = D2.length;
+document.getElementById('cnt1').textContent = D1.length;
+document.getElementById('cnt2').textContent = D2.length;
+
+// ── TABS ───────────────────────────────────────────────────────────────────────
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('panel-' + t.dataset.tab).classList.add('active');
+  });
+});
+
+// ── FILTER ─────────────────────────────────────────────────────────────────────
+
+function filterTable(tblId, q) {
+  const q2 = q.toLowerCase();
+  document.querySelectorAll('#' + tblId + ' tbody tr').forEach(row => {
+    row.style.display = row.textContent.toLowerCase().includes(q2) ? '' : 'none';
+  });
+}
+
+// ── SORT ───────────────────────────────────────────────────────────────────────
+
+const sortState = {};
+function sortTable(tblId, col, type) {
+  const key = tblId + col;
+  sortState[key] = !sortState[key];
+  const asc = sortState[key];
+  const tbody = document.querySelector('#' + tblId + ' tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  rows.sort((a, b) => {
+    let va = a.cells[col]?.textContent.trim() || '';
+    let vb = b.cells[col]?.textContent.trim() || '';
+    if (type === 'num') {
+      va = parseFloat(va.replace(/[^0-9.]/g,''))||0;
+      vb = parseFloat(vb.replace(/[^0-9.]/g,''))||0;
+      return asc ? va - vb : vb - va;
+    } else if (type === 'date') {
+      const pd = s => { const [d,m,y] = s.split('/'); return new Date(`20${y}`,m-1,d); };
+      return asc ? pd(va) - pd(vb) : pd(vb) - pd(va);
+    } else {
+      return asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    }
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+</script>
+</body>
+</html>
