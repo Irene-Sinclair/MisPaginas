@@ -251,7 +251,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 <div id="pb"></div>
 <div id="timer">⏱ <span id="td">5:00</span></div>
 <div id="stb"></div>
-<div id="counter"><span id="cur">1</span> / 10</div>
+<div id="counter"><span id="cur">1</span> / 11</div>
 <div id="logo-wm">
   <img src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" alt="CREDIDEMO"
        onerror="this.style.display='none';document.querySelector('.lfb').style.display='block'">
@@ -264,10 +264,11 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
   <div class="dot" onclick="goTo(3)"></div>
   <div class="dot" onclick="goTo(4)"></div>
   <div class="dot" onclick="goTo(5)"></div>
-  <div class="dot p2" onclick="goTo(6)"></div>
+  <div class="dot" onclick="goTo(6)"></div>
   <div class="dot p2" onclick="goTo(7)"></div>
   <div class="dot p2" onclick="goTo(8)"></div>
-  <div class="dot end" onclick="goTo(9)"></div>
+  <div class="dot p2" onclick="goTo(9)"></div>
+  <div class="dot end" onclick="goTo(10)"></div>
 </div>
 <button class="nb" id="bp" onclick="prevSlide()">&#8592;</button>
 <button class="nb" id="bn" onclick="nextSlide()">&#8594;</button>
@@ -335,9 +336,281 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
   </div>
 </div>
 
+
+<!-- 4. ARQUITECTURA — FLUJO ETL -->
+<div class="slide">
+  <div class="stag">03 · Arquitectura</div>
+  <div class="sectitle" style="margin-bottom:16px;">Del dato a la <span class="r">decisión</span></div>
+
+  <style>
+    /* ─── Contenedor principal ─── */
+    .af-wrap{display:flex;align-items:center;justify-content:center;gap:0;width:100%;max-width:940px;}
+
+    /* ─── Contenedor principal ─── */
+.af-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    width:100%;
+    max-width:1120px;
+}
+
+/* ─── Cajas de fuentes ─── */
+.af-sources{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    flex-shrink:0;
+}
+
+.af-src-lbl{
+    font-family:"Exo 2",sans-serif;
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--muted);
+    text-transform:uppercase;
+    margin-bottom:8px;
+    align-self:flex-start;
+}
+
+.af-src-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.af-img-box{
+    width:88px;
+    height:88px;
+    background:#fff;
+    border-radius:14px;
+    border:2px dashed rgba(204,31,43,0.25);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    box-shadow:0 3px 12px rgba(0,0,0,0.09);
+    transition:transform 0.2s;
+    cursor:default;
+}
+
+.af-img-box:hover{
+    transform:translateY(-3px);
+    border-color:var(--red);
+}
+
+.af-img-box img{
+    width:68px;
+    height:68px;
+    object-fit:contain;
+    display:block;
+}
+
+.af-img-box .af-ph{
+    font-size:10px;
+    color:var(--muted);
+    text-align:center;
+    padding:3px;
+    line-height:1.3;
+    display:none;
+}
+
+/* Oculta solo cuando todavía no se ha colocado una URL real */
+.af-img-box img[src="URL_IMAGEN_1"],
+.af-img-box img[src="URL_IMAGEN_2"],
+.af-img-box img[src="URL_IMAGEN_3"],
+.af-img-box img[src="URL_IMAGEN_4"],
+.af-img-box img[src="URL_IMAGEN_5"],
+.af-img-box img[src="URL_IMAGEN_6"]{
+    display:none;
+}
+
+/* Muestra el texto temporal solo si la imagen aún no tiene URL real */
+.af-img-box img[src="URL_IMAGEN_1"] ~ .af-ph,
+.af-img-box img[src="URL_IMAGEN_2"] ~ .af-ph,
+.af-img-box img[src="URL_IMAGEN_3"] ~ .af-ph,
+.af-img-box img[src="URL_IMAGEN_4"] ~ .af-ph,
+.af-img-box img[src="URL_IMAGEN_5"] ~ .af-ph,
+.af-img-box img[src="URL_IMAGEN_6"] ~ .af-ph{
+    display:block;
+}
+
+.af-src-name{
+    font-family:"Exo 2",sans-serif;
+    font-size:10px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:5px;
+    font-weight:700;
+}
+
+    /* ─── Conector animado ─── */
+    .af-connector{display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
+    .af-arrow{width:52px;height:3px;background:rgba(204,31,43,0.15);position:relative;overflow:hidden;border-radius:2px;}
+    .af-arrow::after{content:"";position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,var(--red),transparent);animation:arrowFlow 1.2s linear infinite;}
+    @keyframes arrowFlow{0%{left:-50%;}100%{left:110%;}}
+    .af-arrow-tip{width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(204,31,43,0.5);margin-left:-2px;flex-shrink:0;}
+
+    /* ─── ETL ─── */
+    .af-etl{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;}
+    .af-etl-gear{font-size:36px;animation:gearSpin 3s linear infinite;display:inline-block;transform-origin:center;}
+    @keyframes gearSpin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    .af-etl-lbl{font-family:"Exo 2",sans-serif;font-size:13px;font-weight:900;color:var(--dark);letter-spacing:3px;}
+
+    /* ─── BIGDATA hub ─── */
+    .af-hub{background:#1A1410;border-radius:16px;padding:16px 18px;text-align:center;color:#fff;
+      box-shadow:0 6px 28px rgba(0,0,0,0.25);min-width:108px;flex-shrink:0;
+      animation:hubPulseArch 2.5s ease-in-out infinite;}
+    @keyframes hubPulseArch{0%,100%{box-shadow:0 6px 28px rgba(0,0,0,0.25);}50%{box-shadow:0 6px 36px rgba(204,31,43,0.4),0 0 0 8px rgba(204,31,43,0.07);}}
+    .af-hub-icon{font-size:32px;margin-bottom:4px;}
+    .af-hub-name{font-family:"Exo 2",sans-serif;font-size:14px;font-weight:900;}
+    .af-hub-sub{font-family:"Exo 2",sans-serif;font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:2px;margin-top:2px;}
+
+    /* ─── Power BI ─── */
+    .af-pbi{background:#fff;border:2px solid rgba(204,31,43,0.2);border-radius:14px;padding:14px 16px;text-align:center;
+      box-shadow:0 4px 20px rgba(204,31,43,0.1);min-width:108px;flex-shrink:0;
+      animation:pbiPulseArch 3s ease-in-out infinite;}
+    @keyframes pbiPulseArch{0%,100%{box-shadow:0 4px 20px rgba(204,31,43,0.1);}50%{box-shadow:0 6px 28px rgba(204,31,43,0.25);}}
+    .af-pbi-logo{width:40px;height:40px;margin:0 auto 6px;display:block;object-fit:contain;}
+    .af-pbi-name{font-family:"Exo 2",sans-serif;font-size:11px;font-weight:900;color:var(--red);}
+    .af-pbi-sub{font-family:"Exo 2",sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px;}
+
+    /* ─── Decisiones ─── */
+    .af-dec{background:linear-gradient(135deg,#fff 0%,rgba(232,168,0,0.08) 100%);
+      border:2px solid rgba(232,168,0,0.4);border-radius:14px;padding:14px 16px;text-align:center;
+      box-shadow:0 4px 20px rgba(232,168,0,0.15);min-width:108px;flex-shrink:0;
+      animation:decPulse 2.8s ease-in-out infinite;}
+    @keyframes decPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.04);box-shadow:0 6px 30px rgba(232,168,0,0.3);}}
+    .af-dec-icon{font-size:34px;margin-bottom:6px;animation:decGlow 2s ease-in-out infinite;}
+    @keyframes decGlow{0%,100%{filter:drop-shadow(0 0 0px transparent);}50%{filter:drop-shadow(0 0 8px rgba(232,168,0,0.6));}}
+    .af-dec-name{font-family:"Exo 2",sans-serif;font-size:11px;font-weight:900;color:var(--dark);letter-spacing:1px;}
+    .af-dec-sub{font-family:"Exo 2",sans-serif;font-size:9px;color:var(--muted);margin-top:2px;}
+  </style>
+
+  <div class="af-wrap">
+
+    <!-- ① FUENTES -->
+    <div class="af-sources">
+      <div class="af-src-lbl">FUENTES</div>
+      <div class="af-src-grid">
+
+        <!-- Reemplaza URL_IMAGEN_X con la URL de tu imagen -->
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNKgrLlP4keVK10RVwS0tj1MBHGFxpjAy5vg&s" alt="CREDI-AYUDA" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">CREDI-AYUDA</div>
+          </div>
+          <div class="af-src-name">CREDI-AYUDA</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Salesforce.com_logo.svg/1280px-Salesforce.com_logo.svg.png" alt="Salesforce" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">Salesforce</div>
+          </div>
+          <div class="af-src-name">Salesforce</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUE5o8q3C0m5Astoy9YrMhSrWMtN-2KSgkzg&s" alt="Odoo ERP" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">Odoo</div>
+          </div>
+          <div class="af-src-name">Odoo</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://mlbq5uommzvm.i.optimole.com/w:1920/h:360/q:mauto/f:best/https://www.casedo.com/wp-content/uploads/2021/07/casebank-Inverted-Color-2224x418-1.png" alt="Casebank" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">Casebank</div>
+          </div>
+          <div class="af-src-name">Casebank</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://imecaf.com/blog/wp-content/uploads/microsoft-excel.jpg" alt="Excel" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">Excel</div>
+          </div>
+          <div class="af-src-name">Excel</div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="af-img-box">
+            <img src="https://images.foolproofonline.info/images/hall_transunion_equifax.m3-w800-16-9.jpg" alt="Equifax/TransUnion" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <div class="af-ph">Equifax / TransUnion</div>
+          </div>
+          <div class="af-src-name">Equifax/TransUnion</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─── FLECHA 1 → ETL ─── -->
+    <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+      <div class="af-arrow" style="width:30px;"></div>
+      <div class="af-arrow-tip"></div>
+    </div>
+
+    <!-- ② ETL -->
+    <div class="af-etl">
+      <div class="af-etl-gear">⚙️</div>
+      <div class="af-etl-lbl">ETL</div>
+    </div>
+
+    <!-- ─── FLECHA 2 → BIGDATA ─── -->
+    <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+      <div class="af-arrow" style="width:30px;"></div>
+      <div class="af-arrow-tip"></div>
+    </div>
+
+    <!-- ③ BIGDATA -->
+    <div class="af-hub">
+      <div class="af-hub-icon">🗄️</div>
+      <div class="af-hub-name">BIGDATA</div>
+      <div class="af-hub-sub">SQL SERVER</div>
+    </div>
+
+    <!-- ─── FLECHA 3 → POWER BI ─── -->
+    <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+      <div class="af-arrow" style="width:30px;animation-delay:0.4s;"></div>
+      <div class="af-arrow-tip"></div>
+    </div>
+
+    <!-- ④ POWER BI -->
+    <div class="af-pbi">
+      <img class="af-pbi-logo" src="https://logo.clearbit.com/microsoft.com" alt="Power BI"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div style="display:none;font-size:30px;margin-bottom:6px;">📊</div>
+      <div class="af-pbi-name">POWER BI</div>
+      <div class="af-pbi-sub">Business Intelligence</div>
+      <div style="font-family:'Exo 2',sans-serif;font-size:9px;color:var(--green);font-weight:700;margin-top:4px;">29 dashboards</div>
+    </div>
+
+    <!-- ─── FLECHA 4 → DECISIONES ─── -->
+    <div style="display:flex;align-items:center;gap:0;flex-shrink:0;">
+      <div class="af-arrow" style="width:30px;animation-delay:0.8s;"></div>
+      <div class="af-arrow-tip"></div>
+    </div>
+
+    <!-- ⑤ TOMA DE DECISIONES -->
+    <div class="af-dec">
+      <div class="af-dec-icon">💡</div>
+      <div class="af-dec-name">TOMA DE<br>DECISIONES</div>
+      <div class="af-dec-sub">Basadas en datos</div>
+    </div>
+
+  </div>
+
+ 
+</div>
+
 <!-- 4. DEPARTAMENTOS -->
 <div class="slide">
-  <div class="stag">03 · Cobertura por Área</div>
+  <div class="stag">04 · Cobertura por Área</div>
   <div class="sectitle">Los <span class="r">KPIs</span> que mide BIGDATA por departamento</div>
   <div class="dept-grid">
     <div class="dept-card">
@@ -367,7 +640,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
     <div class="dept-card">
       <div class="dept-icon">📊</div>
       <div class="dept-name">Finanzas</div>
-      <div class="dept-kpis">Estados Financieros (Casebank), Movimientos Bancarios, Intercompany</div>
+      <div class="dept-kpis">Estados Financieros (Casebank), Movimientos Bancarios,  Intercompany</div>
       <div class="dept-badge">ACTIVO</div>
     </div>
     <div class="dept-card">
@@ -390,7 +663,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 5. IMPACTO EJECUTIVO -->
 <div class="slide">
-  <div class="stag">04 · Valor para el Negocio</div>
+  <div class="stag">05 · Valor para el Negocio</div>
   <div class="sectitle">Lo que <span class="r">cada área</span> gana con BIGDATA</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;width:100%;max-width:820px;">
 
@@ -430,7 +703,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
       <div style="font-size:26px;flex-shrink:0;">🤝</div>
       <div>
         <div style="font-family:'Exo 2',sans-serif;font-size:14px;font-weight:800;margin-bottom:4px;">Todas las áreas alineadas</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5;">Un solo número para toda la empresa, todos podemos trabajar alineados.</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5;">Un solo número para toda la empresa, con una visibilidad clara llegamos a la meta.</div>
       </div>
     </div>
 
@@ -447,7 +720,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 6. AVANCE 90% -->
 <div class="slide">
-  <div class="stag">05 · Avance Global</div>
+  <div class="stag">06 · Avance Global</div>
   <div class="sectitle">Estado de <span class="r">avance</span> del proyecto</div>
   <div class="prog-wrap">
     <div class="prog-pct">90%</div>
@@ -464,7 +737,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 7. FASE 2 INTRO -->
 <div class="slide">
-  <div class="stag y">06 · La Evolución Estratégica</div>
+  <div class="stag y">07 · La Evolución Estratégica</div>
   <div class="sectitle">Fase 1 fue el cimiento.<br>La <span class="y">Fase 2</span> es el salto.</div>
   <div class="p2ban">
     <div class="p2lbl">Decisión Estratégica de CREDIDEMO</div>
@@ -481,7 +754,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 8. FASE 2 DETALLE -->
 <div class="slide">
-  <div class="stag y">07 · Fase 2 — Alcance</div>
+  <div class="stag y">08 · Fase 2 — Alcance</div>
   <div class="sectitle">Lo que viene con la <span class="y">Fase 2</span></div>
   <div class="p2det">
     <div class="p2di"><div style="font-size:22px;flex-shrink:0;">🔬</div><div style="flex:1;"><div style="font-family:'Exo 2',sans-serif;font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:3px;">Ajustes QA + Documentación técnica</div><div style="font-size:14px;color:var(--muted);">Validación completa de calidad de datos y documentación del modelo ETL.</div></div><div style="background:rgba(204,31,43,0.08);border:1px solid rgba(204,31,43,0.2);border-radius:6px;padding:3px 10px;font-size:11px;color:var(--red);white-space:nowrap;flex-shrink:0;font-weight:700;">ALTA</div></div>
@@ -493,7 +766,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 9. ROADMAP -->
 <div class="slide">
-  <div class="stag y">08 · Roadmap</div>
+  <div class="stag y">09 · Roadmap</div>
   <div class="sectitle">De la <span class="r">Fase 1</span> completada a la <span class="y">Fase 2</span> en marcha</div>
   <div class="rm">
     <div class="rml"><div class="rmp" style="width:30%;"></div></div>
@@ -516,7 +789,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <!-- 10. CIERRE — VANGUARDIA -->
 <div class="slide">
-  <div class="stag gr">09 · CREDIDEMO en Vanguardia</div>
+  <div class="stag gr">10 · CREDIDEMO en Vanguardia</div>
   <div class="vang-wrap">
     <div class="vang-title">
       <span class="anim-word">El futuro</span>&nbsp;
@@ -542,7 +815,7 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
     </div>
     <div class="vang-msg">
       <div class="vang-quote">"Cada área de CREDIDEMO tiene hoy algo que pocas empresas en Honduras pueden decir:<br>sus datos trabajan <span class="r">para ellos</span>, no al revés."</div>
-      <div class="vang-sub">Créditos · Negocios · Cobros · Operaciones · Finanzas · Legal &amp; Riesgo · TI · Proyectos</div>
+      <div class="vang-sub">Créditos · Negocios · Cobros · Operaciones · Finanzas · Legal &amp; Riesgo · TI · Proyectos · RRHH</div>
     </div>
     <div class="gracias-txt">¡Gracias por su atención!</div>
     <div class="note-foot" style="font-family:'Exo 2',sans-serif;font-size:12px;color:var(--muted);margin-top:8px;letter-spacing:1px;">CREDIDEMO &nbsp;·&nbsp; PROYECTO BIGDATA &nbsp;·&nbsp; MAYO 2026 &nbsp;·&nbsp; REF: CP-0090</div>
@@ -553,30 +826,56 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none
 
 <script>
 let cur=0;
-const total=10;
 const slides=document.querySelectorAll('.slide');
+const total=slides.length;
 const dots=document.querySelectorAll('.dot');
 const pb=document.getElementById('pb');
 const curEl=document.getElementById('cur');
 const stb=document.getElementById('stb');
 let timerSec=300;
-const titles=['Portada','Resultados Fase 1','Antes vs Después','KPIs por Departamento','Valor para el Negocio','Avance 90%','La Evolución — Fase 2','Fase 2 — Alcance','Roadmap','CREDIDEMO en Vanguardia'];
+const titles=['Portada','Resultados Fase 1','Antes vs Después','Arquitectura BIGDATA','KPIs por Departamento','Valor para el Negocio','Avance 90%','La Evolución — Fase 2','Fase 2 — Alcance','Roadmap','CREDIDEMO en Vanguardia'];
 
 function updateSlide(idx){
-  slides[cur].classList.remove('active');slides[cur].classList.add('exit');
-  setTimeout(()=>slides[cur].classList.remove('exit'),500);
-  cur=idx;slides[cur].classList.add('active');
+  if(idx < 0 || idx >= slides.length) return;
+
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('exit');
+
+  const oldCur = cur;
+  setTimeout(()=>slides[oldCur].classList.remove('exit'),500);
+
+  cur=idx;
+  slides[cur].classList.add('active');
+
   dots.forEach((d,i)=>d.classList.toggle('active',i===cur));
   pb.style.width=((cur+1)/total*100)+'%';
-  curEl.textContent=cur+1;stb.textContent=titles[cur];
-  if(cur===5){
+  curEl.textContent=cur+1;
+  stb.textContent=titles[cur] || '';
+
+  if(cur===6){
     const fill=document.querySelector('.prog-bar-fill');
-    if(fill){fill.style.transition='none';fill.style.width='0%';setTimeout(()=>{fill.style.transition='width 1.8s cubic-bezier(.4,0,.2,1)';fill.style.width='90%';},80);}
+    if(fill){
+      fill.style.transition='none';
+      fill.style.width='0%';
+      setTimeout(()=>{
+        fill.style.transition='width 1.8s cubic-bezier(.4,0,.2,1)';
+        fill.style.width='90%';
+      },80);
+    }
   }
 }
-function nextSlide(){if(cur<total-1)updateSlide(cur+1);}
-function prevSlide(){if(cur>0)updateSlide(cur-1);}
-function goTo(i){updateSlide(i);}
+
+function nextSlide(){
+  if(cur < slides.length-1) updateSlide(cur+1);
+}
+
+function prevSlide(){
+  if(cur > 0) updateSlide(cur-1);
+}
+
+function goTo(i){
+  updateSlide(i);
+}
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')nextSlide();if(e.key==='ArrowLeft')prevSlide();});
 document.getElementById('sc').addEventListener('click',e=>{if(!e.target.closest('.nb')&&!e.target.closest('.dot'))nextSlide();});
 
