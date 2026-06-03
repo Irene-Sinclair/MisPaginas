@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREDIDEMO — Análisis Mayo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#c0171f;--red2:#e01f29;--redl:#fce8e9;
+  --yellow:#f5c400;--yellowd:#c8a000;--yellowl:#fff9e0;
+  --black:#111;--white:#fff;
+  --bg:#f4f4f4;--bg2:#ebebeb;--bg3:#e0e0e0;
+  --card:#fff;--border:#e2e2e2;
+  --text:#1a1a1a;--text2:#444;--text3:#888;
+  --green:#1a7f52;--orange:#d9620a;--blue:#1a5fa8;
+  --sh:0 2px 10px rgba(0,0,0,0.07);--sh2:0 4px 20px rgba(0,0,0,0.11);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;}
+
+.topbar{background:#fff;border-bottom:3px solid var(--red);padding:0 40px;height:70px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.topbar img{height:44px;object-fit:contain;}
+.topbar-fallback{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--red);letter-spacing:-1px;display:none;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.topbar-badge{background:var(--red);color:#fff;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 14px;border-radius:3px;}
+.topbar-date{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--text3);}
+
+.hero{background:linear-gradient(135deg,#f9f9f9 0%,#efefef 100%);border-bottom:3px solid var(--yellow);padding:28px 40px 30px;position:relative;overflow:hidden;}
+.hero-stripe{position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,var(--red) 0%,var(--yellow) 100%);}
+.hero::after{content:'MAYO 2026';position:absolute;right:-12px;top:-16px;font-family:'Barlow Condensed',sans-serif;font-size:130px;font-weight:900;letter-spacing:-4px;color:rgba(0,0,0,0.04);line-height:1;pointer-events:none;user-select:none;}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;position:relative;z-index:1;}
+.hero h1{font-family:'Barlow Condensed',sans-serif;font-size:42px;font-weight:900;line-height:1.05;color:var(--black);letter-spacing:-1px;}
+.hero h1 span{color:var(--red);}
+.hero-sub{color:var(--text3);font-size:12px;font-weight:500;margin-top:5px;}
+.hero-kpis{display:flex;flex-wrap:wrap;}
+.hero-kpi{padding:10px 24px;border-left:1px solid var(--border);text-align:center;}
+.hero-kpi:first-child{border-left:none;}
+.hero-kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--red);line-height:1;}
+.hero-kpi-lbl{font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--text3);text-transform:uppercase;margin-top:3px;}
+
+.wrapper{max-width:1400px;margin:0 auto;padding:28px 40px 60px;}
+
+.debate-alert{background:var(--black);border-radius:10px;border-left:5px solid var(--red);padding:20px 26px;margin-bottom:28px;box-shadow:var(--sh2);}
+.debate-alert h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;color:var(--red2);text-transform:uppercase;margin-bottom:14px;}
+.debate-points{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;}
+.dp{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,0.05);border-radius:6px;padding:10px 13px;border:1px solid rgba(255,255,255,0.07);}
+.dp-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.dp-text{font-size:12px;color:rgba(255,255,255,0.55);line-height:1.5;}
+.dp-text strong{color:var(--yellow);}
+
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:800;letter-spacing:3px;color:var(--text3);text-transform:uppercase;margin:32px 0 14px;display:flex;align-items:center;gap:10px;}
+.section-title::before{content:'';width:4px;height:15px;background:var(--red);border-radius:2px;flex-shrink:0;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px;margin-bottom:10px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:16px 18px;box-shadow:var(--sh);position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-color,var(--red));}
+.kpi-label{font-size:10px;font-weight:700;letter-spacing:1.8px;color:var(--text3);text-transform:uppercase;margin-bottom:7px;}
+.kpi-value{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);line-height:1;margin-bottom:4px;}
+.kpi-value span{font-size:13px;font-weight:500;color:var(--text3);margin-left:2px;}
+.kpi-sub{font-size:11px;color:var(--text3);}
+.kpi-sub b{color:var(--kpi-color,var(--red));}
+
+.charts-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;margin-bottom:14px;}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 22px;box-shadow:var(--sh);}
+.chart-card.wide{grid-column:1/-1;}
+.chart-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--border);padding-bottom:11px;}
+.chart-title .badge{font-size:10px;padding:3px 8px;border-radius:3px;background:var(--redl);color:var(--red);letter-spacing:1px;font-weight:700;}
+canvas{display:block;width:100%!important;}
+
+.debate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-bottom:14px;}
+.dcard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 22px;box-shadow:var(--sh);border-top:3px solid var(--dcard-color,var(--red));}
+.dcard-label{font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--dcard-color,var(--red));margin-bottom:5px;}
+.dcard-claim{font-size:11.5px;color:var(--text3);font-style:italic;line-height:1.5;background:var(--bg2);border-radius:5px;padding:9px 11px;margin-bottom:12px;}
+.dcard-stat{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--bg2);}
+.dcard-stat:last-of-type{border-bottom:none;}
+.dcard-stat-label{font-size:12px;color:var(--text2);}
+.dcard-stat-value{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--text);}
+.dcard-conclusion{margin-top:10px;padding:9px 11px;border-radius:5px;background:#e8f5ee;border:1px solid #b2dfcc;font-size:11.5px;color:var(--green);line-height:1.5;font-weight:600;}
+.dcard-conclusion.warn{background:var(--yellowl);border-color:#e0c040;color:#7a5f00;}
+.zar-box{margin-top:10px;padding:9px 11px;border-radius:5px;background:#fff3e0;border:1px solid #f5c090;font-size:11.5px;color:var(--orange);line-height:1.6;font-weight:600;}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:10px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:var(--text3);padding:9px 11px;text-align:left;white-space:nowrap;background:var(--bg2);}
+td{padding:8px 11px;font-size:12.5px;color:var(--text2);border-bottom:1px solid var(--bg2);white-space:nowrap;}
+tr:hover td{background:#f9f9f9;}
+.td-model{font-weight:700;color:var(--text);font-family:'Barlow Condensed',sans-serif;font-size:14px;}
+.sport-tag{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;background:#fff3e0;color:var(--orange);border:1px solid #ffd0a0;border-radius:3px;padding:1px 5px;margin-left:5px;}
+.bar-mini{display:flex;align-items:center;gap:7px;}
+.bar-mini-track{width:60px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;flex-shrink:0;}
+.bar-mini-fill{height:100%;border-radius:3px;}
+.num-pos{color:var(--green);font-weight:700;}
+.num-neg{color:var(--red);font-weight:700;}
+.num-warn{color:var(--orange);font-weight:700;}
+.num-gold{color:var(--yellowd);font-weight:700;}
+.num-bold{font-weight:700;color:var(--text);}
+.tr-total td{background:var(--black);color:#fff;font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:14px;}
+.tr-total .num-yl{color:var(--yellow);}
+.diff-neg{color:var(--red);font-size:11px;font-weight:700;}
+.diff-pos{color:var(--green);font-size:11px;font-weight:700;}
+
+.footer{background:var(--black);padding:16px 40px;border-top:3px solid var(--yellow);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-left{font-size:11px;color:rgba(255,255,255,0.4);}
+.footer-left span{color:var(--yellow);font-weight:600;}
+.footer-right{font-size:11px;color:rgba(255,255,255,0.3);}
+
+@media(max-width:768px){.topbar,.hero,.wrapper,.footer{padding-left:16px;padding-right:16px;}.hero h1{font-size:30px;}.charts-grid{grid-template-columns:1fr;}.hero-kpis{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img id="logoImg" src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" alt="CREDIDEMO" onerror="this.style.display='none';document.getElementById('logoFallback').style.display='block'">
+  <div class="topbar-fallback" id="logoFallback">CREDIDEMO</div>
+  <div class="topbar-right">
+    <div class="topbar-date">📅 Mayo 2026</div>
+    <div class="topbar-badge">Dashboard Ejecutivo</div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-stripe"></div>
+  <div class="hero-inner">
+    <div>
+      <h1>ANÁLISIS DE <span>CARTERA</span><br>MAYO 2026</h1>
+      <div class="hero-sub">Oportunidades ODOO &nbsp;·&nbsp; Fichas Ingresadas &nbsp;·&nbsp; Facturación Real CRM</div>
+    </div>
+    <div class="hero-kpis">
+      <div class="hero-kpi"><div class="hero-kpi-val">1,156</div><div class="hero-kpi-lbl">Fichas ODOO</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">L 52.9M</div><div class="hero-kpi-lbl">Valor Factura BD</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">722</div><div class="hero-kpi-lbl">Facturadas CRM</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">L 32.2M</div><div class="hero-kpi-lbl">Monto CRM Real</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+  <div class="debate-alert">
+    <h3>⚠️ Puntos a Debatir — Respuesta con Datos al Correo Recibido</h3>
+    <div class="debate-points">
+      <div class="dp"><div class="dp-icon">📊</div><div class="dp-text"><strong>"Motos XR mayormente vendidas contado"</strong> — XR 150L 2.0 tiene 81.8% aprobación, la más alta del portafolio. Los créditos XR existen además de las ventas contado.</div></div>
+      <div class="dp"><div class="dp-icon">🏍️</div><div class="dp-text"><strong>"80% créditos son NAVI y CB100"</strong> — Sport es 23% fichas pero genera <strong>31.9% del monto</strong>. Ticket sport L 61,400 vs L 32,600 resto.</div></div>
+      <div class="dp"><div class="dp-icon">🔓</div><div class="dp-text"><strong>"~90 créditos abiertos sin facturar"</strong> — Confirmado: <strong>90 fichas = L 4.9M</strong> sin cerrar. Más 208 pendientes = L 9.6M potencial.</div></div>
+      <div class="dp"><div class="dp-icon">📡</div><div class="dp-text"><strong>"GPS encima del 20%, combo caro"</strong> — GPS en 23%. <strong>Zona ZAR (29.5% clientes) exige GPS+Seguro</strong> como condición de aprobación — no es opcional para ese segmento.</div></div>
+    </div>
+  </div>
+
+  <div class="section-title">Resumen General · Fichas ODOO en BD</div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--kpi-color:#c0171f"><div class="kpi-label">Total Fichas</div><div class="kpi-value">1,156</div><div class="kpi-sub">Oportunidades ODOO</div></div>
+    <div class="kpi" style="--kpi-color:#1a7f52"><div class="kpi-label">Aprobadas</div><div class="kpi-value">812 <span>70.2%</span></div><div class="kpi-sub"><b>L 37.1M</b> valor factura</div></div>
+    <div class="kpi" style="--kpi-color:#d9620a"><div class="kpi-label">Pendientes</div><div class="kpi-value">208 <span>18%</span></div><div class="kpi-sub"><b>L 9.6M</b> potencial</div></div>
+    <div class="kpi" style="--kpi-color:#c0171f"><div class="kpi-label">Rechazadas</div><div class="kpi-value">136 <span>11.8%</span></div><div class="kpi-sub">L 6.2M valor factura</div></div>
+    <div class="kpi" style="--kpi-color:#f5c400"><div class="kpi-label">Valor Factura Total</div><div class="kpi-value">52.9<span>M L</span></div><div class="kpi-sub">Todas las fichas</div></div>
+    <div class="kpi" style="--kpi-color:#111"><div class="kpi-label">Cartera Financiada</div><div class="kpi-value">46.2<span>M L</span></div><div class="kpi-sub">Total financiado BD</div></div>
+    <div class="kpi" style="--kpi-color:#c0171f"><div class="kpi-label">Sin Facturar</div><div class="kpi-value">90</div><div class="kpi-sub"><b>L 4.9M</b> no procesados</div></div>
+    <div class="kpi" style="--kpi-color:#d9620a"><div class="kpi-label">Zona ZAR</div><div class="kpi-value">341 <span>29.5%</span></div><div class="kpi-sub">Clientes en zona riesgo</div></div>
+  </div>
+
+  <div class="section-title">Facturación Real CRM · 722 Líneas</div>
+  <div class="kpi-grid">
+    <div class="kpi" style="--kpi-color:#1a7f52"><div class="kpi-label">Monto Facturado</div><div class="kpi-value">32.2<span>M L</span></div><div class="kpi-sub">Total CRM mayo 2026</div></div>
+    <div class="kpi" style="--kpi-color:#f5c400"><div class="kpi-label">Primas Cobradas</div><div class="kpi-value">3.6<span>M L</span></div><div class="kpi-sub">Primas en facturas</div></div>
+    <div class="kpi" style="--kpi-color:#1a7f52"><div class="kpi-label">Con Seguro</div><div class="kpi-value">512 <span>70.9%</span></div><div class="kpi-sub">Solo seguro</div></div>
+    <div class="kpi" style="--kpi-color:#d9620a"><div class="kpi-label">GPS + Seguro</div><div class="kpi-value">160 <span>22.2%</span></div><div class="kpi-sub">Combo GPS + Seguro</div></div>
+    <div class="kpi" style="--kpi-color:#111"><div class="kpi-label">Solo GPS</div><div class="kpi-value">6 <span>0.8%</span></div><div class="kpi-sub">Sin seguro</div></div>
+    <div class="kpi" style="--kpi-color:#c0171f"><div class="kpi-label">Solo Crédito</div><div class="kpi-value">44 <span>6.1%</span></div><div class="kpi-sub">Sin seguro ni GPS</div></div>
+  </div>
+
+  <div class="section-title">Visualizaciones</div>
+  <div class="charts-grid">
+    <div class="chart-card"><div class="chart-title">Estados BD ODOO <span class="badge">1,156 fichas</span></div><canvas id="cEstados" height="220"></canvas></div>
+    <div class="chart-card"><div class="chart-title">Cobertura CRM <span class="badge">722 facturas</span></div><canvas id="cCobertura" height="220"></canvas></div>
+    <div class="chart-card"><div class="chart-title">Sport vs Portafolio <span class="badge">fichas vs monto</span></div><canvas id="cSport" height="220"></canvas></div>
+    <div class="chart-card"><div class="chart-title">Top Sucursales · Monto CRM</div><canvas id="cSucursales" height="220"></canvas></div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card wide"><div class="chart-title">Fichas BD vs Aprobadas por Modelo</div><canvas id="cModelos" height="200"></canvas></div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card wide"><div class="chart-title">Zona ZAR · Distribución y Aprobación <span class="badge">1,156 fichas</span></div><canvas id="cZar" height="160"></canvas></div>
+  </div>
+
+  <div class="section-title">🔴 Respuesta Detallada con Datos</div>
+  <div class="debate-grid">
+    <div class="dcard" style="--dcard-color:#d9620a">
+      <div class="dcard-label">Punto 1 · XR vendidas al contado</div>
+      <div class="dcard-claim">"Se hizo pre venta de moto XR con lo cual quizás la mayoría se vendieron contado."</div>
+      <div class="dcard-stat"><span class="dcard-stat-label">XR 150L fichas BD</span><span class="dcard-stat-value num-warn">22</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">XR 150L 2.0 aprobadas</span><span class="dcard-stat-value num-pos">18 (81.8%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">XR 150L facturadas CRM</span><span class="dcard-stat-value num-warn">26</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">XR 190 2.0 fichas BD</span><span class="dcard-stat-value num-warn">16</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">XR 190 2.0 aprobadas</span><span class="dcard-stat-value num-pos">8 (50%)</span></div>
+      <div class="dcard-conclusion">✅ Las XR sí generaron créditos. XR 150L 2.0 tiene la aprobación más alta del portafolio (81.8%). Las ventas contado son adicionales, no reemplazan el crédito.</div>
+    </div>
+    <div class="dcard" style="--dcard-color:#c0171f">
+      <div class="dcard-label">Punto 2 · Sport con altos requisitos</div>
+      <div class="dcard-claim">"Motos Sport cada vez menos gente aplica. 80% créditos son NAVI y CB100."</div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Fichas sport ingresadas</span><span class="dcard-stat-value num-warn">264 (22.8%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Sport aprobadas</span><span class="dcard-stat-value num-pos">177 (67%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Sport facturadas CRM</span><span class="dcard-stat-value num-pos">167 (23.1%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Monto sport CRM</span><span class="dcard-stat-value num-pos">L 10.3M (31.9%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Ticket prom. sport</span><span class="dcard-stat-value num-pos">L 61,400</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Ticket prom. NAVI/CB100</span><span class="dcard-stat-value num-warn">L 32,600</span></div>
+      <div class="dcard-conclusion">✅ Sport es 23% de fichas pero genera 31.9% del monto. Ticket casi el doble. No está decayendo — está siendo subutilizado con alto retorno por unidad.</div>
+    </div>
+    <div class="dcard" style="--dcard-color:#c0171f">
+      <div class="dcard-label">Punto 3 · ~90 créditos sin facturar</div>
+      <div class="dcard-claim">"Este mes quedaron casi 90 créditos abiertos."</div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Aprobados BD ODOO</span><span class="dcard-stat-value num-warn">812</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Facturados CRM</span><span class="dcard-stat-value num-warn">722</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Sin facturar</span><span class="dcard-stat-value num-neg">90 fichas</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Valor estimado</span><span class="dcard-stat-value num-neg">L 4.9M</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Pendientes adicionales</span><span class="dcard-stat-value num-warn">208 (L 9.6M)</span></div>
+      <div class="dcard-conclusion warn">⚠️ Confirmado: 90 aprobados sin cerrar = L 4.9M en riesgo. Más 208 en proceso = L 9.6M potencial adicional.</div>
+    </div>
+    <div class="dcard" style="--dcard-color:#1a5fa8">
+      <div class="dcard-label">Punto 4 · GPS + Seguro + Zona ZAR</div>
+      <div class="dcard-claim">"Comenzamos con ~30% motos GPS, terminó arriba de 20%. El combo es caro vs la competencia."</div>
+      <div class="dcard-stat"><span class="dcard-stat-label">GPS + Seguro facturados</span><span class="dcard-stat-value num-pos">160 (22.2%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Total con algún GPS</span><span class="dcard-stat-value num-pos">166 (23%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Monto GPS facturado</span><span class="dcard-stat-value num-pos">L 8.2M (25.6%)</span></div>
+      <div class="dcard-stat"><span class="dcard-stat-label">Total con seguro (cualquier tipo)</span><span class="dcard-stat-value num-pos">678 (93.9%)</span></div>
+      <div class="dcard-conclusion">✅ GPS supera el 20% confirmado (23%). Penetración seguro total: 93.9%.</div>
+      <div class="zar-box">📍 <strong>Zona ZAR explica el GPS:</strong> El 29.5% de clientes (341 fichas / L 15.5M) viven en Zona ZAR, donde el <strong>GPS+Seguro es condición de aprobación</strong>, no una opción comercial. Sin este requisito, esos créditos no se aprueban — es una herramienta de control de riesgo, no un cargo discrecional.<br><br>
+      · ZAR aprobadas: <strong>229/341 = 67.2%</strong> &nbsp;|&nbsp; No-ZAR: <strong>583/815 = 71.5%</strong><br>
+      · Diferencia de 4.3pp justificada por el nivel de riesgo de la zona.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Tabla por Modelo · BD ODOO + Facturación CRM Cruzada</div>
+  <div class="chart-card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Modelo</th><th>Fichas BD</th><th>% Fichas</th><th>✅ Apro.</th><th>% Apro.</th>
+          <th>❌ Rech.</th><th>⏳ Pend.</th><th>Fact. CRM</th><th>Δ Apro–CRM</th><th>Monto CRM</th><th>Primas CRM</th>
+        </tr></thead>
+        <tbody id="tablaModelos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section-title">Top Ubicaciones · Facturación CRM Mayo 2026</div>
+  <div class="chart-card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Ubicación</th><th>Facturas</th><th>%</th><th>Monto Facturado</th><th>Primas</th><th>Participación</th></tr></thead>
+        <tbody id="tablaEquipos"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-left">CREDIDEMO BIGDATA · <span>isinclair</span> · 192.168.50.103\BIGDATA</div>
+  <div class="footer-right">[bigdata].[credianalisis].[V_vista_fichas_completa] + CRM Facturas · Mayo 2026</div>
+</div>
+
+<script>
+// ─── COLORES ───────────────────────────────────────────────────────────────
+const RED='#c0171f', YEL='#f5c400', BLK='#111111', GRN='#1a7f52', ORG='#d9620a', BLU='#1a5fa8';
+const GRAY='#cccccc', GRAY2='#e8e8e8', WHITE='#ffffff';
+const FONT="'Barlow',sans-serif";
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+function px(n){ return Math.round(n); }
+
+function drawDonut(id, slices, labels){
+  const cv = document.getElementById(id);
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.offsetWidth || 400;
+  cv.width = W; cv.height = parseInt(cv.getAttribute('height'))||220;
+  const H = cv.height;
+  const cx = W*0.42, cy = H/2, R = Math.min(cx,cy)*0.78, r = R*0.58;
+  const total = slices.reduce((a,s)=>a+s.v,0);
+  let angle = -Math.PI/2;
+
+  // slices
+  slices.forEach(s=>{
+    const sweep = (s.v/total)*(2*Math.PI);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,R,angle,angle+sweep);
+    ctx.closePath();
+    ctx.fillStyle = s.c;
+    ctx.fill();
+    ctx.strokeStyle = WHITE;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    angle += sweep;
+  });
+
+  // hole
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,2*Math.PI);
+  ctx.fillStyle = WHITE;
+  ctx.fill();
+
+  // center text
+  ctx.fillStyle = '#111';
+  ctx.font = `800 22px ${FONT}`;
+  ctx.textAlign = 'center';
+  ctx.fillText(total.toLocaleString(), cx, cy+4);
+  ctx.font = `500 10px ${FONT}`;
+  ctx.fillStyle = '#888';
+  ctx.fillText('TOTAL', cx, cy+18);
+
+  // legend
+  const lx = W*0.86, startY = cy - (slices.length*22)/2 + 10;
+  slices.forEach((s,i)=>{
+    const y = startY + i*24;
+    ctx.fillStyle = s.c;
+    ctx.fillRect(lx-60, y-8, 12, 12);
+    ctx.fillStyle = '#444';
+    ctx.font = `500 11px ${FONT}`;
+    ctx.textAlign = 'left';
+    const pct = ((s.v/total)*100).toFixed(1);
+    ctx.fillText(`${labels[i]}`, lx-44, y+3);
+    ctx.font = `700 11px ${FONT}`;
+    ctx.fillStyle = '#111';
+    ctx.fillText(`${s.v.toLocaleString()} (${pct}%)`, lx-44, y+15);
+  });
+}
+
+// Colores fijos para barras: DS0=RED, DS1=YELLOW
+const BAR_COLORS = [RED, YEL];
+
+function drawHBar(id, categories, datasets, opts={}){
+  const cv = document.getElementById(id);
+  if(!cv) return;
+  const W = cv.offsetWidth || 600;
+  cv.width = W; cv.height = parseInt(cv.getAttribute('height'))||220;
+  const H = cv.height;
+  const ctx = cv.getContext('2d');
+  const pad = {t:36,b:20,l:20,r:70};
+  const nCat = categories.length;
+  const rowH = (H - pad.t - pad.b) / nCat;
+  const maxVal = opts.stacked
+    ? Math.max(...categories.map((_,i)=>datasets.reduce((a,d)=>a+d.data[i],0)))
+    : Math.max(...datasets.flatMap(d=>d.data));
+  const bw = W - pad.l - pad.r - 10;
+
+  // gridlines
+  [25,50,75,100].forEach(p=>{
+    const x = pad.l + (p/100)*bw;
+    ctx.beginPath(); ctx.strokeStyle='#eee'; ctx.lineWidth=1;
+    ctx.moveTo(x, pad.t); ctx.lineTo(x, H-pad.b); ctx.stroke();
+    ctx.fillStyle='#bbb'; ctx.font=`500 9px ${FONT}`; ctx.textAlign='center';
+    ctx.fillText(p+'%', x, H-pad.b+12);
+  });
+
+  categories.forEach((cat,i)=>{
+    const baseY = pad.t + i*rowH + rowH*0.12;
+    let offsetX = 0;
+    datasets.forEach((ds,di)=>{
+      const val = ds.data[i];
+      const barW = (val/maxVal) * bw;
+      const bH = opts.stacked ? rowH*0.65 : rowH*0.55/datasets.length;
+      const y = opts.stacked ? baseY + rowH*0.1 : baseY + di*(bH+2) + rowH*0.05;
+      const col = BAR_COLORS[di] || BAR_COLORS[0];
+      ctx.fillStyle = col;
+      roundRect(ctx, pad.l + (opts.stacked ? offsetX : 0), y, barW, bH, 3);
+      ctx.fill();
+      // valor ENCIMA de la barra
+      const labelX = pad.l + (opts.stacked ? offsetX : 0) + barW + 4;
+      ctx.fillStyle = '#333'; ctx.font=`700 10px ${FONT}`; ctx.textAlign='left';
+      ctx.fillText(val+'%', labelX, y + bH/2 + 4);
+      if(opts.stacked) offsetX += barW;
+    });
+    // category label
+    ctx.fillStyle='#444'; ctx.font=`600 11px ${FONT}`; ctx.textAlign='right';
+    ctx.fillText(cat, pad.l-4, pad.t + i*rowH + rowH/2 + 4);
+  });
+
+  // leyenda encima
+  let lx = pad.l;
+  ctx.textAlign='left';
+  datasets.forEach((ds,di)=>{
+    const col = BAR_COLORS[di] || BAR_COLORS[0];
+    ctx.fillStyle=col; ctx.fillRect(lx, 10, 12, 12);
+    ctx.fillStyle='#333'; ctx.font=`600 11px ${FONT}`;
+    ctx.fillText(ds.label, lx+16, 21);
+    lx += ctx.measureText(ds.label).width + 40;
+  });
+}
+
+function drawVBar(id, labels, datasets, opts={}){
+  const cv = document.getElementById(id);
+  if(!cv) return;
+  const W = cv.offsetWidth || 600;
+  cv.width = W; cv.height = parseInt(cv.getAttribute('height'))||220;
+  const H = cv.height;
+  const ctx = cv.getContext('2d');
+  const nDS = datasets.length;
+  const legH = nDS > 1 ? 32 : 0;
+  const pad = {t: legH + 24, b:52, l:62, r:16};
+  const n = labels.length;
+  const maxVal = Math.max(...datasets.flatMap(d=>d.data)) * 1.15; // 15% headroom para etiquetas
+  const bw = (W - pad.l - pad.r) / n;
+  const barGroupW = bw * 0.78;
+  const barW = barGroupW / nDS;
+  const chartH = H - pad.t - pad.b;
+
+  // y gridlines
+  [0.25,0.5,0.75,1].forEach(p=>{
+    const y = pad.t + chartH*(1-p/1.15);
+    ctx.beginPath(); ctx.strokeStyle='#eee'; ctx.lineWidth=1;
+    ctx.moveTo(pad.l, y); ctx.lineTo(W-pad.r, y); ctx.stroke();
+    const lbl = opts.yFmt ? opts.yFmt(maxVal*p/1.15) : Math.round(maxVal*p/1.15).toLocaleString();
+    ctx.fillStyle='#bbb'; ctx.font=`500 9px ${FONT}`; ctx.textAlign='right';
+    ctx.fillText(lbl, pad.l-4, y+3);
+  });
+
+  datasets.forEach((ds,di)=>{
+    const col = BAR_COLORS[di] || BAR_COLORS[0];
+    ds.data.forEach((val,i)=>{
+      const barH = (val/maxVal)*chartH;
+      const x = pad.l + i*bw + bw*0.11 + di*barW;
+      const y = pad.t + chartH - barH;
+      ctx.fillStyle = col;
+      roundRect(ctx, x, y, barW-2, barH, 3);
+      ctx.fill();
+      // valor ENCIMA de la barra
+      const lbl = opts.valFmt ? opts.valFmt(val) : val.toLocaleString();
+      ctx.fillStyle='#222'; ctx.font=`700 9px ${FONT}`; ctx.textAlign='center';
+      ctx.fillText(lbl, x + barW/2 - 1, y - 4);
+    });
+  });
+
+  // x labels rotados
+  labels.forEach((lbl,i)=>{
+    ctx.save();
+    const x = pad.l + i*bw + bw/2;
+    ctx.translate(x, H-pad.b+8);
+    ctx.rotate(-0.5);
+    ctx.fillStyle='#555'; ctx.font=`500 10px ${FONT}`; ctx.textAlign='right';
+    ctx.fillText(lbl, 0, 0);
+    ctx.restore();
+  });
+
+  // leyenda encima
+  if(nDS > 1){
+    let lx = pad.l;
+    ctx.textAlign='left';
+    datasets.forEach((ds,di)=>{
+      const col = BAR_COLORS[di] || BAR_COLORS[0];
+      ctx.fillStyle=col; ctx.fillRect(lx, legH-18, 12, 12);
+      ctx.fillStyle='#333'; ctx.font=`600 11px ${FONT}`;
+      ctx.fillText(ds.label, lx+16, legH-7);
+      lx += ctx.measureText(ds.label).width + 40;
+    });
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────────────
+window.addEventListener('load', function(){
+
+  // 1. ESTADOS
+  drawDonut('cEstados',
+    [{v:812,c:GRN},{v:208,c:YEL},{v:136,c:RED}],
+    ['Aprobado','Pendiente','Rechazado']
+  );
+
+  // 2. COBERTURA
+  drawDonut('cCobertura',
+    [{v:512,c:GRN},{v:160,c:ORG},{v:44,c:RED},{v:6,c:BLK}],
+    ['Solo Seguro','GPS+Seguro','Solo Crédito','Solo GPS']
+  );
+
+  // 3. SPORT vs PORTAFOLIO
+  drawHBar('cSport',
+    ['% Fichas BD','% Monto CRM'],
+    [{label:'🏍️ Sport',data:[22.8,31.9]},{label:'Resto Portafolio',data:[77.2,68.1]}],
+    {stacked:true}
+  );
+
+  // 4. SUCURSALES (datos reales campo Ubicación CRM)
+  drawVBar('cSucursales',
+    ['Suyapa','Comayaguela','SPS Lima','Toncontin','Choluteca','Comayagua','Megamall','Juticalpa'],
+    [{label:'Monto Facturado',
+      data:[6587340,4131831,3119740,1839680,1724540,1758560,1432810,984080]}],
+    {yFmt:v=>'L '+(v/1e6).toFixed(1)+'M', valFmt:v=>'L '+(v/1e6).toFixed(1)+'M'}
+  );
+
+  // 5. MODELOS — 2 datasets: Total Fichas y Aprobadas
+  drawVBar('cModelos',
+    ['NAVI 110','CB 100','XBLADE','CBF 150','CB 190','HORNET','CG 110','SHINE','XR150L','XR190','NX190','CB190R'],
+    [
+      {label:'Total Fichas', data:[469,191,161,47,39,35,33,27,22,16,12,10]},
+      {label:'Aprobadas',    data:[348,137,108,29,27,21,21,20,18, 8, 8, 7]}
+    ]
+  );
+
+  // 6. ZONA ZAR
+  drawVBar('cZar',
+    ['No ZAR (70.5%)','ZAR (29.5%)'],
+    [
+      {label:'Aprobadas', data:[583,229]},
+      {label:'Rechazadas',data:[97,39]}
+    ]
+  );
+
+  // ─── TABLA MODELOS ──────────────────────────────────────────────────────
+  const modData=[
+    {m:'NAVI 110',      f:469,pf:40.6,a:348,pa:74.2,r:51,p:70, fc:315,mc:'L 11,666,801',pc:'L 746,257', sport:false},
+    {m:'CB 100',        f:191,pf:16.5,a:137,pa:71.7,r:17,p:37, fc:132,mc:'L 3,960,141', pc:'L 359,500', sport:false},
+    {m:'XBLADE',        f:161,pf:13.9,a:108,pa:67.1,r:21,p:32, fc:95, mc:'L 4,977,600', pc:'L 743,800', sport:true},
+    {m:'CBF 150',       f:47, pf:4.1, a:29, pa:61.7,r:11,p:7,  fc:28, mc:'L 1,338,140', pc:'L 63,400',  sport:false},
+    {m:'CB 190 2.0',    f:39, pf:3.4, a:27, pa:69.2,r:3, p:9,  fc:34, mc:'L 2,425,660', pc:'L 284,200', sport:true},
+    {m:'CB160R HORNET', f:35, pf:3.0, a:21, pa:60.0,r:5, p:9,  fc:17, mc:'L 937,960',   pc:'L 97,700',  sport:true},
+    {m:'CG 110',        f:33, pf:2.9, a:21, pa:63.6,r:5, p:7,  fc:21, mc:'L 589,790',   pc:'L 69,473',  sport:false},
+    {m:'SHINE 125',     f:27, pf:2.3, a:20, pa:74.1,r:1, p:6,  fc:18, mc:'L 724,820',   pc:'L 66,600',  sport:false},
+    {m:'XR 150L 2.0',   f:22, pf:1.9, a:18, pa:81.8,r:3, p:1,  fc:26, mc:'L 1,550,901', pc:'L 286,300', sport:false},
+    {m:'XR190 2.0',     f:16, pf:1.4, a:8,  pa:50.0,r:5, p:3,  fc:12, mc:'L 1,055,880', pc:'L 308,600', sport:false},
+    {m:'NX190',         f:12, pf:1.0, a:8,  pa:66.7,r:2, p:2,  fc:10, mc:'L 799,900',   pc:'L 100,800', sport:true},
+    {m:'CB 190R',       f:10, pf:0.9, a:7,  pa:70.0,r:0, p:3,  fc:10, mc:'L 799,900',   pc:'L 100,800', sport:true},
+    {m:'DIO STD',       f:12, pf:1.0, a:10, pa:83.3,r:2, p:0,  fc:9,  mc:'L 341,910',   pc:'L 17,300',  sport:false},
+    {m:'TWISTER 300',   f:2,  pf:0.2, a:2,  pa:100, r:0, p:0,  fc:2,  mc:'L 224,000',   pc:'L 94,600',  sport:true},
+  ];
+  const tb=document.getElementById('tablaModelos');
+  modData.forEach(d=>{
+    const cp=d.pa>=75?'num-pos':d.pa>=65?'num-warn':'num-neg';
+    const diff=d.a-d.fc;
+    const dcls=diff>0?'diff-neg':diff<0?'diff-pos':'';
+    const dstr=diff>0?`−${diff} sin facturar`:diff<0?`+${Math.abs(diff)} extra`:'=';
+    tb.innerHTML+=`<tr>
+      <td class="td-model">${d.m}${d.sport?'<span class="sport-tag">sport</span>':''}</td>
+      <td class="num-bold">${d.f}</td>
+      <td><div class="bar-mini"><div class="bar-mini-track"><div class="bar-mini-fill" style="width:${Math.min(d.pf/42*100,100)}%;background:${d.sport?ORG:RED}"></div></div><span style="font-size:11px;color:#999">${d.pf}%</span></div></td>
+      <td class="num-pos">${d.a}</td>
+      <td class="${cp}">${d.pa}%</td>
+      <td class="num-neg">${d.r}</td>
+      <td class="num-warn">${d.p}</td>
+      <td class="num-bold">${d.fc}</td>
+      <td class="${dcls}">${dstr}</td>
+      <td class="num-gold">${d.mc}</td>
+      <td class="num-pos" style="font-size:12px">${d.pc}</td>
+    </tr>`;
+  });
+  tb.innerHTML+=`<tr class="tr-total"><td>TOTAL</td><td>1,156</td><td>100%</td><td class="num-yl">812</td><td class="num-yl">70.2%</td><td>136</td><td>208</td><td class="num-yl">722</td><td class="num-yl">−90</td><td class="num-yl">L 32,188,503</td><td class="num-yl">L 3,585,830</td></tr>`;
+
+  // ─── TABLA EQUIPOS ─────────────────────────────────────────────────────
+  const eqData=[
+    {e:'Sala de Venta Suyapa',          f:142,pct:19.7,m:'L 6,587,340',p:'L 569,157'},
+    {e:'Sala de Ventas Comayaguela',     f:93, pct:12.9,m:'L 4,131,831',p:'L 466,973'},
+    {e:'Sala Ventas Salida a La Lima',   f:58, pct:8.0, m:'L 3,119,740',p:'L 532,300'},
+    {e:'Sala de Ventas Toncontín',       f:40, pct:5.5, m:'L 1,839,680',p:'L 261,700'},
+    {e:'Sala de Ventas Comayagua',       f:40, pct:5.5, m:'L 1,758,560',p:'L 204,700'},
+    {e:'Sala de Ventas Choluteca',       f:45, pct:6.2, m:'L 1,724,540',p:'L 182,100'},
+    {e:'Sala de Ventas Megamall SPS',    f:28, pct:3.9, m:'L 1,432,810',p:'L 138,400'},
+    {e:'Sala de Ventas Choloma',         f:23, pct:3.2, m:'L 984,630',  p:'L 51,100'},
+    {e:'Sala de Ventas Juticalpa',       f:25, pct:3.5, m:'L 984,080',  p:'L 88,000'},
+    {e:'Sala de Ventas Ceiba',           f:23, pct:3.2, m:'L 907,310',  p:'L 128,400'},
+    {e:'Sala de Venta Catacamas',        f:19, pct:2.6, m:'L 800,710',  p:'L 122,200'},
+    {e:'Inv. Más y Alimentos San Lorenzo',f:16,pct:2.2, m:'L 660,200',  p:'L 52,100'},
+    {e:'Inversiones Peri Villanueva',    f:17, pct:2.4, m:'L 658,100',  p:'L 25,400'},
+    {e:'Sala de Ventas Mall Premier',    f:17, pct:2.4, m:'L 647,070',  p:'L 53,400'},
+    {e:'Dimotos #2 / Danlí',            f:17, pct:2.4, m:'L 623,290',  p:'L 51,400'},
+  ];
+  const tb2=document.getElementById('tablaEquipos');
+  eqData.forEach((d,i)=>{
+    tb2.innerHTML+=`<tr>
+      <td class="td-model">${d.e}</td>
+      <td class="num-bold">${d.f}</td>
+      <td>${d.pct}%</td>
+      <td class="num-gold">${d.m}</td>
+      <td class="num-pos">${d.p}</td>
+      <td><div class="bar-mini"><div class="bar-mini-track"><div class="bar-mini-fill" style="width:${Math.min(d.pct/21*100,100)}%;background:${i%2===0?RED:YEL}"></div></div><span style="font-size:11px;color:#999">${d.pct}%</span></div></td>
+    </tr>`;
+  });
+  tb2.innerHTML+=`<tr class="tr-total"><td>TOTAL CRM</td><td>722</td><td>100%</td><td class="num-yl">L 32,188,503</td><td class="num-yl">L 3,585,830</td><td>100%</td></tr>`;
+
+}); // end load
+</script>
+</body>
+</html>
