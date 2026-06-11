@@ -160,6 +160,23 @@
   .badge-rep{display:inline-block; background:#F0EBE3; color:var(--gris); font-size:10px; font-weight:700; letter-spacing:.05em; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle}
   .mcard .sin{padding:16px 18px; color:var(--gris); font-size:13.5px}
 
+
+  /* Ganadores por día */
+  .ganadores-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin:4px 0 28px}
+  .gcard{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:18px; border-top:5px solid var(--amarillo)}
+  .gcard.parcial{border-top-color:var(--rojo)}
+  .gcard h3{font-family:var(--display); font-size:15px; text-transform:uppercase; margin-bottom:4px; line-height:1.25}
+  .gcard .estado-dia{font-size:11px; color:var(--gris); font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:12px}
+  .gcard .ganador{background:var(--asfalto); color:#fff; border-radius:10px; padding:12px 14px; margin-bottom:12px}
+  .gcard .ganador .med{font-family:var(--display); color:var(--amarillo); font-size:18px; margin-right:6px}
+  .gcard .ganador b{font-size:15px}
+  .gcard .ganador span{display:block; color:#CFC5BE; font-size:12px; margin-top:3px}
+  .gcard table{width:100%; border-collapse:collapse; font-size:12.5px}
+  .gcard th{font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); text-align:left; padding:6px 4px; border-bottom:1px solid var(--gris-c)}
+  .gcard td{padding:7px 4px; border-bottom:1px solid var(--gris-c)}
+  .gcard tr:last-child td{border-bottom:none}
+  .gcard .num{text-align:center; font-variant-numeric:tabular-nums}
+
   .tabla-wrap{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; overflow:auto}
   table.tpos{width:100%; border-collapse:collapse; font-size:14px; min-width:560px}
   .tpos th{font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:#CFC5BE; background:var(--asfalto); padding:12px 14px; text-align:left}
@@ -268,7 +285,7 @@
 
     <div id="zona-registro" style="display:none">
       <div class="tarjeta">
-        <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" placeholder="Ej. Ivis Sinclair"></div>
+        <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" placeholder="Ej. Irene Sinclair"></div>
         <div class="campo"><label for="reg-area">Área o departamento</label><input id="reg-area" maxlength="40" placeholder="Ej. Business Intelligence"></div>
         <button class="btn" onclick="registrar()">Entrar a la quiniela</button>
         <div class="aviso" id="reg-aviso"></div>
@@ -299,8 +316,13 @@
   <!-- ============ POSICIONES ============ -->
   <section class="pagina" id="pag-posiciones">
     <div class="cinta-mini"></div>
-    <h2 class="titulo">Tabla de posiciones</h2>
-    <p class="bajada">3 puntos por marcador exacto · 1 punto por acertar el resultado. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
+    <h2 class="titulo">Ganadores por día</h2>
+    <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha que ya tengan resultado oficial capturado. Si aún falta un partido del día, se muestra como jornada parcial. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
+    <div id="ganadores-zona"><div class="vacio">Cargando ganadores por día…</div></div>
+
+    <div class="cinta-mini" style="margin-top:30px"></div>
+    <h2 class="titulo">Tabla general</h2>
+    <p class="bajada">Acumulado general: 3 puntos por marcador exacto · 1 punto por acertar el resultado.</p>
     <div id="tabla-zona"><div class="vacio">Cargando posiciones…</div></div>
   </section>
 
@@ -562,7 +584,7 @@ function refrescarVistaActual(){
   const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
   if(pag === "inicio") cargarInicio();
   if(pag === "quiniela") cargarQuiniela();
-  if(pag === "apuestas") cargarApuestas();
+  if(pag === "apuestas") cargarPronósticos();
   if(pag === "posiciones") cargarTabla();
 }
 
@@ -746,21 +768,29 @@ function setPred(id, lado, val){
 }
 async function guardarApuesta(id){
   const p = PARTIDOS.find(x => x[0] === id);
-  if(!yo || !p || cerrado(p) || estadoDia(p[1]) !== "hoy" && estadoDia(p[1]) !== "pasado"){ /* solo día activo */ }
-  if(!yo || !p || cerrado(p)) return;
+  if(!yo || !p) return;
+
+  if(cerrado(p)){
+    toast("El partido ya inició. El pronóstico está cerrado.");
+    return;
+  }
+
+  if(estadoDia(p[1]) !== "hoy"){
+    toast("Solo puedes registrar pronósticos de la jornada activa.");
+    return;
+  }
+
   misPred[id][2] = Date.now();
-  // leer-fusionar-escribir para no pisar apuestas de otros partidos
-  const previo = await stGet("mundial:pred:" + yo.id, true);
-  const base = previo ? JSON.parse(previo) : {};
-  base[id] = misPred[id];
-  const ok = await stSet("mundial:pred:" + yo.id, JSON.stringify(base), true);
-  misPred = base;
-  if(ok){
+
+  try{
+    await dbGuardarApuesta(yo.id, id, misPred[id][0], misPred[id][1]);
+    misPred = await dbGetMisPred(yo.id);
+
     const eh = EQUIPOS[p[3]], ea = EQUIPOS[p[4]];
     toast("✓ Pronóstico registrado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + " · " + horaApuesta(misPred[id][2]));
     setTimeout(() => verPronósticosDe(p[1], id), 900);
-  } else {
-    toast("⚠ No se pudo guardar el pronóstico. Intenta de nuevo.");
+  }catch(e){
+    toast("⚠ No se pudo guardar el pronóstico: " + (e.message || e));
   }
 }
 
@@ -774,18 +804,21 @@ async function cargarPronósticos(forzar){
   pintarDias("dias-apuestas", diaApu, "setDiaApu");
   const zona = $("lista-apuestas");
   zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
-  const lp = await stGet("mundial:participantes", true);
-  participantes = lp ? JSON.parse(lp).users : [];
-  const lr = await stGet("mundial:resultados", true);
-  resultados = lr ? JSON.parse(lr) : {};
-  predsTodos = {};
-  await Promise.all(participantes.map(async u => {
-    const raw = await stGet("mundial:pred:" + u.id, true);
-    predsTodos[u.id] = raw ? JSON.parse(raw) : {};
-  }));
-  pintarPronósticos();
+
+  try{
+    participantes = await dbGetParticipantes();
+    resultados = await dbGetResultados();
+    predsTodos = await dbGetPredsTodos();
+    pintarPronósticos();
+  }catch(e){
+    zona.innerHTML = '<div class="vacio">No se pudieron cargar los pronósticos: '+esc(e.message || e)+'</div>';
+  }
 }
-function setDiaApu(f){ diaApu = f; resaltarMatch = null; pintarDias("dias-apuestas", diaApu, "setDiaApu"); pintarPronósticos(); }
+function setDiaApu(f){
+  diaApu = f;
+  resaltarMatch = null;
+  cargarPronósticos();
+}
 function pintarPronósticos(){
   const zona = $("lista-apuestas");
   const lista = PARTIDOS.filter(p => p[1] === diaApu);
@@ -850,30 +883,103 @@ function pintarPronósticos(){
   }
 }
 
-/* ================== TABLA ================== */
-async function cargarTabla(){
-  const zona = $("tabla-zona");
-  zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
-  try{
-    participantes = await dbGetParticipantes();
-    resultados = await dbGetResultados();
-    predsTodos = await dbGetPredsTodos();
-  }catch(e){ zona.innerHTML = '<div class="vacio">No se pudo calcular la tabla: '+esc(e.message || e)+'</div>'; return; }
-  if(!participantes.length){ zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en llenar sus pronósticos!</div>'; return; }
-  const filas = participantes.map(u => {
+/* ================== TABLA Y GANADORES POR DÍA ================== */
+function calcularRanking(matchIds){
+  return participantes.map(u => {
     const preds = predsTodos[u.id] || {};
     let pts = 0, exactos = 0, aciertos = 0, jugados = 0;
-    Object.keys(resultados).forEach(mid => {
+
+    matchIds.forEach(mid => {
       const pu = puntosDe(preds[mid], resultados[mid]);
       if(pu === null) return;
       jugados++;
       if(pu === 3){ pts += 3; exactos++; }
       else if(pu === 1){ pts += 1; aciertos++; }
     });
+
     return {u, pts, exactos, aciertos, jugados};
+  }).sort((a,b) => b.pts - a.pts || b.exactos - a.exactos || b.aciertos - a.aciertos || b.jugados - a.jugados || a.u.t - b.u.t);
+}
+
+function pintarGanadoresPorDia(){
+  const zona = $("ganadores-zona");
+  if(!zona) return;
+
+  const fechasConResultado = FECHAS.filter(f => PARTIDOS.some(p => p[1] === f && resultados[p[0]]));
+  if(!fechasConResultado.length){
+    zona.innerHTML = '<div class="vacio">Todavía no hay resultados oficiales. Cuando captures el primer marcador, aquí aparecerá el ganador de cada día.</div>';
+    return;
+  }
+
+  let html = '<div class="ganadores-grid">';
+
+  fechasConResultado.forEach(f => {
+    const partidosDia = PARTIDOS.filter(p => p[1] === f);
+    const idsEvaluados = partidosDia.filter(p => resultados[p[0]]).map(p => p[0]);
+    const totalDia = partidosDia.length;
+    const capturados = idsEvaluados.length;
+    const completo = capturados === totalDia;
+    const ranking = calcularRanking(idsEvaluados).filter(x => x.jugados > 0);
+
+    html += '<div class="gcard '+(completo ? 'final' : 'parcial')+'">';
+    html += '<h3>'+nombreDia(f)+'</h3>';
+    html += '<div class="estado-dia">'+(completo ? 'Jornada finalizada' : 'Jornada parcial')+' · '+capturados+'/'+totalDia+' resultados capturados</div>';
+
+    if(!ranking.length){
+      html += '<div class="vacio" style="padding:18px">Hay resultados capturados, pero todavía no hay pronósticos evaluados para esta fecha.</div>';
+    } else {
+      const top = ranking[0];
+      const empatados = ranking.filter(x => x.pts === top.pts && x.exactos === top.exactos && x.aciertos === top.aciertos);
+      const tituloGanador = empatados.length > 1 ? 'Empate del día' : 'Ganador del día';
+      const nombres = empatados.slice(0,3).map(x => esc(x.u.nombre)).join(', ') + (empatados.length > 3 ? ' +' + (empatados.length-3) : '');
+
+      html += '<div class="ganador"><span class="med">🏆</span><b>'+tituloGanador+': '+nombres+'</b>' +
+        '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+top.jugados+' pronósticos evaluados</span></div>';
+
+      html += '<table><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th><th class="num">Aciertos</th></tr></thead><tbody>';
+      ranking.slice(0,5).forEach((r,i) => {
+        html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span></td>'+
+          '<td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td><td class="num">'+r.aciertos+'</td></tr>';
+      });
+      html += '</tbody></table>';
+    }
+
+    html += '</div>';
   });
-  filas.sort((a,b) => b.pts - a.pts || b.exactos - a.exactos || a.u.t - b.u.t);
-  let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pronósticos<br>evaluadas</th><th class="num">Puntos</th></tr></thead><tbody>';
+
+  html += '</div>';
+  zona.innerHTML = html;
+}
+
+async function cargarTabla(){
+  const zona = $("tabla-zona");
+  const zonaGanadores = $("ganadores-zona");
+  if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Calculando ganadores por día…</div>';
+  zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
+
+  try{
+    participantes = await dbGetParticipantes();
+    resultados = await dbGetResultados();
+    predsTodos = await dbGetPredsTodos();
+  }catch(e){
+    const msg = '<div class="vacio">No se pudo calcular: '+esc(e.message || e)+'</div>';
+    if(zonaGanadores) zonaGanadores.innerHTML = msg;
+    zona.innerHTML = msg;
+    return;
+  }
+
+  if(!participantes.length){
+    if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Aún no hay participantes inscritos.</div>';
+    zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en llenar sus pronósticos!</div>';
+    return;
+  }
+
+  pintarGanadoresPorDia();
+
+  const idsGenerales = Object.keys(resultados);
+  const filas = calcularRanking(idsGenerales);
+
+  let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pronósticos<br>evaluados</th><th class="num">Puntos</th></tr></thead><tbody>';
   filas.forEach((f,i) => {
     const cls = [];
     if(i===0) cls.push("podio-1"); if(i===1) cls.push("podio-2"); if(i===2) cls.push("podio-3");
@@ -882,7 +988,8 @@ async function cargarTabla(){
       '<td class="num">'+f.exactos+'</td><td class="num">'+f.aciertos+'</td><td class="num">'+f.jugados+'</td><td class="num total">'+f.pts+'</td></tr>';
   });
   h += '</tbody></table></div>';
-  if(!Object.keys(resultados).length) h += '<p style="margin-top:12px; font-size:13px; color:var(--gris)">Todavía no se ha capturado ningún resultado oficial: todos arrancan en cero. La tabla cobrará vida con el primer partido. ⚽</p>';
+
+  if(!idsGenerales.length) h += '<p style="margin-top:12px; font-size:13px; color:var(--gris)">Todavía no se ha capturado ningún resultado oficial: todos arrancan en cero. La tabla cobrará vida con el primer partido. ⚽</p>';
   zona.innerHTML = h;
 }
 
