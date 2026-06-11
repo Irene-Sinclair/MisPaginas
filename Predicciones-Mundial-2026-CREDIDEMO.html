@@ -59,7 +59,8 @@
 
   .reloj{margin-top:30px; background:var(--humo); border:1px solid var(--linea); border-radius:10px; padding:18px 20px; max-width:560px}
   .reloj .et{font-size:11px; font-weight:700; letter-spacing:.2em; color:var(--amarillo); text-transform:uppercase}
-  .reloj .partido{font-family:var(--display); font-size:20px; margin-top:6px}
+  .reloj .partido{font-family:var(--display); font-size:20px; margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .reloj .partido .flag-img.mini{width:38px; min-width:38px; height:28px; margin:0 2px}
   .reloj .digitos{display:flex; gap:14px; margin-top:12px}
   .reloj .d{text-align:center}
   .reloj .d b{font-family:var(--display); font-size:30px; font-variant-numeric:tabular-nums; display:block; color:#fff}
@@ -136,7 +137,33 @@
   .pcard.bloqueado::before{background:var(--gris-c)}
   .eq{display:flex; align-items:center; gap:10px; min-width:0}
   .eq.der{flex-direction:row-reverse; text-align:right}
-  .eq .bandera{font-size:26px; line-height:1}
+  .eq .bandera{line-height:1}
+  .flag-img{width:46px; min-width:46px; height:34px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+    overflow:hidden; background:#fff; border:2px solid var(--gris-c); box-shadow:0 2px 8px rgba(21,17,15,.10)}
+  .flag-img img{width:100%; height:100%; object-fit:cover; display:block}
+  .flag-img span{display:none; font-family:var(--display); font-size:11px; letter-spacing:.04em; color:var(--asfalto)}
+  .flag-img.flag-fallback{background:linear-gradient(135deg,#fff 0 50%,#F7F3EC 50%); box-shadow:inset 0 -3px 0 rgba(204,31,43,.14)}
+  .flag-img.flag-fallback span{display:inline-flex}
+  .flag-img.mini{width:34px; min-width:34px; height:25px; border-radius:6px; border-width:1px; margin-right:4px}
+  .flag-img.mini span{font-size:9px}
+  .partido-nav{display:flex; align-items:center; gap:8px; overflow-x:auto;
+    background:rgba(247,243,236,.96); border:1px solid var(--gris-c); border-radius:12px; padding:10px; margin:0 0 14px;
+    box-shadow:0 8px 22px rgba(21,17,15,.08); backdrop-filter:blur(6px)}
+  .partido-nav::-webkit-scrollbar{height:6px}
+  .partido-nav::-webkit-scrollbar-thumb{background:var(--gris-c); border-radius:20px}
+  .partido-nav-label{flex:0 0 auto; font-size:10.5px; text-transform:uppercase; letter-spacing:.12em; color:var(--gris); font-weight:800; padding:0 4px}
+  .partido-nav button{flex:0 0 auto; font-family:var(--body); border:1px solid var(--gris-c); background:var(--papel); color:var(--tinta);
+    border-radius:10px; padding:9px 12px; font-weight:800; cursor:pointer; text-align:left; min-width:138px; transition:background .12s ease, border .12s ease, transform .12s ease}
+  .partido-nav button:hover{border-color:var(--rojo); color:var(--rojo); transform:translateY(-1px)}
+  .partido-nav button.activo{background:var(--asfalto); border-color:var(--asfalto); color:var(--amarillo)}
+  .partido-nav button.activo small{color:#CFC5BE}
+  .partido-nav button small{display:block; margin-top:2px; font-size:10px; font-weight:700; color:var(--gris); letter-spacing:.05em}
+  .partido-nav .flag-img.mini{vertical-align:middle; margin:0}
+  .partido-nav .nav-line{display:flex; align-items:center; gap:5px; margin-top:4px; white-space:nowrap}
+  .partido-nav .nav-vs{font-size:10px; color:var(--gris); font-weight:900; letter-spacing:.04em}
+  .partido-nav button.activo .nav-vs{color:#CFC5BE}
+  .partido-nav .nav-team{font-size:12px; font-weight:900; line-height:1}
+  .ventana-nota{font-size:12.5px; color:var(--gris); margin:-4px 0 14px; line-height:1.45}
   .eq .nom{font-weight:700; font-size:14.5px; line-height:1.2}
   .eq .grupo{display:block; font-size:10.5px; color:var(--gris); font-weight:600; letter-spacing:.08em}
   .marcador{display:flex; align-items:center; gap:7px}
@@ -260,6 +287,8 @@
     .marcador{justify-content:center}
     .meta-p{justify-content:center}
     .mcard-head .res{margin-left:0; width:100%}
+    .partido-nav{padding:8px}
+    .partido-nav button{min-width:118px; padding:8px 9px; font-size:12px}
   }
 </style>
 </head>
@@ -268,7 +297,7 @@
 <header>
   <div class="barra">
     <div class="logo-box"><img src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" alt="CREDIDEMO" onerror="this.parentElement.style.display='none'"></div>
-    <div class="marca">PREDICCIONES MUNDIAL 2026<small>COPA DEL MUNDO · OFICINA CREDIDEMO</small> <small>Hecho por: Irene Sinclair</small> </div>
+    <div class="marca">PREDICCIONES MUNDIAL 2026<small>COPA DEL MUNDO · OFICINA CREDIDEMO</small><small>Hecho por: Irene Sinclair⭐</small></div>
     <nav id="nav">
       <button data-pag="inicio" class="activo">Inicio</button>
       <button data-pag="quiniela">Mis pronósticos</button>
@@ -573,8 +602,74 @@ const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto"
 let PARTIDOS = [...PARTIDOS_INICIALES];
 function ordenarPartidos(){ PARTIDOS.sort((a,b) => fechaPartido(a).getTime() - fechaPartido(b).getTime() || String(a[0]).localeCompare(String(b[0]))); }
 function fechasDisponibles(){ return [...new Set(PARTIDOS.map(p => p[1]))].sort(); }
-function equipo(code){ const c = String(code || "").trim(); return EQUIPOS[c] || [c || "Por definir", "🏳️"]; }
+function normalizarTexto(txt){
+  return String(txt || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+function equipo(code){
+  const c = String(code || "").trim();
+  if(EQUIPOS[c]) return [...EQUIPOS[c], c];
+  const cn = normalizarTexto(c);
+  const found = Object.entries(EQUIPOS).find(([k,v]) => normalizarTexto(v[0]) === cn);
+  if(found) return [found[1][0], found[1][1], found[0]];
+  return [c || "Por definir", "🏳️", c];
+}
 function etiquetaFase(g){ const x = String(g || "").trim(); return /^[A-L]$/i.test(x) ? "GRUPO " + x.toUpperCase() : (x ? x.toUpperCase() : "FASE"); }
+function abreviaEquipo(code, nombre){
+  const raw = String(code || "").trim();
+  if(raw && raw.length <= 4 && /^[A-Za-z0-9]+$/.test(raw)) return raw.toUpperCase();
+  const base = String(nombre || raw || "POR DEFINIR").replace(/[^\p{L}\p{N}\s]/gu, " ").trim();
+  const stop = new Set(["de","del","la","las","el","los","y","grupo","ganador","segundo","primer","primero","tercer","tercero"]);
+  const partes = base.split(/\s+/).filter(x => x && !stop.has(x.toLowerCase()));
+  if(partes.length >= 2) return (partes[0][0] + partes[1][0]).toUpperCase();
+  return (partes[0] || "TBD").slice(0,3).toUpperCase();
+}
+function emojiFlagEquipo(code){
+  const resolved = equipo(code);
+  const key = String(resolved[2] || code || "").trim().toUpperCase();
+  const especiales = {
+    ENG:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}",
+    SCO:"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}"
+  };
+  return especiales[key] || resolved[1] || "🏳️";
+}
+function twemojiUrl(emoji){
+  const cps = [];
+  for(const ch of emoji){ cps.push(ch.codePointAt(0).toString(16)); }
+  return "https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/" + cps.join("-") + ".svg";
+}
+function banderaEquipo(code, cls=""){
+  const e = equipo(code);
+  const ab = abreviaEquipo(e[2] || code, e[0]);
+  const url = twemojiUrl(emojiFlagEquipo(e[2] || code));
+  return '<span class="bandera flag-img '+cls+'" title="'+esc(e[0])+'">' +
+    '<img src="'+esc(url)+'" alt="Bandera de '+esc(e[0])+'" loading="lazy" onerror="this.style.display=\'none\';this.parentElement.classList.add(\'flag-fallback\')">' +
+    '<span>'+esc(ab)+'</span></span>';
+}
+function domId(prefix, id){ return prefix + "-" + String(id).replace(/[^A-Za-z0-9_-]/g, "_"); }
+function navPartidosHtml(lista, contexto, activo){
+  if(!lista || !lista.length) return "";
+  return '<div class="partido-nav"><span class="partido-nav-label">Ventanas</span>' + lista.map((p, i) => {
+    const eh = equipo(p[3]), ea = equipo(p[4]);
+    const cls = p[0] === activo ? ' class="activo"' : '';
+    return '<button type="button"'+cls+' onclick="setVentanaPartido(\''+contexto+'\',\''+p[0]+'\')">' +
+      '<b>Partido '+(i+1)+'</b>' +
+      '<div class="nav-line">' + banderaEquipo(p[3], 'mini') + '<span class="nav-team">'+esc(abreviaEquipo(p[3], eh[0]))+'</span>' +
+      '<span class="nav-vs">vs</span>' + banderaEquipo(p[4], 'mini') + '<span class="nav-team">'+esc(abreviaEquipo(p[4], ea[0]))+'</span></div>' +
+      '<small>'+esc(p[2])+' HN · '+esc(etiquetaFase(p[5]))+'</small></button>';
+  }).join("") + '</div>';
+}
+function setVentanaPartido(contexto, matchId){
+  if(contexto === "qui"){
+    partidoQuinActivo = matchId;
+    pintarPartidos();
+    return;
+  }
+  if(contexto === "apu"){
+    partidoApuActivo = matchId;
+    resaltarMatch = null;
+    pintarPronósticos();
+  }
+}
 
 /* ================== ALMACENAMIENTO ================== */
 const memFallback = {};
@@ -822,6 +917,8 @@ let misPred = {};              // {matchId:[h,a,t]}
 let predsTodos = {};           // {userId:{matchId:[h,a,t]}}
 let editandoPred = {};          // {matchId:true} para habilitar edición visual antes del cierre
 let diaQuin = null, diaApu = null;
+let partidoQuinActivo = null;
+let partidoApuActivo = null;
 let resaltarMatch = null;
 
 const $ = id => document.getElementById(id);
@@ -919,7 +1016,7 @@ function iniciarReloj(){
   if(!prox){ caja.style.display = "none"; return; }
   caja.style.display = "block";
   const eh = equipo(prox[3]), ea = equipo(prox[4]);
-  $("reloj-partido").textContent = eh[1] + " " + eh[0] + "  vs  " + ea[0] + " " + ea[1];
+  $("reloj-partido").innerHTML = banderaEquipo(prox[3], "mini") + " <span>" + esc(eh[0]) + "</span> <span style='color:#A99C93'>vs</span> " + banderaEquipo(prox[4], "mini") + " <span>" + esc(ea[0]) + "</span>";
   $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
   if(relojInt) clearInterval(relojInt);
   const tick = () => {
@@ -952,7 +1049,12 @@ async function cargarQuiniela(){
   pintarDias("dias-quiniela", diaQuin, "setDiaQuin");
   pintarPartidos();
 }
-function setDiaQuin(f){ diaQuin = f; pintarDias("dias-quiniela", diaQuin, "setDiaQuin"); pintarPartidos(); }
+function setDiaQuin(f){
+  diaQuin = f;
+  partidoQuinActivo = null;
+  pintarDias("dias-quiniela", diaQuin, "setDiaQuin");
+  pintarPartidos();
+}
 async function loginParticipante(){
   const usuario = usuarioLimpio($("login-usuario").value);
   const pin = $("login-pin").value.trim();
@@ -1007,9 +1109,17 @@ function pintarPartidos(){
   const f = diaQuin;
   const lista = PARTIDOS.filter(p => p[1] === f);
   const ed = estadoDia(f);
+  if(!lista.length){
+    $("lista-partidos").innerHTML = '<div class="vacio">No hay partidos configurados para esta fecha.</div>';
+    return;
+  }
+  if(!partidoQuinActivo || !lista.some(p => p[0] === partidoQuinActivo)) partidoQuinActivo = lista[0][0];
   let html = '<div class="dia-sep">' + nombreDia(f) +
-    '<span>' + (ed==="hoy" ? "JORNADA DE HOY · ¡A PRONOSTICAR!" : ed==="futuro" ? "SE ACTIVA ESE DÍA" : "JORNADA JUGADA") + '</span></div><div class="partidos">';
-  lista.forEach(p => {
+    '<span>' + (ed==="hoy" ? "JORNADA DE HOY · ¡A PRONOSTICAR!" : ed==="futuro" ? "SE ACTIVA ESE DÍA" : "JORNADA JUGADA") + '</span></div>' +
+    navPartidosHtml(lista, "qui", partidoQuinActivo) +
+    '<p class="ventana-nota">Selecciona una ventana para registrar o revisar cada partido, sin bajar por toda la jornada.</p>' +
+    '<div class="partidos">';
+  lista.filter(p => p[0] === partidoQuinActivo).forEach(p => {
     const [id, fecha, hora, h, a, g] = p;
     const eh = equipo(h), ea = equipo(a);
     const lock = cerrado(p);
@@ -1049,10 +1159,10 @@ function pintarPartidos(){
           '<input id="pred-'+id+'-1" type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setPred(\''+id+'\',1,this.value)">';
       }
     }
-    html += '<div class="pcard'+(lock?' cerrado':'')+(futuro?' bloqueado':'')+'">' +
-      '<div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">'+etiquetaFase(g)+'</span></span></div>' +
+    html += '<div class="pcard'+(lock?' cerrado':'')+(futuro?' bloqueado':'')+'" id="'+domId("qui",id)+'">' +
+      '<div class="eq">'+banderaEquipo(h)+'<span class="nom">'+esc(eh[0])+'<span class="grupo">'+etiquetaFase(g)+'</span></span></div>' +
       '<div class="marcador">'+caja+'</div>' +
-      '<div class="eq der"><span class="bandera">'+ea[1]+'</span><span class="nom">'+ea[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
+      '<div class="eq der">'+banderaEquipo(a)+'<span class="nom">'+esc(ea[0])+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="meta-p">'+estado+'</div></div>';
   });
   html += '</div>';
@@ -1124,7 +1234,9 @@ async function guardarApuesta(id){
 
 /* ================== APUESTAS DE LA OFICINA ================== */
 function verPronósticosDe(fecha, matchId){
-  diaApu = fecha; resaltarMatch = matchId || null;
+  diaApu = fecha;
+  partidoApuActivo = matchId || null;
+  resaltarMatch = matchId || null;
   irA("apuestas");
 }
 function predCompleto(pr){
@@ -1187,6 +1299,7 @@ async function cargarPronósticos(forzar){
 }
 function setDiaApu(f){
   diaApu = f;
+  partidoApuActivo = null;
   resaltarMatch = null;
   cargarPronósticos();
 }
@@ -1197,8 +1310,16 @@ function pintarPronósticos(){
     zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en pronosticar!</div>';
     return;
   }
-  let html = '<div class="dia-sep">' + nombreDia(diaApu) + '<span>PRONÓSTICOS REGISTRADOS · ORDEN POR HORA</span></div>';
-  lista.forEach(p => {
+  if(!lista.length){
+    zona.innerHTML = '<div class="vacio">No hay partidos configurados para esta fecha.</div>';
+    return;
+  }
+  if(resaltarMatch && lista.some(p => p[0] === resaltarMatch)) partidoApuActivo = resaltarMatch;
+  if(!partidoApuActivo || !lista.some(p => p[0] === partidoApuActivo)) partidoApuActivo = lista[0][0];
+  let html = '<div class="dia-sep">' + nombreDia(diaApu) + '<span>PRONÓSTICOS REGISTRADOS · VENTANA POR PARTIDO</span></div>' +
+    navPartidosHtml(lista, "apu", partidoApuActivo) +
+    '<p class="ventana-nota">Selecciona el partido que quieres revisar. Solo se muestra una ventana a la vez para evitar bajar entre muchas personas registradas.</p>';
+  lista.filter(p => p[0] === partidoApuActivo).forEach(p => {
     const [id, fecha, hora, h, a, g] = p;
     const eh = equipo(h), ea = equipo(a);
     const res = resultados[id];
@@ -1219,7 +1340,7 @@ function pintarPronósticos(){
       if(vistos[clave] == null){ vistos[clave] = f.u.id; f.prim = true; f.rep = false; }
       else { f.prim = false; f.rep = true; }
     });
-    let head = '<div class="mcard-head"><div class="vsx">' + eh[1] + ' ' + eh[0] + ' <span style="color:#A99C93">vs</span> ' + ea[0] + ' ' + ea[1] +
+    let head = '<div class="mcard-head"><div class="vsx">' + banderaEquipo(h,'mini') + ' ' + esc(eh[0]) + ' <span style="color:#A99C93">vs</span> ' + esc(ea[0]) + ' ' + banderaEquipo(a,'mini') +
       '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' + (lock ? ' · CERRADO' : ' · ABIERTO') + '</span>' +
       (res ? '<div class="res">Final: ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
     let cuerpo;
@@ -1245,13 +1366,10 @@ function pintarPronósticos(){
       });
       cuerpo += '</tbody></table>';
     }
-    html += '<div class="mcard' + (resaltarMatch === id ? ' resaltado' : '') + '" id="apu-' + id + '">' + head + cuerpo + '</div>';
+    html += '<div class="mcard' + (resaltarMatch === id ? ' resaltado' : '') + '" id="' + domId("apu", id) + '">' + head + cuerpo + '</div>';
   });
   zona.innerHTML = html;
-  if(resaltarMatch){
-    const el = document.getElementById("apu-" + resaltarMatch);
-    if(el) setTimeout(() => el.scrollIntoView({behavior:"smooth", block:"center"}), 150);
-  }
+  resaltarMatch = null;
 }
 
 /* ================== TABLA Y GANADORES POR DÍA ================== */
@@ -1506,10 +1624,10 @@ function pintarAdmin(){
     }
     const eh = equipo(ho), ea = equipo(aw);
     const r = resultados[id] || ["",""];
-    h += '<div class="pcard"><div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
+    h += '<div class="pcard"><div class="eq">'+banderaEquipo(ho)+'<span class="nom">'+esc(eh[0])+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="marcador"><input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setRes(\''+id+'\',0,this.value)"><span class="vs">–</span>' +
       '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setRes(\''+id+'\',1,this.value)"></div>' +
-      '<div class="eq der"><span class="bandera">'+ea[1]+'</span><span class="nom">'+ea[0]+'</span></div></div>';
+      '<div class="eq der">'+banderaEquipo(aw)+'<span class="nom">'+esc(ea[0])+'</span></div></div>';
   });
   h += '</div>';
   $("admin-lista").innerHTML = h;
@@ -1617,7 +1735,7 @@ function pintarCalendarioAdmin(){
   PARTIDOS.forEach(p => {
     const eh = equipo(p[3]), ea = equipo(p[4]);
     h += '<tr><td>'+nombreDia(p[1])+'</td><td>'+esc(p[2])+' HN</td><td>'+etiquetaFase(p[5])+'</td>'+ 
-      '<td class="partido">'+eh[1]+' '+esc(eh[0])+' vs '+esc(ea[0])+' '+ea[1]+'</td><td>'+esc(p[0])+'</td>'+ 
+      '<td class="partido">'+banderaEquipo(p[3],'mini')+' '+esc(eh[0])+' vs '+esc(ea[0])+' '+banderaEquipo(p[4],'mini')+'</td><td>'+esc(p[0])+'</td>'+ 
       '<td><div class="acciones"><button class="btn mini" onclick="editarPartidoCalendario(\''+esc(p[0])+'\')">Editar</button>'+ 
       '<button class="btn mini peligro" onclick="eliminarPartidoCalendario(\''+esc(p[0])+'\')">Eliminar</button></div></td></tr>';
   });
