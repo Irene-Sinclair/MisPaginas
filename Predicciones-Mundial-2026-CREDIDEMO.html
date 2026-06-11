@@ -81,9 +81,6 @@
     var(--rojo) 0 14px, var(--amarillo) 14px 28px); border-radius:3px}
 
   .tarjeta{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:26px; max-width:520px}
-  .login-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; align-items:start; max-width:980px}
-  .tarjeta h3{font-family:var(--display); font-size:16px; text-transform:uppercase; margin-bottom:8px}
-  .tarjeta .nota{font-size:12.5px; color:var(--gris); line-height:1.45; margin:-2px 0 14px}
   .campo{margin-bottom:16px}
   .campo label{display:block; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:.03em}
   .campo input{width:100%; padding:12px 14px; font-family:var(--body); font-size:15px; border:2px solid var(--gris-c); border-radius:8px; background:var(--hueso)}
@@ -200,37 +197,6 @@
     font-family:var(--display); font-size:20px; display:flex; align-items:center; justify-content:center}
   .regla h3{font-size:15.5px; margin-bottom:4px} .regla p{font-size:14px; color:var(--gris); line-height:1.55}
 
-
-
-  /* Administración de calendario */
-
-  .final-card{background:var(--asfalto); color:#fff; border-radius:14px; padding:24px; border-left:7px solid var(--amarillo); margin:6px 0 28px; box-shadow:0 10px 24px rgba(21,17,15,.18)}
-  .final-card .tag{font-size:11px; font-weight:800; letter-spacing:.16em; color:var(--amarillo); text-transform:uppercase; margin-bottom:8px}
-  .final-card h3{font-family:var(--display); font-size:clamp(20px,3vw,32px); line-height:1.05; text-transform:uppercase; margin-bottom:8px}
-  .final-card p{font-size:13.5px; color:#D8CEC7; line-height:1.45; margin:4px 0}
-  .final-card .metricas{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
-  .final-card .metricas span{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); padding:8px 10px; border-radius:8px; font-size:12px; font-weight:700}
-  .final-card.provisional{border-left-color:var(--rojo)}
-  .edit-actions{display:flex; gap:7px; flex-wrap:wrap; align-items:center}
-
-  .admin-panel{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:22px; margin:18px 0 24px}
-  .admin-panel h3{font-family:var(--display); font-size:18px; text-transform:uppercase; margin-bottom:6px}
-  .admin-panel p{color:var(--gris); font-size:13.5px; line-height:1.45; margin-bottom:14px}
-  .grid-form{display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; align-items:end}
-  .grid-form .campo{margin-bottom:0}
-  .campo select{width:100%; padding:12px 14px; font-family:var(--body); font-size:15px; border:2px solid var(--gris-c); border-radius:8px; background:var(--hueso); color:var(--tinta)}
-  .campo select:focus{border-color:var(--rojo)}
-  .cal-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px}
-  .cal-table{width:100%; border-collapse:collapse; font-size:13px; min-width:720px}
-  .cal-table th{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:#CFC5BE; background:var(--asfalto); padding:10px 12px; text-align:left}
-  .cal-table td{padding:10px 12px; border-bottom:1px solid var(--gris-c); vertical-align:middle}
-  .cal-table td.partido{font-weight:700}
-  .cal-table .acciones{display:flex; gap:6px; flex-wrap:wrap}
-  .btn.mini{padding:6px 10px; font-size:11.5px; border-radius:6px}
-  .btn.peligro{background:#7D1B1B; color:#fff}
-  .btn.peligro:hover{background:#5F1111}
-
-
   footer{background:var(--asfalto); color:#A99C93; font-size:12.5px; text-align:center; padding:22px}
   footer b{color:var(--amarillo)}
 
@@ -298,7 +264,7 @@
       <div class="stat"><b id="st-part">—</b><span>Participantes inscritos</span></div>
       <div class="stat"><b id="st-hoy">—</b><span>Partidos activos hoy</span></div>
       <div class="stat"><b id="st-jug">—</b><span>Partidos con resultado</span></div>
-      <div class="stat"><b id="st-total">—</b><span>Partidos configurados</span></div>
+      <div class="stat"><b>72</b><span>Partidos de fase de grupos</span></div>
     </div>
 
     <div class="cinta-mini"></div>
@@ -306,7 +272,7 @@
     <p class="bajada">Cada día del Mundial es una nueva jornada de pronósticos.</p>
     <div class="pasos">
       <div class="paso"><h3>1 · Regístrate</h3><p>Entra a "Mis pronósticos", escribe tu nombre y tu área. Solo se hace una vez en este dispositivo.</p></div>
-      <div class="paso"><h3>2 · Pronostica el día</h3><p>Solo están activos los partidos del día en curso. Escribe el marcador, presiona guardar y tu pronóstico queda registrado con fecha y hora.</p></div>
+      <div class="paso"><h3>2 · Pronostica el día</h3><p>Solo están activos los partidos del día en curso. Escribe el marcador y tu pronóstico queda registrado al instante con fecha y hora.</p></div>
       <div class="paso"><h3>3 · Compara y compite</h3><p>Al registrar verás de inmediato los pronósticos de toda la oficina. Si dos personas repiten marcador, la prioridad es de quien registró primero.</p></div>
     </div>
   </section>
@@ -315,29 +281,14 @@
   <section class="pagina" id="pag-quiniela">
     <div class="cinta-mini"></div>
     <h2 class="titulo">Mis pronósticos</h2>
-    <p class="bajada">Los partidos se activan el día que se juegan (hora de Honduras). Escribe el marcador y presiona “Guardar pronóstico”. Puedes editarlo hasta que inicie el partido.</p>
+    <p class="bajada">Los partidos se activan el día que se juegan (hora de Honduras). Tu pronóstico se guarda solo al completar el marcador.</p>
 
     <div id="zona-registro" style="display:none">
-      <div class="login-grid">
-        <div class="tarjeta">
-          <h3>Ya estoy registrado</h3>
-          <p class="nota">Después del primer registro solo necesitas tu usuario y PIN personal.</p>
-          <div class="campo"><label for="login-usuario">Usuario</label><input id="login-usuario" maxlength="30" autocomplete="username" placeholder="Ej. irene"></div>
-          <div class="campo"><label for="login-pin">PIN personal</label><input id="login-pin" maxlength="8" inputmode="numeric" autocomplete="current-password" placeholder="••••"></div>
-          <button class="btn" onclick="loginParticipante()">Entrar</button>
-          <div class="aviso" id="login-aviso"></div>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Primera vez</h3>
-          <p class="nota">El área solo se pide al crear el usuario. Luego entrarás únicamente con usuario y PIN.</p>
-          <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" autocomplete="name" placeholder="Ej. Irene Sinclair"></div>
-          <div class="campo"><label for="reg-usuario">Usuario</label><input id="reg-usuario" maxlength="30" autocomplete="username" placeholder="Ej. irene"></div>
-          <div class="campo"><label for="reg-pin">PIN personal (4–8 dígitos)</label><input id="reg-pin" maxlength="8" inputmode="numeric" autocomplete="new-password" placeholder="Ej. 2026"></div>
-          <div class="campo"><label for="reg-area">Área o departamento</label><input id="reg-area" maxlength="40" placeholder="Ej. Business Intelligence"></div>
-          <button class="btn" onclick="registrar()">Crear usuario</button>
-          <div class="aviso" id="reg-aviso"></div>
-        </div>
+      <div class="tarjeta">
+        <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" placeholder="Ej. Irene Sinclair"></div>
+        <div class="campo"><label for="reg-area">Área o departamento</label><input id="reg-area" maxlength="40" placeholder="Ej. Business Intelligence"></div>
+        <button class="btn" onclick="registrar()">Entrar a la quiniela</button>
+        <div class="aviso" id="reg-aviso"></div>
       </div>
     </div>
 
@@ -345,7 +296,7 @@
       <div class="quien">
         <div class="ficha" id="yo-ini">?</div>
         <div><b id="yo-nombre">—</b><br><span id="yo-area">—</span></div>
-        <button class="salir" onclick="salir()">Cerrar sesión / cambiar usuario</button>
+        <button class="salir" onclick="salir()">Cambiar de usuario</button>
       </div>
       <div class="dias-strip" id="dias-quiniela"></div>
       <div id="lista-partidos"></div>
@@ -357,7 +308,7 @@
   <section class="pagina" id="pag-apuestas">
     <div class="cinta-mini"></div>
     <h2 class="titulo">Pronósticos de la oficina</h2>
-    <p class="bajada">Aquí se ve todo: quién pronosticó qué y a qué hora, pero solo después de registrar tus propios marcadores de la jornada. En marcadores repetidos, la prioridad de reconocimiento es para quien registró primero. <button class="btn sec peq" onclick="cargarPronósticos(true)">Actualizar</button></p>
+    <p class="bajada">Aquí se ve todo: quién pronosticó qué y a qué hora. En marcadores repetidos, la prioridad de reconocimiento es para quien registró primero. <button class="btn sec peq" onclick="cargarPronósticos(true)">Actualizar</button></p>
     <div class="dias-strip" id="dias-apuestas"></div>
     <div id="lista-apuestas"><div class="vacio">Cargando pronósticos…</div></div>
   </section>
@@ -368,11 +319,6 @@
     <h2 class="titulo">Ganadores por día</h2>
     <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha que ya tengan resultado oficial capturado. Si aún falta un partido del día, se muestra como jornada parcial. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
     <div id="ganadores-zona"><div class="vacio">Cargando ganadores por día…</div></div>
-
-    <div class="cinta-mini" style="margin-top:30px"></div>
-    <h2 class="titulo">Ganador final</h2>
-    <p class="bajada">Se calcula con todos los partidos configurados y con resultado oficial capturado. Mientras falten partidos o la final no esté capturada, se muestra como líder provisional.</p>
-    <div id="ganador-final-zona"><div class="vacio">Cargando ganador final…</div></div>
 
     <div class="cinta-mini" style="margin-top:30px"></div>
     <h2 class="titulo">Tabla general</h2>
@@ -403,41 +349,7 @@
     </div>
 
     <div id="admin-zona" style="display:none">
-      <div class="aviso ok" style="display:block; margin-bottom:18px">Modo administrador activo. Desde aquí puedes administrar el calendario, agregar fases finales y capturar resultados oficiales sin cambiar el HTML.</div>
-
-      <div class="admin-panel">
-        <h3>Calendario y fases finales</h3>
-        <p>Agrega aquí dieciseisavos, octavos, cuartos, semifinales, tercer lugar y final. Puedes usar nombres reales cuando ya estén definidos, o textos temporales como "Ganador Grupo A", "2.º Grupo B" o "Ganador Octavos 1".</p>
-        <div class="grid-form">
-          <div class="campo"><label for="cal-id">Código del partido</label><input id="cal-id" maxlength="20" placeholder="Ej. r32-01"></div>
-          <div class="campo"><label for="cal-fase">Fase</label>
-            <select id="cal-fase">
-              <option value="Dieciseisavos">Dieciseisavos</option>
-              <option value="Octavos">Octavos</option>
-              <option value="Cuartos">Cuartos</option>
-              <option value="Semifinales">Semifinales</option>
-              <option value="Tercer lugar">Tercer lugar</option>
-              <option value="Final">Final</option>
-              <option value="Fase de grupos">Fase de grupos</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-          <div class="campo"><label for="cal-fecha">Fecha</label><input id="cal-fecha" type="date"></div>
-          <div class="campo"><label for="cal-hora">Hora Honduras</label><input id="cal-hora" type="time"></div>
-          <div class="campo"><label for="cal-local">Equipo local / referencia</label><input id="cal-local" maxlength="50" placeholder="Ej. México o Ganador A"></div>
-          <div class="campo"><label for="cal-visita">Equipo visita / referencia</label><input id="cal-visita" maxlength="50" placeholder="Ej. Corea o 2.º Grupo B"></div>
-        </div>
-        <div class="cal-actions">
-          <button class="btn" onclick="guardarPartidoCalendario()">Guardar partido</button>
-          <button class="btn sec" onclick="limpiarFormPartido()">Limpiar / nuevo</button>
-        </div>
-        <div class="aviso" id="cal-aviso"></div>
-        <div id="calendario-lista" style="margin-top:18px"></div>
-      </div>
-
-      <div class="cinta-mini"></div>
-      <h2 class="titulo">Captura de resultados</h2>
-      <p class="bajada">Captura los marcadores reales. Al guardar, Supabase actualiza la tabla general y los ganadores por día.</p>
+      <div class="aviso ok" style="display:block; margin-bottom:18px">Modo administrador activo. Captura solo los partidos ya finalizados y presiona "Guardar resultados".</div>
       <div id="admin-lista"></div>
       <div class="guardar-flot"><button class="btn" onclick="guardarResultados()">Guardar resultados</button></div>
       <div class="aviso" id="adm-aviso"></div>
@@ -450,15 +362,12 @@
     <h2 class="titulo">Reglas de la quiniela</h2>
     <p class="bajada">Cortas, claras y sin VAR.</p>
     <div class="regla"><div class="punto">📅</div><div><h3>Se apuesta por día</h3><p>Solo están activos los partidos del día en curso (hora de Honduras). Los de días futuros aparecen bloqueados hasta que llegue su fecha.</p></div></div>
-    <div class="regla"><div class="punto">⏱️</div><div><h3>Todo pronóstico lleva hora</h3><p>Cada pronóstico queda registrado con su fecha y hora exacta, visible para toda la oficina en la sección "Pronósticos" después de participar.</p></div></div>
-    <div class="regla"><div class="punto">👀</div><div><h3>Ver pronósticos de la oficina</h3><p>Para ver los pronósticos de la jornada, primero debes registrar tus propios marcadores en todos los partidos de la jornada seleccionada. Así se evita copiar resultados antes de participar.</p></div></div>
-    <div class="regla"><div class="punto">✏️</div><div><h3>Edición de pronósticos</h3><p>Cada participante puede editar su marcador hasta la hora de inicio del partido. Al editar, se actualiza la hora del registro y también cambia su prioridad frente a marcadores repetidos.</p></div></div>
+    <div class="regla"><div class="punto">⏱️</div><div><h3>Todo pronóstico lleva hora</h3><p>Cada apuesta queda registrada con su fecha y hora exacta, visible para toda la oficina en la sección "Pronósticos".</p></div></div>
     <div class="regla"><div class="punto">🥇</div><div><h3>Marcadores repetidos</h3><p>Si dos o más personas registran el mismo marcador en un partido, la prioridad de reconocimiento es de quien lo registró primero. Si cambias tu pronóstico, tu hora se actualiza y pierdes la antigüedad.</p></div></div>
     <div class="regla"><div class="punto">3</div><div><h3>Marcador exacto</h3><p>Si tu pronóstico coincide exactamente con el resultado final (ej. dijiste 2–1 y quedó 2–1), ganas 3 puntos.</p></div></div>
     <div class="regla"><div class="punto">1</div><div><h3>Resultado acertado</h3><p>Si acertaste quién gana o el empate, pero no el marcador (ej. dijiste 2–0 y quedó 1–0), ganas 1 punto.</p></div></div>
     <div class="regla"><div class="punto">🔒</div><div><h3>Cierre por partido</h3><p>Cada partido se bloquea automáticamente a su hora de inicio. Después de eso ya no se puede pronosticar ni modificar.</p></div></div>
-    <div class="regla"><div class="punto">🏆</div><div><h3>Desempates en la tabla</h3><p>Si hay empate en puntos, gana quien tenga más marcadores exactos. Si persiste, quien tenga más aciertos y luego quien se haya inscrito primero. La dinámica de reconocimiento la define la oficina 😉.</p></div></div>
-    <div class="regla"><div class="punto">➕</div><div><h3>Fases finales</h3><p>El administrador puede agregar nuevos partidos desde la sección Resultados: dieciseisavos, octavos, cuartos, semifinales, tercer lugar y final. No se necesita modificar el HTML publicado.</p></div></div>
+    <div class="regla"><div class="punto">🏆</div><div><h3>Desempates en la tabla</h3><p>Si hay empate en puntos, gana quien tenga más marcadores exactos. Si persiste, quien se haya inscrito primero. La dinámica de reconocimiento la define la oficina 😉.</p></div></div>
   </section>
 
 </main>
@@ -495,7 +404,7 @@ const EQUIPOS = {
   ENG:["Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"], CRO:["Croacia","🇭🇷"], GHA:["Ghana","🇬🇭"], PAN:["Panamá","🇵🇦"]
 };
 /* [id, fecha, hora HN, local, visita, grupo] — horario centro (UTC-6) */
-const PARTIDOS_INICIALES = [
+const PARTIDOS = [
  ["m01","2026-06-11","13:00","MEX","RSA","A"],["m02","2026-06-11","20:00","KOR","CZE","A"],
  ["m03","2026-06-12","13:00","CAN","BIH","B"],["m04","2026-06-12","19:00","USA","PAR","D"],
  ["m05","2026-06-13","13:00","QAT","SUI","B"],["m06","2026-06-13","16:00","BRA","MAR","C"],
@@ -536,142 +445,43 @@ const PARTIDOS_INICIALES = [
 const DIAS_SEM = ["dom","lun","mar","mié","jue","vie","sáb"];
 const DIAS_LARGO = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-let PARTIDOS = [...PARTIDOS_INICIALES];
-function ordenarPartidos(){ PARTIDOS.sort((a,b) => fechaPartido(a).getTime() - fechaPartido(b).getTime() || String(a[0]).localeCompare(String(b[0]))); }
-function fechasDisponibles(){ return [...new Set(PARTIDOS.map(p => p[1]))].sort(); }
-function equipo(code){ const c = String(code || "").trim(); return EQUIPOS[c] || [c || "Por definir", "🏳️"]; }
-function etiquetaFase(g){ const x = String(g || "").trim(); return /^[A-L]$/i.test(x) ? "GRUPO " + x.toUpperCase() : (x ? x.toUpperCase() : "FASE"); }
+const FECHAS = [...new Set(PARTIDOS.map(p => p[1]))];
 
 /* ================== ALMACENAMIENTO ================== */
 const memFallback = {};
 const tieneStorage = typeof window.storage !== "undefined";
 async function stGet(k, shared){
-  if(tieneStorage){
-    try{ const r = await window.storage.get(k, !!shared); return r ? r.value : null; }catch(e){}
-  }
-  try{
-    const v = window.localStorage.getItem(k);
-    return v === null ? (memFallback[k] ?? null) : v;
-  }catch(e){
-    return memFallback[k] ?? null;
-  }
+  if(!tieneStorage) return memFallback[k] ?? null;
+  try{ const r = await window.storage.get(k, !!shared); return r ? r.value : null; }catch(e){ return null; }
 }
 async function stSet(k, v, shared){
-  if(tieneStorage){
-    try{ const r = await window.storage.set(k, v, !!shared); if(r) return true; }catch(e){}
-  }
-  try{
-    if(v === "" || v == null) window.localStorage.removeItem(k);
-    else window.localStorage.setItem(k, v);
-    memFallback[k] = v;
-    return true;
-  }catch(e){
-    memFallback[k] = v;
-    return true;
-  }
+  if(!tieneStorage){ memFallback[k] = v; return true; }
+  try{ const r = await window.storage.set(k, v, !!shared); return !!r; }catch(e){ return false; }
 }
 
 
 /* ================== CAPA DE DATOS MULTIUSUARIO ================== */
-
-async function dbGetPartidos(){
-  if(!modoNube()) return [...PARTIDOS_INICIALES];
-  const {data, error} = await SB.from("quiniela_partidos")
-    .select("match_id,fecha,hora_hn,local_code,visita_code,grupo,start_at")
-    .order("start_at", {ascending:true});
-  if(error) throw error;
-  const rows = (data || []).map(r => [
-    r.match_id,
-    String(r.fecha),
-    String(r.hora_hn || "00:00").slice(0,5),
-    r.local_code,
-    r.visita_code,
-    r.grupo || ""
-  ]);
-  return rows.length ? rows : [...PARTIDOS_INICIALES];
-}
-async function cargarPartidos(){
-  PARTIDOS = await dbGetPartidos();
-  ordenarPartidos();
-  return PARTIDOS;
-}
-async function dbGuardarPartidoAdmin(pin, partido){
-  if(!modoNube()){
-    const idx = PARTIDOS.findIndex(p => p[0] === partido.id);
-    const row = [partido.id, partido.fecha, partido.hora, partido.local, partido.visita, partido.fase];
-    if(idx >= 0) PARTIDOS[idx] = row; else PARTIDOS.push(row);
-    ordenarPartidos();
-    return true;
-  }
-  const {data, error} = await SB.rpc("guardar_partido_admin", {
-    p_pin: pin,
-    p_match_id: partido.id,
-    p_fecha: partido.fecha,
-    p_hora: partido.hora,
-    p_local: partido.local,
-    p_visita: partido.visita,
-    p_grupo: partido.fase
-  });
-  if(error) throw error;
-  return !!data;
-}
-async function dbEliminarPartidoAdmin(pin, matchId){
-  if(!modoNube()){
-    PARTIDOS = PARTIDOS.filter(p => p[0] !== matchId);
-    delete resultados[matchId];
-    ordenarPartidos();
-    return true;
-  }
-  const {data, error} = await SB.rpc("eliminar_partido_admin", {p_pin:pin, p_match_id:matchId});
-  if(error) throw error;
-  return !!data;
-}
 async function dbGetParticipantes(){
   if(!modoNube()){
     const lp = await stGet("mundial:participantes", true);
     return lp ? JSON.parse(lp).users : [];
   }
   const {data, error} = await SB.from("quiniela_participantes")
-    .select("id,nombre,area,usuario,created_at")
+    .select("id,nombre,area,created_at")
     .order("created_at", {ascending:true});
   if(error) throw error;
-  return (data || []).map(u => ({id:u.id, nombre:u.nombre, usuario:u.usuario || "", area:u.area || "", t:new Date(u.created_at).getTime()}));
-}
-function usuarioLimpio(v){
-  return String(v || "").trim().toLowerCase().replace(/[^a-z0-9._-]/g, "");
+  return (data || []).map(u => ({id:u.id, nombre:u.nombre, area:u.area || "", t:new Date(u.created_at).getTime()}));
 }
 async function dbRegistrarParticipante(u){
   if(!modoNube()){
     const lp = await stGet("mundial:participantes", true);
     const lista = lp ? JSON.parse(lp) : {users:[]};
-    const usr = usuarioLimpio(u.usuario);
-    if(lista.users.some(x => usuarioLimpio(x.usuario) === usr)) throw new Error("Ese usuario ya existe.");
-    const nuevo = {id:u.id || ("u" + Date.now().toString(36) + Math.random().toString(36).slice(2,7)), nombre:u.nombre, usuario:usr, area:u.area || "", t:Date.now()};
-    lista.users.push(nuevo);
-    await stSet("mundial:participantes", JSON.stringify(lista), true);
-    return nuevo;
+    lista.users.push({...u, t:Date.now()});
+    return await stSet("mundial:participantes", JSON.stringify(lista), true);
   }
-  const {data, error} = await SB.rpc("registrar_participante_usuario", {
-    p_nombre: u.nombre,
-    p_usuario: u.usuario,
-    p_area: u.area || "",
-    p_pin: u.pin
-  });
+  const {error} = await SB.from("quiniela_participantes").insert({id:u.id, nombre:u.nombre, area:u.area || ""});
   if(error) throw error;
-  return data;
-}
-async function dbLoginParticipante(usuario, pin){
-  if(!modoNube()){
-    const lp = await stGet("mundial:participantes", true);
-    const lista = lp ? JSON.parse(lp).users : [];
-    const usr = usuarioLimpio(usuario);
-    const u = lista.find(x => usuarioLimpio(x.usuario) === usr);
-    if(!u) throw new Error("Usuario no encontrado.");
-    return u;
-  }
-  const {data, error} = await SB.rpc("login_participante", {p_usuario: usuario, p_pin: pin});
-  if(error) throw error;
-  return data;
+  return true;
 }
 async function dbGetResultados(){
   if(!modoNube()){
@@ -723,7 +533,7 @@ async function dbGuardarApuesta(userId, matchId, h, a){
     base[matchId] = [String(h), String(a), Date.now()];
     return await stSet("mundial:pred:" + userId, JSON.stringify(base), true);
   }
-  const {error} = await SB.rpc("guardar_prediccion_usuario", {p_usuario:yo.usuario, p_pin:yo.pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
+  const {error} = await SB.rpc("guardar_prediccion", {p_user_id:userId, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
   if(error) throw error;
   return true;
 }
@@ -765,7 +575,6 @@ async function dbGuardarResultado(pin, matchId, h, a){
 function activarTiempoReal(){
   if(!modoNube()) return;
   SB.channel("quiniela-live")
-    .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_partidos"}, refrescarVistaActual)
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_participantes"}, refrescarVistaActual)
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_predicciones"}, refrescarVistaActual)
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_resultados"}, refrescarVistaActual)
@@ -777,7 +586,6 @@ function refrescarVistaActual(){
   if(pag === "quiniela") cargarQuiniela();
   if(pag === "apuestas") cargarPronósticos();
   if(pag === "posiciones") cargarTabla();
-  if(pag === "resultados" && adminOk) mostrarAdmin();
 }
 
 /* ================== ESTADO ================== */
@@ -786,7 +594,6 @@ let participantes = [];        // [{id, nombre, area, t}]
 let resultados = {};           // {matchId:[h,a]}
 let misPred = {};              // {matchId:[h,a,t]}
 let predsTodos = {};           // {userId:{matchId:[h,a,t]}}
-let editandoPred = {};          // {matchId:true} para habilitar edición visual antes del cierre
 let diaQuin = null, diaApu = null;
 let resaltarMatch = null;
 
@@ -803,7 +610,7 @@ function horaApuesta(t){
 }
 function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("ver"); setTimeout(()=>t.classList.remove("ver"), 3200); }
-function diaDefecto(){ const fs = fechasDisponibles(); if(!fs.length) return hoyHN(); const h = hoyHN(); if(h < fs[0]) return fs[0]; if(h > fs[fs.length-1]) return fs[fs.length-1]; return fs.includes(h) ? h : fs.find(f => f >= h) || fs[fs.length-1]; }
+function diaDefecto(){ const h = hoyHN(); if(h < FECHAS[0]) return FECHAS[0]; if(h > FECHAS[FECHAS.length-1]) return FECHAS[FECHAS.length-1]; return FECHAS.includes(h) ? h : FECHAS.find(f => f >= h) || FECHAS[FECHAS.length-1]; }
 
 /* ================== NAVEGACIÓN ================== */
 document.querySelectorAll("#nav button").forEach(b => b.addEventListener("click", () => irA(b.dataset.pag)));
@@ -821,7 +628,7 @@ function irA(p){
 /* ================== SELECTOR DE DÍAS ================== */
 function pintarDias(contId, sel, fn){
   let h = "";
-  fechasDisponibles().forEach(f => {
+  FECHAS.forEach(f => {
     const d = new Date(f + "T12:00:00-06:00");
     const ed = estadoDia(f);
     const cls = [(f === sel ? "on" : ""), (ed === "hoy" ? "hoy" : ""), (ed === "futuro" ? "futuro" : "")].filter(Boolean).join(" ");
@@ -834,13 +641,11 @@ function pintarDias(contId, sel, fn){
 /* ================== INICIO ================== */
 async function cargarInicio(){
   try{
-    await cargarPartidos();
     participantes = await dbGetParticipantes();
     resultados = await dbGetResultados();
     $("st-part").textContent = participantes.length;
     $("st-jug").textContent = Object.keys(resultados).length;
     $("st-hoy").textContent = PARTIDOS.filter(p => p[1] === hoyHN()).length;
-    if($("st-total")) $("st-total").textContent = PARTIDOS.length;
     iniciarReloj();
   }catch(e){ toast("No se pudo cargar la nube: " + (e.message || e)); }
 }
@@ -850,7 +655,7 @@ function iniciarReloj(){
   const caja = $("reloj");
   if(!prox){ caja.style.display = "none"; return; }
   caja.style.display = "block";
-  const eh = equipo(prox[3]), ea = equipo(prox[4]);
+  const eh = EQUIPOS[prox[3]], ea = EQUIPOS[prox[4]];
   $("reloj-partido").textContent = eh[1] + " " + eh[0] + "  vs  " + ea[0] + " " + ea[1];
   $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
   if(relojInt) clearInterval(relojInt);
@@ -868,15 +673,13 @@ function iniciarReloj(){
 
 /* ================== REGISTRO ================== */
 async function cargarQuiniela(){
-  await cargarPartidos();
   const y = await stGet("mundial:yo", false);
   yo = y ? JSON.parse(y) : null;
-  if(yo && (!yo.usuario || !yo.pin)){ await stSet("mundial:yo", "", false); yo = null; }
   if(!yo){ $("zona-registro").style.display = "block"; $("zona-juego").style.display = "none"; return; }
   $("zona-registro").style.display = "none";
   $("zona-juego").style.display = "block";
   $("yo-nombre").textContent = yo.nombre;
-  $("yo-area").textContent = "@" + (yo.usuario || "usuario") + (yo.area ? " · " + yo.area : "");
+  $("yo-area").textContent = yo.area || "Sin área";
   $("yo-ini").textContent = yo.nombre.trim().charAt(0).toUpperCase();
   try{
     resultados = await dbGetResultados();
@@ -887,39 +690,22 @@ async function cargarQuiniela(){
   pintarPartidos();
 }
 function setDiaQuin(f){ diaQuin = f; pintarDias("dias-quiniela", diaQuin, "setDiaQuin"); pintarPartidos(); }
-async function loginParticipante(){
-  const usuario = usuarioLimpio($("login-usuario").value);
-  const pin = $("login-pin").value.trim();
-  const av = $("login-aviso"); av.className = "aviso";
-  if(!/^[a-z0-9._-]{3,30}$/.test(usuario)){ av.className = "aviso err"; av.textContent = "Escribe tu usuario. Mínimo 3 caracteres."; return; }
-  if(!/^\d{4,8}$/.test(pin)){ av.className = "aviso err"; av.textContent = "El PIN debe tener entre 4 y 8 dígitos."; return; }
-  try{
-    const data = await dbLoginParticipante(usuario, pin);
-    yo = {id:data.id, nombre:data.nombre, usuario:data.usuario || usuario, area:data.area || "", pin};
-    await stSet("mundial:yo", JSON.stringify(yo), false);
-    toast("Bienvenido/a, " + yo.nombre + ".");
-    cargarQuiniela();
-  }catch(e){ av.className = "aviso err"; av.textContent = "No se pudo iniciar sesión: " + (e.message || e); }
-}
 async function registrar(){
   const nombre = $("reg-nombre").value.trim();
-  const usuario = usuarioLimpio($("reg-usuario").value);
-  const pin = $("reg-pin").value.trim();
   const area = $("reg-area").value.trim();
   const av = $("reg-aviso"); av.className = "aviso";
   if(nombre.length < 2){ av.className = "aviso err"; av.textContent = "Escribe tu nombre para inscribirte."; return; }
-  if(!/^[a-z0-9._-]{3,30}$/.test(usuario)){ av.className = "aviso err"; av.textContent = "El usuario debe tener 3 a 30 caracteres. Usa letras, números, punto, guion o guion bajo."; return; }
-  if(!/^\d{4,8}$/.test(pin)){ av.className = "aviso err"; av.textContent = "El PIN debe tener entre 4 y 8 dígitos."; return; }
+  const id = "u" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  yo = {id, nombre, area};
   try{
-    const data = await dbRegistrarParticipante({nombre, usuario, area, pin});
-    yo = {id:data.id, nombre:data.nombre, usuario:data.usuario || usuario, area:data.area || area, pin};
-    await stSet("mundial:yo", JSON.stringify(yo), false);
-    toast("Usuario creado correctamente.");
+    const okYo = await stSet("mundial:yo", JSON.stringify(yo), false);
+    const okLista = await dbRegistrarParticipante(yo);
+    if(!okYo || !okLista) throw new Error("No se pudo guardar el registro.");
     cargarQuiniela();
-  }catch(e){ av.className = "aviso err"; av.textContent = "No se pudo crear el usuario: " + (e.message || e); }
+  }catch(e){ av.className = "aviso err"; av.textContent = "No se pudo guardar el registro: " + (e.message || e); }
 }
 async function salir(){
-  if(!confirm("¿Cerrar sesión o cambiar de usuario en este dispositivo? Tus pronósticos guardados no se pierden.")) return;
+  if(!confirm("¿Cambiar de usuario en este dispositivo? Tus apuestas guardadas no se pierden.")) return;
   await stSet("mundial:yo", "", false);
   yo = null; cargarQuiniela();
 }
@@ -937,10 +723,10 @@ function pintarPartidos(){
   const lista = PARTIDOS.filter(p => p[1] === f);
   const ed = estadoDia(f);
   let html = '<div class="dia-sep">' + nombreDia(f) +
-    '<span>' + (ed==="hoy" ? "JORNADA DE HOY · ¡A PRONOSTICAR!" : ed==="futuro" ? "SE ACTIVA ESE DÍA" : "JORNADA JUGADA") + '</span></div><div class="partidos">';
+    '<span>' + (ed==="hoy" ? "JORNADA DE HOY · ¡A APOSTAR!" : ed==="futuro" ? "SE ACTIVA ESE DÍA" : "JORNADA JUGADA") + '</span></div><div class="partidos">';
   lista.forEach(p => {
     const [id, fecha, hora, h, a, g] = p;
-    const eh = equipo(h), ea = equipo(a);
+    const eh = EQUIPOS[h], ea = EQUIPOS[a];
     const lock = cerrado(p);
     const futuro = ed === "futuro";
     const pred = misPred[id] || ["","",null];
@@ -952,34 +738,21 @@ function pintarPartidos(){
       const res = resultados[id];
       const pts = res ? puntosDe(pred, res) : null;
       estado = (res
-        ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') + ' <span>Resultado: '+res[0]+'–'+res[1]+'</span>'
+        ? (pts===null ? '<span class="pill cerrado">Sin apuesta</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') + ' <span>Resultado: '+res[0]+'–'+res[1]+'</span>'
         : '<span class="pill cerrado">Cerrado · esperando resultado</span>');
       if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
-      estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
+      estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver apuestas de todos</button>';
       caja = '<div class="fijo">'+(pred[0]===""?"–":esc(pred[0]))+'</div><span class="vs">VS</span><div class="fijo">'+(pred[1]===""?"–":esc(pred[1]))+'</div>';
     } else {
-      const tienePred = predCompleto(pred);
-      const editando = !tienePred || !!editandoPred[id];
-
-      if(tienePred && !editando){
-        estado = '<span class="pill abierto">✓ Registrado · editable hasta las ' + hora + ' HN</span>';
-        estado += ' <span>Última actualización: '+horaApuesta(pred[2])+'</span>';
-        estado += ' <span class="edit-actions"><button class="btn mini" onclick="editarPronostico(\''+id+'\')">Editar pronóstico</button>';
-        estado += '<button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button></span>';
-        caja = '<div class="fijo">'+esc(pred[0])+'</div><span class="vs">VS</span><div class="fijo">'+esc(pred[1])+'</div>';
-      } else {
-        estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
-        if(tienePred) estado += ' <span>Editando: al guardar se actualiza la hora y la prioridad.</span>';
-        else estado += ' <span>Completa ambos marcadores para guardar.</span>';
-        estado += ' <button class="btn mini" onclick="guardarApuesta(\''+id+'\')">'+(tienePred ? 'Guardar cambios' : 'Guardar pronóstico')+'</button>';
-        if(tienePred) estado += ' <button class="link-apuestas" onclick="cancelarEditarPronostico(\''+id+'\')">Cancelar edición</button>';
-        caja = '<input id="pred-'+id+'-0" type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setPred(\''+id+'\',0,this.value)">' +
-          '<span class="vs">VS</span>' +
-          '<input id="pred-'+id+'-1" type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setPred(\''+id+'\',1,this.value)">';
-      }
+      estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
+      if(pred[2]) estado += ' <span>✓ Registrado el '+horaApuesta(pred[2])+'</span>';
+      estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver apuestas de todos</button>';
+      caja = '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setPred(\''+id+'\',0,this.value)">' +
+        '<span class="vs">VS</span>' +
+        '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setPred(\''+id+'\',1,this.value)">';
     }
     html += '<div class="pcard'+(lock?' cerrado':'')+(futuro?' bloqueado':'')+'">' +
-      '<div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">'+etiquetaFase(g)+'</span></span></div>' +
+      '<div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">GRUPO '+g+'</span></span></div>' +
       '<div class="marcador">'+caja+'</div>' +
       '<div class="eq der"><span class="bandera">'+ea[1]+'</span><span class="nom">'+ea[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="meta-p">'+estado+'</div></div>';
@@ -987,30 +760,11 @@ function pintarPartidos(){
   html += '</div>';
   $("lista-partidos").innerHTML = html;
 }
-function editarPronostico(id){
-  const p = PARTIDOS.find(x => x[0] === id);
-  if(!p || cerrado(p)){
-    toast("Este partido ya inició. Ya no se puede editar.");
-    return;
-  }
-  if(estadoDia(p[1]) !== "hoy"){
-    toast("Solo puedes editar pronósticos de la jornada activa.");
-    return;
-  }
-  editandoPred[id] = true;
-  pintarPartidos();
-  setTimeout(() => { const el = document.getElementById("pred-"+id+"-0"); if(el) el.focus(); }, 80);
-}
-async function cancelarEditarPronostico(id){
-  delete editandoPred[id];
-  try{ if(yo) misPred = await dbGetMisPred(yo.id); }catch(e){}
-  pintarPartidos();
-}
-
 function setPred(id, lado, val){
   if(!misPred[id]) misPred[id] = ["","",null];
   const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
   misPred[id][lado] = v === "" ? "" : String(v);
+  if(misPred[id][0] !== "" && misPred[id][1] !== "") guardarApuesta(id);
 }
 async function guardarApuesta(id){
   const p = PARTIDOS.find(x => x[0] === id);
@@ -1026,26 +780,15 @@ async function guardarApuesta(id){
     return;
   }
 
-  const inpLocal = document.getElementById("pred-"+id+"-0");
-  const inpVisita = document.getElementById("pred-"+id+"-1");
-  if(inpLocal) setPred(id, 0, inpLocal.value);
-  if(inpVisita) setPred(id, 1, inpVisita.value);
-
-  if(!predCompleto(misPred[id])){
-    toast("Completa ambos marcadores para guardar el pronóstico.");
-    return;
-  }
-
   misPred[id][2] = Date.now();
 
   try{
     await dbGuardarApuesta(yo.id, id, misPred[id][0], misPred[id][1]);
     misPred = await dbGetMisPred(yo.id);
-    delete editandoPred[id];
 
-    const eh = equipo(p[3]), ea = equipo(p[4]);
-    toast("✓ Pronóstico guardado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + " · " + horaApuesta(misPred[id][2]));
-    pintarPartidos();
+    const eh = EQUIPOS[p[3]], ea = EQUIPOS[p[4]];
+    toast("✓ Pronóstico registrado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + " · " + horaApuesta(misPred[id][2]));
+    setTimeout(() => verPronósticosDe(p[1], id), 900);
   }catch(e){
     toast("⚠ No se pudo guardar el pronóstico: " + (e.message || e));
   }
@@ -1056,58 +799,15 @@ function verPronósticosDe(fecha, matchId){
   diaApu = fecha; resaltarMatch = matchId || null;
   irA("apuestas");
 }
-function predCompleto(pr){
-  return !!(pr && pr[0] !== "" && pr[1] !== "" && pr[0] != null && pr[1] != null);
-}
-function pendientesParaVerPronosticos(fecha, preds){
-  const listaDia = PARTIDOS.filter(p => p[1] === fecha);
-  const ed = estadoDia(fecha);
-
-  // La validación es por jornada completa: para ver pronósticos ajenos,
-  // la persona debe haber registrado marcador para todos los partidos de esa fecha.
-  if(ed === "futuro") return listaDia;
-  return listaDia.filter(p => !predCompleto(preds[p[0]]));
-}
-function pintarBloqueoPronosticos(fecha, pendientes){
-  const zona = $("lista-apuestas");
-  const ed = estadoDia(fecha);
-  if(ed === "futuro"){
-    zona.innerHTML = '<div class="vacio"><b>Jornada todavía no activa.</b><br>Los pronósticos de esta fecha se podrán consultar cuando llegue el día del partido y hayas registrado tus propios marcadores.</div>';
-    return;
-  }
-  const items = pendientes.map(p => {
-    const eh = equipo(p[3]), ea = equipo(p[4]);
-    return '<li style="margin:6px 0">'+esc(eh[0])+' vs '+esc(ea[0])+' · '+esc(p[2])+' HN</li>';
-  }).join("");
-  zona.innerHTML = '<div class="vacio" style="text-align:left"><b>Primero completa tus pronósticos de esta jornada.</b><br><br>Para ver los pronósticos de la oficina, debes registrar tus marcadores en todos los partidos de la jornada seleccionada. Pendientes:<ul style="margin:10px 0 0 22px">'+items+'</ul><br><button class="btn peq" onclick="irA(\'quiniela\')">Ir a Mis pronósticos</button></div>';
-}
 async function cargarPronósticos(forzar){
-  await cargarPartidos();
   if(!diaApu) diaApu = diaDefecto();
   pintarDias("dias-apuestas", diaApu, "setDiaApu");
   const zona = $("lista-apuestas");
   zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
 
   try{
-    const y = await stGet("mundial:yo", false);
-    yo = y ? JSON.parse(y) : null;
-    if(yo && (!yo.usuario || !yo.pin)){ await stSet("mundial:yo", "", false); yo = null; }
-
-    if(!yo){
-      zona.innerHTML = '<div class="vacio"><b>Primero debes registrarte.</b><br>Para ver los pronósticos de la oficina, entra a “Mis pronósticos”, inicia sesión o crea tu usuario y completa tus marcadores de la jornada.</div>';
-      return;
-    }
-
     participantes = await dbGetParticipantes();
     resultados = await dbGetResultados();
-    misPred = await dbGetMisPred(yo.id);
-
-    const pendientes = pendientesParaVerPronosticos(diaApu, misPred);
-    if(pendientes.length){
-      pintarBloqueoPronosticos(diaApu, pendientes);
-      return;
-    }
-
     predsTodos = await dbGetPredsTodos();
     pintarPronósticos();
   }catch(e){
@@ -1129,7 +829,7 @@ function pintarPronósticos(){
   let html = '<div class="dia-sep">' + nombreDia(diaApu) + '<span>PRONÓSTICOS REGISTRADOS · ORDEN POR HORA</span></div>';
   lista.forEach(p => {
     const [id, fecha, hora, h, a, g] = p;
-    const eh = equipo(h), ea = equipo(a);
+    const eh = EQUIPOS[h], ea = EQUIPOS[a];
     const res = resultados[id];
     const lock = cerrado(p);
     // recolectar apuestas de todos
@@ -1149,13 +849,13 @@ function pintarPronósticos(){
       else { f.prim = false; f.rep = true; }
     });
     let head = '<div class="mcard-head"><div class="vsx">' + eh[1] + ' ' + eh[0] + ' <span style="color:#A99C93">vs</span> ' + ea[0] + ' ' + ea[1] +
-      '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' + (lock ? ' · CERRADO' : ' · ABIERTO') + '</span>' +
+      '</div><span style="font-size:12px; color:#B7AAA2">Grupo ' + g + ' · ' + hora + ' HN' + (lock ? ' · CERRADO' : ' · ABIERTO') + '</span>' +
       (res ? '<div class="res">Final: ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
     let cuerpo;
     if(!filas.length){
       cuerpo = '<div class="sin">Todavía nadie ha pronosticado en este partido' + (lock ? '.' : ' — ¡sé la primera persona y asegura la prioridad! ⏱️') + '</div>';
     } else {
-      cuerpo = '<table><thead><tr><th>#</th><th>Participante</th><th>Pronóstico</th><th>Hora del registro</th>' + (res ? '<th>Puntos</th>' : '') + '</tr></thead><tbody>';
+      cuerpo = '<table><thead><tr><th>#</th><th>Participante</th><th>Apuesta</th><th>Hora del registro</th>' + (res ? '<th>Puntos</th>' : '') + '</tr></thead><tbody>';
       filas.forEach((f, i) => {
         const mio = yo && f.u.id === yo.id;
         let marca = "";
@@ -1205,7 +905,7 @@ function pintarGanadoresPorDia(){
   const zona = $("ganadores-zona");
   if(!zona) return;
 
-  const fechasConResultado = fechasDisponibles().filter(f => PARTIDOS.some(p => p[1] === f && resultados[p[0]]));
+  const fechasConResultado = FECHAS.filter(f => PARTIDOS.some(p => p[1] === f && resultados[p[0]]));
   if(!fechasConResultado.length){
     zona.innerHTML = '<div class="vacio">Todavía no hay resultados oficiales. Cuando captures el primer marcador, aquí aparecerá el ganador de cada día.</div>';
     return;
@@ -1251,61 +951,10 @@ function pintarGanadoresPorDia(){
   zona.innerHTML = html;
 }
 
-function pintarGanadorFinal(filas, idsGenerales){
-  const zona = $("ganador-final-zona");
-  if(!zona) return;
-
-  if(!idsGenerales.length || !filas.length){
-    zona.innerHTML = '<div class="vacio">Todavía no hay resultados oficiales. Cuando captures resultados, aquí aparecerá el líder general.</div>';
-    return;
-  }
-
-  const rankingConJuego = filas.filter(x => x.jugados > 0);
-  if(!rankingConJuego.length){
-    zona.innerHTML = '<div class="vacio">Hay resultados capturados, pero todavía no hay pronósticos evaluados.</div>';
-    return;
-  }
-
-  const top = rankingConJuego[0];
-  const empatados = rankingConJuego.filter(x => x.pts === top.pts && x.exactos === top.exactos && x.aciertos === top.aciertos);
-  const nombres = empatados.slice(0,4).map(x => esc(x.u.nombre)).join(', ') + (empatados.length > 4 ? ' +' + (empatados.length - 4) : '');
-  const totalConfigurados = PARTIDOS.length;
-  const totalCapturados = Object.keys(resultados).length;
-  const finalConfigurada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final');
-  const finalCapturada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final' && resultados[p[0]]);
-  const todosCapturados = totalConfigurados > 0 && PARTIDOS.every(p => !!resultados[p[0]]);
-  const esFinal = finalConfigurada && finalCapturada && todosCapturados;
-
-  const titulo = empatados.length > 1
-    ? (esFinal ? 'Empate final del Mundial' : 'Empate provisional general')
-    : (esFinal ? 'Ganador final del Mundial' : 'Líder general provisional');
-
-  const estado = esFinal
-    ? 'Competencia finalizada: todos los partidos configurados ya tienen resultado oficial.'
-    : 'Aún es provisional: falta capturar resultados o agregar/cerrar la fase final.';
-
-  zona.innerHTML = '<div class="final-card '+(esFinal ? '' : 'provisional')+'">' +
-    '<div class="tag">'+titulo+'</div>' +
-    '<h3>🏆 '+nombres+'</h3>' +
-    '<p>'+estado+'</p>' +
-    '<div class="metricas">' +
-      '<span>'+top.pts+' puntos</span>' +
-      '<span>'+top.exactos+' marcadores exactos</span>' +
-      '<span>'+top.aciertos+' aciertos de resultado</span>' +
-      '<span>'+top.jugados+' pronósticos evaluados</span>' +
-      '<span>'+totalCapturados+'/'+totalConfigurados+' resultados capturados</span>' +
-      '<span>Final configurada: '+(finalConfigurada ? 'sí' : 'no')+'</span>' +
-    '</div>' +
-  '</div>';
-}
-
 async function cargarTabla(){
-  await cargarPartidos();
   const zona = $("tabla-zona");
   const zonaGanadores = $("ganadores-zona");
-  const zonaFinal = $("ganador-final-zona");
   if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Calculando ganadores por día…</div>';
-  if(zonaFinal) zonaFinal.innerHTML = '<div class="vacio">Calculando ganador final…</div>';
   zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
 
   try{
@@ -1315,14 +964,12 @@ async function cargarTabla(){
   }catch(e){
     const msg = '<div class="vacio">No se pudo calcular: '+esc(e.message || e)+'</div>';
     if(zonaGanadores) zonaGanadores.innerHTML = msg;
-    if(zonaFinal) zonaFinal.innerHTML = msg;
     zona.innerHTML = msg;
     return;
   }
 
   if(!participantes.length){
     if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Aún no hay participantes inscritos.</div>';
-    if(zonaFinal) zonaFinal.innerHTML = '<div class="vacio">Aún no hay participantes inscritos.</div>';
     zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en llenar sus pronósticos!</div>';
     return;
   }
@@ -1331,7 +978,6 @@ async function cargarTabla(){
 
   const idsGenerales = Object.keys(resultados);
   const filas = calcularRanking(idsGenerales);
-  pintarGanadorFinal(filas, idsGenerales);
 
   let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pronósticos<br>evaluados</th><th class="num">Puntos</th></tr></thead><tbody>';
   filas.forEach((f,i) => {
@@ -1380,7 +1026,6 @@ async function validarPin(){
 async function mostrarAdmin(){
   $("admin-gate").style.display = "none";
   $("admin-zona").style.display = "block";
-  await cargarPartidos();
   resultados = await dbGetResultados();
   pintarAdmin();
 }
@@ -1388,7 +1033,6 @@ function pintarAdmin(){
   if(!adminOk) return;
   $("admin-gate").style.display = "none";
   $("admin-zona").style.display = "block";
-  pintarCalendarioAdmin();
   let h = ""; let diaAct = "";
   PARTIDOS.forEach(p => {
     const [id, fecha, hora, ho, aw] = p;
@@ -1397,7 +1041,7 @@ function pintarAdmin(){
       diaAct = fecha;
       h += '<div class="dia-sep">' + nombreDia(fecha) + '<span>CAPTURA DE RESULTADOS</span></div><div class="partidos">';
     }
-    const eh = equipo(ho), ea = equipo(aw);
+    const eh = EQUIPOS[ho], ea = EQUIPOS[aw];
     const r = resultados[id] || ["",""];
     h += '<div class="pcard"><div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="marcador"><input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setRes(\''+id+'\',0,this.value)"><span class="vs">–</span>' +
@@ -1431,101 +1075,9 @@ async function guardarResultados(){
   setTimeout(()=>{ av.className = "aviso"; }, 5000);
 }
 
-
-/* ================== ADMIN CALENDARIO ================== */
-function normalizarIdPartido(s){ return String(s || "").trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9_-]/g,""); }
-function sugerirIdPartido(){
-  const fase = ($("cal-fase")?.value || "fase").toLowerCase();
-  const pref = fase.includes("diec") ? "r32" : fase.includes("oct") ? "oct" : fase.includes("cuart") ? "cua" : fase.includes("semi") ? "semi" : fase.includes("tercer") ? "ter" : fase.includes("final") ? "fin" : "fx";
-  let n = 1;
-  while(PARTIDOS.some(p => p[0] === pref + "-" + String(n).padStart(2,"0"))) n++;
-  return pref + "-" + String(n).padStart(2,"0");
-}
-function limpiarFormPartido(){
-  if(!$('cal-id')) return;
-  $('cal-id').value = sugerirIdPartido();
-  $('cal-fecha').value = '';
-  $('cal-hora').value = '';
-  $('cal-local').value = '';
-  $('cal-visita').value = '';
-  const av = $('cal-aviso'); if(av){ av.className = 'aviso'; av.textContent = ''; }
-}
-function editarPartidoCalendario(matchId){
-  const p = PARTIDOS.find(x => x[0] === matchId);
-  if(!p) return;
-  $('cal-id').value = p[0];
-  $('cal-fecha').value = p[1];
-  $('cal-hora').value = p[2];
-  $('cal-local').value = p[3];
-  $('cal-visita').value = p[4];
-  const fase = p[5] || 'Otro';
-  const sel = $('cal-fase');
-  if([...sel.options].some(o => o.value === fase)) sel.value = fase; else sel.value = 'Otro';
-  window.scrollTo({top: $('cal-id').getBoundingClientRect().top + window.scrollY - 120, behavior:'smooth'});
-}
-async function guardarPartidoCalendario(){
-  const av = $('cal-aviso'); av.className = 'aviso'; av.textContent = '';
-  if(!adminOk || !adminPinActual){ av.className='aviso err'; av.textContent='Primero entra con el PIN administrador.'; return; }
-
-  const partido = {
-    id: normalizarIdPartido($('cal-id').value),
-    fase: $('cal-fase').value === 'Otro' ? 'Otro' : $('cal-fase').value,
-    fecha: $('cal-fecha').value,
-    hora: $('cal-hora').value,
-    local: $('cal-local').value.trim(),
-    visita: $('cal-visita').value.trim()
-  };
-
-  if(!partido.id){ av.className='aviso err'; av.textContent='Escribe un código para el partido. Ejemplo: oct-01.'; return; }
-  if(!partido.fecha || !partido.hora){ av.className='aviso err'; av.textContent='Selecciona fecha y hora de Honduras.'; return; }
-  if(partido.local.length < 2 || partido.visita.length < 2){ av.className='aviso err'; av.textContent='Escribe los dos equipos o referencias del partido.'; return; }
-
-  try{
-    await dbGuardarPartidoAdmin(adminPinActual, partido);
-    await cargarPartidos();
-    resultados = await dbGetResultados();
-    av.className='aviso ok';
-    av.textContent='✓ Partido guardado. Ya aparece en pronósticos, resultados y ganadores por día.';
-    pintarAdmin();
-  }catch(e){ av.className='aviso err'; av.textContent='No se pudo guardar el partido: '+(e.message || e); }
-}
-async function eliminarPartidoCalendario(matchId){
-  if(!adminOk || !adminPinActual){ toast('Primero entra con el PIN administrador.'); return; }
-  const p = PARTIDOS.find(x => x[0] === matchId);
-  if(!p) return;
-  if(!confirm('¿Eliminar el partido '+p[3]+' vs '+p[4]+'? Solo se permite si no tiene pronósticos ni resultado guardado.')) return;
-  try{
-    await dbEliminarPartidoAdmin(adminPinActual, matchId);
-    await cargarPartidos();
-    resultados = await dbGetResultados();
-    toast('✓ Partido eliminado.');
-    pintarAdmin();
-  }catch(e){ toast('No se pudo eliminar: '+(e.message || e)); }
-}
-function pintarCalendarioAdmin(){
-  const zona = $('calendario-lista');
-  if(!zona) return;
-  if(!PARTIDOS.length){ zona.innerHTML = '<div class="vacio">No hay partidos configurados.</div>'; return; }
-  let h = '<div class="tabla-wrap"><table class="cal-table"><thead><tr><th>Fecha</th><th>Hora</th><th>Fase</th><th>Partido</th><th>Código</th><th>Acciones</th></tr></thead><tbody>';
-  PARTIDOS.forEach(p => {
-    const eh = equipo(p[3]), ea = equipo(p[4]);
-    h += '<tr><td>'+nombreDia(p[1])+'</td><td>'+esc(p[2])+' HN</td><td>'+etiquetaFase(p[5])+'</td>'+ 
-      '<td class="partido">'+eh[1]+' '+esc(eh[0])+' vs '+esc(ea[0])+' '+ea[1]+'</td><td>'+esc(p[0])+'</td>'+ 
-      '<td><div class="acciones"><button class="btn mini" onclick="editarPartidoCalendario(\''+esc(p[0])+'\')">Editar</button>'+ 
-      '<button class="btn mini peligro" onclick="eliminarPartidoCalendario(\''+esc(p[0])+'\')">Eliminar</button></div></td></tr>';
-  });
-  h += '</tbody></table></div>';
-  zona.innerHTML = h;
-  if(!$('cal-id').value) $('cal-id').value = sugerirIdPartido();
-}
-
 /* ================== ARRANQUE ================== */
-async function iniciarApp(){
-  try{ await cargarPartidos(); }catch(e){ toast("No se pudieron cargar los partidos: " + (e.message || e)); }
-  activarTiempoReal();
-  cargarInicio();
-}
-iniciarApp();
+activarTiempoReal();
+cargarInicio();
 </script>
 </body>
 </html>
