@@ -268,11 +268,7 @@
 <header>
   <div class="barra">
     <div class="logo-box"><img src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" alt="CREDIDEMO" onerror="this.parentElement.style.display='none'"></div>
-   <div class="marca">
-  PREDICCIONES MUNDIAL 2026
-  <small>COPA DEL MUNDO · OFICINA CREDIDEMO</small>
-  <small>Hecho por Irene Sinclair</small>
-</div>
+    <div class="marca">PREDICCIONES MUNDIAL 2026<small>COPA DEL MUNDO · OFICINA CREDIDEMO</small> <small>Hecho por: Irene Sinclair</small> </div>
     <nav id="nav">
       <button data-pag="inicio" class="activo">Inicio</button>
       <button data-pag="quiniela">Mis pronósticos</button>
@@ -368,7 +364,7 @@
   <section class="pagina" id="pag-posiciones">
     <div class="cinta-mini"></div>
     <h2 class="titulo">Ganadores por día</h2>
-    <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha que ya tengan resultado oficial capturado. Si aún falta un partido del día, se muestra como jornada parcial. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
+    <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha con resultado oficial. Si hay empate en puntos, gana una sola persona: quien registró primero el marcador exacto o el primer pronóstico con puntos. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
     <div id="ganadores-zona"><div class="vacio">Cargando ganadores por día…</div></div>
 
     <div class="cinta-mini" style="margin-top:30px"></div>
@@ -466,7 +462,7 @@
 </main>
 
 <footer><div class="franja" style="margin:-22px 0 18px"></div>
-  Quiniela interna · <b>CREDIDEMO</b> · Mundial Estados Unidos, México y Canadá 2026 · Hecho con ⚽ para la oficina
+  Quiniela interna · <b>CREDIDEMO</b> · Mundial Estados Unidos, México y Canadá 2026 · Hecho por <b>Irene Sinclair</b> · Hecho con ⚽ para la oficina
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -1259,6 +1255,45 @@ function pintarPronósticos(){
 }
 
 /* ================== TABLA Y GANADORES POR DÍA ================== */
+function desempateUsuario(u, matchIds){
+  const preds = predsTodos[u.id] || {};
+  let firstExact = Infinity;
+  let firstScored = Infinity;
+  let firstAny = Infinity;
+
+  matchIds.forEach(mid => {
+    const pr = preds[mid];
+    const res = resultados[mid];
+    const pu = puntosDe(pr, res);
+    if(pu === null) return;
+
+    const t = pr && pr[2] ? Number(pr[2]) : Infinity;
+    if(Number.isFinite(t) && t < firstAny) firstAny = t;
+    if(pu === 3 && Number.isFinite(t) && t < firstExact) firstExact = t;
+    if(pu > 0 && Number.isFinite(t) && t < firstScored) firstScored = t;
+  });
+
+  return {firstExact, firstScored, firstAny};
+}
+
+function compararRanking(a,b){
+  return b.pts - a.pts
+    || b.exactos - a.exactos
+    || b.aciertos - a.aciertos
+    || b.jugados - a.jugados
+    || ((a.firstExact || Infinity) - (b.firstExact || Infinity))
+    || ((a.firstScored || Infinity) - (b.firstScored || Infinity))
+    || ((a.firstAny || Infinity) - (b.firstAny || Infinity))
+    || a.u.t - b.u.t;
+}
+
+function textoDesempate(r){
+  if(Number.isFinite(r.firstExact)) return 'Desempate: primer marcador exacto registrado · ' + horaApuesta(r.firstExact);
+  if(Number.isFinite(r.firstScored)) return 'Desempate: primer pronóstico con puntos registrado · ' + horaApuesta(r.firstScored);
+  if(Number.isFinite(r.firstAny)) return 'Desempate: primer pronóstico registrado · ' + horaApuesta(r.firstAny);
+  return 'Desempate: orden de inscripción.';
+}
+
 function calcularRanking(matchIds){
   return participantes.map(u => {
     const preds = predsTodos[u.id] || {};
@@ -1272,8 +1307,8 @@ function calcularRanking(matchIds){
       else if(pu === 1){ pts += 1; aciertos++; }
     });
 
-    return {u, pts, exactos, aciertos, jugados};
-  }).sort((a,b) => b.pts - a.pts || b.exactos - a.exactos || b.aciertos - a.aciertos || b.jugados - a.jugados || a.u.t - b.u.t);
+    return {u, pts, exactos, aciertos, jugados, ...desempateUsuario(u, matchIds)};
+  }).sort(compararRanking);
 }
 
 function pintarGanadoresPorDia(){
@@ -1302,18 +1337,19 @@ function pintarGanadoresPorDia(){
 
     if(!ranking.length){
       html += '<div class="vacio" style="padding:18px">Hay resultados capturados, pero todavía no hay pronósticos evaluados para esta fecha.</div>';
+    } else if(ranking[0].pts <= 0){
+      html += '<div class="vacio" style="padding:18px">Jornada evaluada sin ganador: ningún participante sumó puntos todavía.</div>';
     } else {
       const top = ranking[0];
-      const empatados = ranking.filter(x => x.pts === top.pts && x.exactos === top.exactos && x.aciertos === top.aciertos);
-      const tituloGanador = empatados.length > 1 ? 'Empate del día' : 'Ganador del día';
-      const nombres = empatados.slice(0,3).map(x => esc(x.u.nombre)).join(', ') + (empatados.length > 3 ? ' +' + (empatados.length-3) : '');
 
-      html += '<div class="ganador"><span class="med">🏆</span><b>'+tituloGanador+': '+nombres+'</b>' +
-        '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+top.jugados+' pronósticos evaluados</span></div>';
+      html += '<div class="ganador"><span class="med">🏆</span><b>Ganador del día: '+esc(top.u.nombre)+'</b>' +
+        '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+top.jugados+' pronósticos evaluados</span>' +
+        '<span>'+textoDesempate(top)+'</span></div>';
 
       html += '<table><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th><th class="num">Aciertos</th></tr></thead><tbody>';
       ranking.slice(0,5).forEach((r,i) => {
-        html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span></td>'+
+        const nota = i === 0 ? '<br><span style="color:var(--rojo);font-size:11px;font-weight:700">Ganador único por criterio de desempate</span>' : '';
+        html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span>'+nota+'</td>'+ 
           '<td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td><td class="num">'+r.aciertos+'</td></tr>';
       });
       html += '</tbody></table>';
@@ -1342,8 +1378,6 @@ function pintarGanadorFinal(filas, idsGenerales){
   }
 
   const top = rankingConJuego[0];
-  const empatados = rankingConJuego.filter(x => x.pts === top.pts && x.exactos === top.exactos && x.aciertos === top.aciertos);
-  const nombres = empatados.slice(0,4).map(x => esc(x.u.nombre)).join(', ') + (empatados.length > 4 ? ' +' + (empatados.length - 4) : '');
   const totalConfigurados = PARTIDOS.length;
   const totalCapturados = Object.keys(resultados).length;
   const finalConfigurada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final');
@@ -1351,18 +1385,16 @@ function pintarGanadorFinal(filas, idsGenerales){
   const todosCapturados = totalConfigurados > 0 && PARTIDOS.every(p => !!resultados[p[0]]);
   const esFinal = finalConfigurada && finalCapturada && todosCapturados;
 
-  const titulo = empatados.length > 1
-    ? (esFinal ? 'Empate final del Mundial' : 'Empate provisional general')
-    : (esFinal ? 'Ganador final del Mundial' : 'Líder general provisional');
-
+  const titulo = esFinal ? 'Ganador final del Mundial' : 'Líder general provisional';
   const estado = esFinal
     ? 'Competencia finalizada: todos los partidos configurados ya tienen resultado oficial.'
     : 'Aún es provisional: falta capturar resultados o agregar/cerrar la fase final.';
 
   zona.innerHTML = '<div class="final-card '+(esFinal ? '' : 'provisional')+'">' +
     '<div class="tag">'+titulo+'</div>' +
-    '<h3>🏆 '+nombres+'</h3>' +
+    '<h3>🏆 '+esc(top.u.nombre)+'</h3>' +
     '<p>'+estado+'</p>' +
+    '<p>'+textoDesempate(top)+'</p>' +
     '<div class="metricas">' +
       '<span>'+top.pts+' puntos</span>' +
       '<span>'+top.exactos+' marcadores exactos</span>' +
