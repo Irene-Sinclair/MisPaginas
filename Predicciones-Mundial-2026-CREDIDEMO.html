@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Predicciones Mundial 2026 · CREDIDEMO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rojo:#CC1F2B; --rojo-d:#97121C; --amarillo:#F5C200; --amarillo-d:#D9AB00;
+    --asfalto:#15110F; --humo:#241C19; --linea:#3A2F2A;
+    --hueso:#F7F3EC; --papel:#FFFFFF; --tinta:#1C1714; --gris:#7C7068; --gris-c:#E7E0D6;
+    --verde:#1E8E4D;
+    --display:'Archivo Black', system-ui, sans-serif;
+    --body:'Archivo', system-ui, sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body); background:var(--hueso); color:var(--tinta); min-height:100vh}
+
+  .franja{height:8px; background:repeating-linear-gradient(-55deg,
+    var(--rojo) 0 22px, var(--rojo-d) 22px 26px, var(--amarillo) 26px 48px, var(--amarillo-d) 48px 52px)}
+
+  header{background:var(--asfalto); position:sticky; top:0; z-index:50}
+  .barra{max-width:1100px; margin:0 auto; padding:14px 20px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
+  .logo-box{background:#fff; border-radius:8px; padding:6px 12px; display:flex; align-items:center}
+  .logo-box img{height:30px; display:block}
+  .marca{color:#fff; font-family:var(--display); font-size:15px; letter-spacing:.06em; line-height:1.1}
+  .marca small{display:block; color:var(--amarillo); font-family:var(--body); font-weight:600; font-size:11px; letter-spacing:.18em}
+  nav{margin-left:auto; display:flex; gap:4px; flex-wrap:wrap}
+  nav button{font-family:var(--body); font-weight:600; font-size:13px; letter-spacing:.04em;
+    background:transparent; color:#CFC5BE; border:none; padding:9px 12px; border-radius:6px; cursor:pointer}
+  nav button:hover{color:#fff; background:rgba(255,255,255,.07)}
+  nav button.activo{background:var(--rojo); color:#fff}
+  nav button:focus-visible, .btn:focus-visible, input:focus-visible{outline:3px solid var(--amarillo); outline-offset:2px}
+
+  main{max-width:1100px; margin:0 auto; padding:28px 20px 80px}
+  .pagina{display:none}
+  .pagina.visible{display:block; animation:entra .25s ease}
+  @keyframes entra{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+  @media (prefers-reduced-motion: reduce){ .pagina.visible{animation:none} }
+
+  .hero{background:var(--asfalto); color:#fff; border-radius:14px; overflow:hidden; margin-bottom:28px}
+  .hero-int{padding:42px 36px 36px; position:relative}
+  .hero h1{font-family:var(--display); font-size:clamp(30px,5.5vw,58px); line-height:.98; text-transform:uppercase}
+  .hero h1 .amar{color:var(--amarillo)}
+  .hero p.sub{margin-top:14px; color:#D8CEC7; font-size:16px; max-width:560px}
+  .hero .cta{margin-top:24px; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+  .btn{font-family:var(--body); font-weight:700; font-size:14px; letter-spacing:.04em; border:none; cursor:pointer;
+    padding:13px 22px; border-radius:8px; background:var(--rojo); color:#fff; transition:transform .12s ease, background .12s ease}
+  .btn:hover{background:var(--rojo-d); transform:translateY(-1px)}
+  .btn.sec{background:transparent; color:var(--amarillo); border:2px solid var(--amarillo)}
+  .btn.sec:hover{background:rgba(245,194,0,.12)}
+  .btn.osc{background:var(--asfalto); color:var(--amarillo)}
+  .btn.peq{padding:8px 14px; font-size:13px}
+  .btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
+
+  .reloj{margin-top:30px; background:var(--humo); border:1px solid var(--linea); border-radius:10px; padding:18px 20px; max-width:560px}
+  .reloj .et{font-size:11px; font-weight:700; letter-spacing:.2em; color:var(--amarillo); text-transform:uppercase}
+  .reloj .partido{font-family:var(--display); font-size:20px; margin-top:6px}
+  .reloj .digitos{display:flex; gap:14px; margin-top:12px}
+  .reloj .d{text-align:center}
+  .reloj .d b{font-family:var(--display); font-size:30px; font-variant-numeric:tabular-nums; display:block; color:#fff}
+  .reloj .d span{font-size:10px; letter-spacing:.15em; color:#A99C93; text-transform:uppercase}
+
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:32px}
+  .stat{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:20px}
+  .stat b{font-family:var(--display); font-size:34px; display:block; color:var(--rojo); font-variant-numeric:tabular-nums}
+  .stat span{font-size:13px; color:var(--gris); font-weight:600}
+
+  .pasos{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+  .paso{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:22px; border-top:5px solid var(--amarillo)}
+  .paso h3{font-family:var(--display); font-size:16px; margin-bottom:8px}
+  .paso p{font-size:14px; color:var(--gris); line-height:1.5}
+
+  h2.titulo{font-family:var(--display); font-size:clamp(22px,3.5vw,32px); text-transform:uppercase; margin:6px 0 4px}
+  p.bajada{color:var(--gris); font-size:15px; margin-bottom:18px}
+  .cinta-mini{width:120px; height:6px; margin-bottom:14px; background:repeating-linear-gradient(-55deg,
+    var(--rojo) 0 14px, var(--amarillo) 14px 28px); border-radius:3px}
+
+  .tarjeta{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:26px; max-width:520px}
+  .campo{margin-bottom:16px}
+  .campo label{display:block; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:.03em}
+  .campo input{width:100%; padding:12px 14px; font-family:var(--body); font-size:15px; border:2px solid var(--gris-c); border-radius:8px; background:var(--hueso)}
+  .campo input:focus{border-color:var(--rojo)}
+  .aviso{margin-top:14px; padding:12px 14px; border-radius:8px; font-size:13.5px; line-height:1.5; display:none}
+  .aviso.err{display:block; background:#FBE9EA; color:var(--rojo-d); border:1px solid #F0C2C6}
+  .aviso.ok{display:block; background:#E8F6EE; color:var(--verde); border:1px solid #BFE4CE}
+
+  .quien{display:flex; align-items:center; gap:12px; background:var(--asfalto); color:#fff; border-radius:10px; padding:14px 18px; margin-bottom:18px; flex-wrap:wrap}
+  .quien .ficha{width:40px; height:40px; border-radius:50%; background:var(--amarillo); color:var(--asfalto);
+    font-family:var(--display); display:flex; align-items:center; justify-content:center; font-size:17px}
+  .quien b{font-size:15px} .quien span{color:#B7AAA2; font-size:13px}
+  .quien .salir{margin-left:auto; background:none; border:1px solid #4A3E38; color:#CFC5BE; font-size:12px; padding:7px 12px; border-radius:6px; cursor:pointer}
+  .quien .salir:hover{color:#fff; border-color:#fff}
+
+  /* Selector de días */
+  .dias-strip{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 20px}
+  .dias-strip button{font-family:var(--body); font-weight:700; font-size:12.5px; padding:9px 13px; border-radius:9px;
+    border:2px solid var(--gris-c); background:var(--papel); cursor:pointer; color:var(--tinta); line-height:1.25; text-align:center}
+  .dias-strip button small{display:block; font-weight:600; font-size:10px; color:var(--gris); letter-spacing:.06em}
+  .dias-strip button.on{background:var(--asfalto); border-color:var(--asfalto); color:var(--amarillo)}
+  .dias-strip button.on small{color:#B7AAA2}
+  .dias-strip button.hoy{border-color:var(--rojo)}
+  .dias-strip button.hoy small{color:var(--rojo); font-weight:700}
+  .dias-strip button.futuro{opacity:.55}
+
+  .dia-sep{font-family:var(--display); font-size:15px; text-transform:uppercase; letter-spacing:.05em;
+    margin:22px 0 12px; padding-bottom:8px; border-bottom:3px solid var(--asfalto); display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap}
+  .dia-sep span{font-family:var(--body); font-weight:600; font-size:12px; color:var(--gris); letter-spacing:.1em}
+  .partidos{display:grid; gap:10px}
+  .pcard{background:var(--papel); border:1px solid var(--gris-c); border-radius:10px; padding:14px 16px;
+    display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:center; position:relative; overflow:hidden}
+  .pcard::before{content:""; position:absolute; left:0; top:0; bottom:0; width:5px;
+    background:repeating-linear-gradient(-55deg, var(--rojo) 0 9px, var(--amarillo) 9px 18px)}
+  .pcard.cerrado::before{background:var(--gris-c)}
+  .pcard.bloqueado{opacity:.72}
+  .pcard.bloqueado::before{background:var(--gris-c)}
+  .eq{display:flex; align-items:center; gap:10px; min-width:0}
+  .eq.der{flex-direction:row-reverse; text-align:right}
+  .eq .bandera{font-size:26px; line-height:1}
+  .eq .nom{font-weight:700; font-size:14.5px; line-height:1.2}
+  .eq .grupo{display:block; font-size:10.5px; color:var(--gris); font-weight:600; letter-spacing:.08em}
+  .marcador{display:flex; align-items:center; gap:7px}
+  .marcador input{width:48px; height:48px; text-align:center; font-family:var(--display); font-size:21px;
+    border:2px solid var(--gris-c); border-radius:8px; background:var(--hueso); color:var(--tinta);
+    font-variant-numeric:tabular-nums; -moz-appearance:textfield}
+  .marcador input::-webkit-outer-spin-button,.marcador input::-webkit-inner-spin-button{-webkit-appearance:none}
+  .marcador input:focus{border-color:var(--rojo)}
+  .marcador .vs{font-family:var(--display); color:var(--gris); font-size:13px}
+  .marcador .fijo{width:48px; height:48px; display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:21px; border-radius:8px; background:var(--asfalto); color:var(--amarillo)}
+  .marcador .fijo.gris{background:var(--gris-c); color:var(--gris)}
+  .meta-p{grid-column:1 / -1; display:flex; gap:10px; flex-wrap:wrap; font-size:11.5px; color:var(--gris); font-weight:600; letter-spacing:.04em; align-items:center}
+  .pill{padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.05em}
+  .pill.abierto{background:#E8F6EE; color:var(--verde)}
+  .pill.cerrado{background:#F0EBE3; color:var(--gris)}
+  .pill.futuro{background:#FFF3C4; color:#8A6D00}
+  .pill.pts3{background:var(--amarillo); color:var(--asfalto)}
+  .pill.pts1{background:#E8F6EE; color:var(--verde)}
+  .pill.pts0{background:#FBE9EA; color:var(--rojo-d)}
+  .link-apuestas{background:none; border:none; color:var(--rojo); font-weight:700; font-size:11.5px; cursor:pointer; text-decoration:underline; padding:0; font-family:var(--body)}
+
+  /* Pronósticos de la oficina */
+  .mcard{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; margin-bottom:14px; overflow:hidden}
+  .mcard.resaltado{border:2px solid var(--amarillo); box-shadow:0 6px 18px rgba(245,194,0,.25)}
+  .mcard-head{background:var(--asfalto); color:#fff; padding:13px 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+  .mcard-head .vsx{font-family:var(--display); font-size:15px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .mcard-head .res{margin-left:auto; font-family:var(--display); color:var(--amarillo); font-size:15px}
+  .mcard table{width:100%; border-collapse:collapse; font-size:13.5px}
+  .mcard th{font-size:10.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--gris); background:var(--hueso); padding:9px 14px; text-align:left; border-bottom:1px solid var(--gris-c)}
+  .mcard td{padding:10px 14px; border-bottom:1px solid var(--gris-c)}
+  .mcard tr:last-child td{border-bottom:none}
+  .mcard td.ap{font-family:var(--display); font-size:15px; white-space:nowrap}
+  .mcard td.hora-ap{color:var(--gris); font-size:12px; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .mcard tr.mio td{background:#FFF8E0}
+  .badge-prim{display:inline-block; background:var(--amarillo); color:var(--asfalto); font-size:10px; font-weight:800; letter-spacing:.05em; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle}
+  .badge-rep{display:inline-block; background:#F0EBE3; color:var(--gris); font-size:10px; font-weight:700; letter-spacing:.05em; padding:2px 7px; border-radius:10px; margin-left:6px; vertical-align:middle}
+  .mcard .sin{padding:16px 18px; color:var(--gris); font-size:13.5px}
+
+  .tabla-wrap{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; overflow:auto}
+  table.tpos{width:100%; border-collapse:collapse; font-size:14px; min-width:560px}
+  .tpos th{font-size:11px; text-transform:uppercase; letter-spacing:.12em; color:#CFC5BE; background:var(--asfalto); padding:12px 14px; text-align:left}
+  .tpos th.num, .tpos td.num{text-align:center; font-variant-numeric:tabular-nums}
+  .tpos td{padding:12px 14px; border-bottom:1px solid var(--gris-c)}
+  .tpos tr:last-child td{border-bottom:none}
+  .tpos td.pos{font-family:var(--display); width:46px}
+  tr.podio-1 td.pos{color:var(--amarillo-d)} tr.podio-2 td.pos{color:#8C8C8C} tr.podio-3 td.pos{color:#A8671F}
+  .tpos td.total{font-family:var(--display); font-size:16px; color:var(--rojo)}
+  .tpos tr.yo td{background:#FFF8E0}
+
+  .guardar-flot{position:sticky; bottom:14px; display:flex; justify-content:center; margin-top:22px; z-index:10}
+  .guardar-flot .btn{box-shadow:0 8px 22px rgba(21,17,15,.28)}
+  .vacio{padding:40px; text-align:center; color:var(--gris); font-size:14.5px; background:var(--papel); border:1px dashed var(--gris-c); border-radius:12px}
+
+  .regla{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:20px 24px; margin-bottom:12px; display:flex; gap:16px; align-items:flex-start}
+  .regla .punto{flex-shrink:0; width:54px; height:54px; border-radius:10px; background:var(--asfalto); color:var(--amarillo);
+    font-family:var(--display); font-size:20px; display:flex; align-items:center; justify-content:center}
+  .regla h3{font-size:15.5px; margin-bottom:4px} .regla p{font-size:14px; color:var(--gris); line-height:1.55}
+
+  footer{background:var(--asfalto); color:#A99C93; font-size:12.5px; text-align:center; padding:22px}
+  footer b{color:var(--amarillo)}
+
+  .toast{position:fixed; left:50%; transform:translateX(-50%); bottom:24px; background:var(--asfalto); color:#fff;
+    padding:13px 20px; border-radius:10px; font-size:14px; font-weight:600; box-shadow:0 10px 26px rgba(0,0,0,.35);
+    z-index:99; display:none; border-left:5px solid var(--amarillo)}
+  .toast.ver{display:block; animation:entra .2s ease}
+
+  @media(max-width:640px){
+    .barra{padding:10px 14px} nav{width:100%; justify-content:space-between} nav button{padding:8px 7px; font-size:11.5px}
+    .hero-int{padding:28px 22px}
+    .pcard{grid-template-columns:1fr; text-align:center}
+    .eq, .eq.der{flex-direction:column; text-align:center; justify-content:center}
+    .marcador{justify-content:center}
+    .meta-p{justify-content:center}
+    .mcard-head .res{margin-left:0; width:100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="barra">
+    <div class="logo-box"><img src="https://www.credidemo.hn/wp-content/uploads/2024/01/Horizontal1.png" alt="CREDIDEMO" onerror="this.parentElement.style.display='none'"></div>
+    <div class="marca">PREDICCIONES MUNDIAL 2026<small>COPA DEL MUNDO · OFICINA CREDIDEMO</small></div>
+    <nav id="nav">
+      <button data-pag="inicio" class="activo">Inicio</button>
+      <button data-pag="quiniela">Mis pronósticos</button>
+      <button data-pag="apuestas">Pronósticos</button>
+      <button data-pag="posiciones">Posiciones</button>
+      <button data-pag="resultados">Resultados</button>
+      <button data-pag="reglas">Reglas</button>
+    </nav>
+  </div>
+  <div class="franja"></div>
+</header>
+
+<main>
+
+  <!-- ============ INICIO ============ -->
+  <section class="pagina visible" id="pag-inicio">
+    <div class="hero">
+      <div class="hero-int">
+        <h1>El Mundial<br>se juega también<br><span class="amar">en la oficina.</span></h1>
+        <p class="sub">Cada día se activan los partidos de la jornada: pronostica el marcador, mira al instante los pronósticos de tus compañeros y pelea el primer lugar de CREDIDEMO. Actividad recreativa interna, sin dinero de por medio. Estados Unidos, México y Canadá · 11 de junio – 19 de julio.</p>
+        <div class="cta">
+          <button class="btn" onclick="irA('quiniela')">Registrar pronósticos de hoy</button>
+          <button class="btn sec" onclick="irA('apuestas')">Ver pronósticos de la oficina</button>
+        </div>
+        <div class="reloj" id="reloj" style="display:none">
+          <div class="et" id="reloj-et">Próximo partido</div>
+          <div class="partido" id="reloj-partido">—</div>
+          <div class="digitos">
+            <div class="d"><b id="cd-d">0</b><span>días</span></div>
+            <div class="d"><b id="cd-h">0</b><span>horas</span></div>
+            <div class="d"><b id="cd-m">0</b><span>min</span></div>
+            <div class="d"><b id="cd-s">0</b><span>seg</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="franja"></div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><b id="st-part">—</b><span>Participantes inscritos</span></div>
+      <div class="stat"><b id="st-hoy">—</b><span>Partidos activos hoy</span></div>
+      <div class="stat"><b id="st-jug">—</b><span>Partidos con resultado</span></div>
+      <div class="stat"><b>72</b><span>Partidos de fase de grupos</span></div>
+    </div>
+
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">¿Cómo funciona?</h2>
+    <p class="bajada">Cada día del Mundial es una nueva jornada de pronósticos.</p>
+    <div class="pasos">
+      <div class="paso"><h3>1 · Regístrate</h3><p>Entra a "Mis pronósticos", escribe tu nombre y tu área. Solo se hace una vez en este dispositivo.</p></div>
+      <div class="paso"><h3>2 · Pronostica el día</h3><p>Solo están activos los partidos del día en curso. Escribe el marcador y tu pronóstico queda registrado al instante con fecha y hora.</p></div>
+      <div class="paso"><h3>3 · Compara y compite</h3><p>Al registrar verás de inmediato los pronósticos de toda la oficina. Si dos personas repiten marcador, la prioridad es de quien registró primero.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ MI QUINIELA ============ -->
+  <section class="pagina" id="pag-quiniela">
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">Mis pronósticos</h2>
+    <p class="bajada">Los partidos se activan el día que se juegan (hora de Honduras). Tu pronóstico se guarda solo al completar el marcador.</p>
+
+    <div id="zona-registro" style="display:none">
+      <div class="tarjeta">
+        <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" placeholder="Ej. Ivis Sinclair"></div>
+        <div class="campo"><label for="reg-area">Área o departamento</label><input id="reg-area" maxlength="40" placeholder="Ej. Business Intelligence"></div>
+        <button class="btn" onclick="registrar()">Entrar a la quiniela</button>
+        <div class="aviso" id="reg-aviso"></div>
+      </div>
+    </div>
+
+    <div id="zona-juego" style="display:none">
+      <div class="quien">
+        <div class="ficha" id="yo-ini">?</div>
+        <div><b id="yo-nombre">—</b><br><span id="yo-area">—</span></div>
+        <button class="salir" onclick="salir()">Cambiar de usuario</button>
+      </div>
+      <div class="dias-strip" id="dias-quiniela"></div>
+      <div id="lista-partidos"></div>
+      <div class="aviso" id="pred-aviso"></div>
+    </div>
+  </section>
+
+  <!-- ============ APUESTAS DE LA OFICINA ============ -->
+  <section class="pagina" id="pag-apuestas">
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">Pronósticos de la oficina</h2>
+    <p class="bajada">Aquí se ve todo: quién pronosticó qué y a qué hora. En marcadores repetidos, la prioridad de reconocimiento es para quien registró primero. <button class="btn sec peq" onclick="cargarPronósticos(true)">Actualizar</button></p>
+    <div class="dias-strip" id="dias-apuestas"></div>
+    <div id="lista-apuestas"><div class="vacio">Cargando pronósticos…</div></div>
+  </section>
+
+  <!-- ============ POSICIONES ============ -->
+  <section class="pagina" id="pag-posiciones">
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">Tabla de posiciones</h2>
+    <p class="bajada">3 puntos por marcador exacto · 1 punto por acertar el resultado. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
+    <div id="tabla-zona"><div class="vacio">Cargando posiciones…</div></div>
+  </section>
+
+  <!-- ============ RESULTADOS (ADMIN) ============ -->
+  <section class="pagina" id="pag-resultados">
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">Resultados oficiales</h2>
+    <p class="bajada">Zona del administrador de la quiniela: aquí se capturan los marcadores reales de cada partido.</p>
+
+    <div id="admin-gate">
+      <div class="tarjeta">
+        <div class="campo" id="pin-crear-zona" style="display:none">
+          <label for="pin-nuevo">Crea el PIN del administrador (4–8 dígitos)</label>
+          <input id="pin-nuevo" maxlength="8" inputmode="numeric" placeholder="Ej. 2026">
+          <p style="font-size:12.5px; color:var(--gris); margin-top:6px">Aún no existe un PIN. La primera persona que lo cree será quien administre los resultados.</p>
+        </div>
+        <div class="campo" id="pin-entrar-zona" style="display:none">
+          <label for="pin-input">PIN del administrador</label>
+          <input id="pin-input" maxlength="8" inputmode="numeric" placeholder="••••">
+        </div>
+        <button class="btn" id="btn-pin" onclick="validarPin()">Entrar</button>
+        <div class="aviso" id="pin-aviso"></div>
+      </div>
+    </div>
+
+    <div id="admin-zona" style="display:none">
+      <div class="aviso ok" style="display:block; margin-bottom:18px">Modo administrador activo. Captura solo los partidos ya finalizados y presiona "Guardar resultados".</div>
+      <div id="admin-lista"></div>
+      <div class="guardar-flot"><button class="btn" onclick="guardarResultados()">Guardar resultados</button></div>
+      <div class="aviso" id="adm-aviso"></div>
+    </div>
+  </section>
+
+  <!-- ============ REGLAS ============ -->
+  <section class="pagina" id="pag-reglas">
+    <div class="cinta-mini"></div>
+    <h2 class="titulo">Reglas de la quiniela</h2>
+    <p class="bajada">Cortas, claras y sin VAR.</p>
+    <div class="regla"><div class="punto">📅</div><div><h3>Se apuesta por día</h3><p>Solo están activos los partidos del día en curso (hora de Honduras). Los de días futuros aparecen bloqueados hasta que llegue su fecha.</p></div></div>
+    <div class="regla"><div class="punto">⏱️</div><div><h3>Todo pronóstico lleva hora</h3><p>Cada apuesta queda registrada con su fecha y hora exacta, visible para toda la oficina en la sección "Pronósticos".</p></div></div>
+    <div class="regla"><div class="punto">🥇</div><div><h3>Marcadores repetidos</h3><p>Si dos o más personas registran el mismo marcador en un partido, la prioridad de reconocimiento es de quien lo registró primero. Si cambias tu pronóstico, tu hora se actualiza y pierdes la antigüedad.</p></div></div>
+    <div class="regla"><div class="punto">3</div><div><h3>Marcador exacto</h3><p>Si tu pronóstico coincide exactamente con el resultado final (ej. dijiste 2–1 y quedó 2–1), ganas 3 puntos.</p></div></div>
+    <div class="regla"><div class="punto">1</div><div><h3>Resultado acertado</h3><p>Si acertaste quién gana o el empate, pero no el marcador (ej. dijiste 2–0 y quedó 1–0), ganas 1 punto.</p></div></div>
+    <div class="regla"><div class="punto">🔒</div><div><h3>Cierre por partido</h3><p>Cada partido se bloquea automáticamente a su hora de inicio. Después de eso ya no se puede pronosticar ni modificar.</p></div></div>
+    <div class="regla"><div class="punto">🏆</div><div><h3>Desempates en la tabla</h3><p>Si hay empate en puntos, gana quien tenga más marcadores exactos. Si persiste, quien se haya inscrito primero. La dinámica de reconocimiento la define la oficina 😉.</p></div></div>
+  </section>
+
+</main>
+
+<footer><div class="franja" style="margin:-22px 0 18px"></div>
+  Quiniela interna · <b>CREDIDEMO</b> · Mundial Estados Unidos, México y Canadá 2026 · Hecho con ⚽ para la oficina
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ================== CONFIGURACIÓN MULTIUSUARIO ================== */
+const SUPABASE_URL = "https://qysuyrnglqfdkdaxsbxk.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_PKXnvNbFDvB2GDosdvTo7g_0OsC3Tg_";
+const SB = (!SUPABASE_URL.includes("PEGAR_AQUI") && !SUPABASE_ANON_KEY.includes("PEGAR_AQUI") && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+function modoNube(){ return !!SB; }
+
+/* ================== DATOS ================== */
+const EQUIPOS = {
+  MEX:["México","🇲🇽"], RSA:["Sudáfrica","🇿🇦"], KOR:["Corea del Sur","🇰🇷"], CZE:["Chequia","🇨🇿"],
+  CAN:["Canadá","🇨🇦"], BIH:["Bosnia y Herzegovina","🇧🇦"], QAT:["Qatar","🇶🇦"], SUI:["Suiza","🇨🇭"],
+  BRA:["Brasil","🇧🇷"], MAR:["Marruecos","🇲🇦"], HAI:["Haití","🇭🇹"], SCO:["Escocia","🏴󠁧󠁢󠁳󠁣󠁴󠁿"],
+  USA:["Estados Unidos","🇺🇸"], PAR:["Paraguay","🇵🇾"], AUS:["Australia","🇦🇺"], TUR:["Turquía","🇹🇷"],
+  GER:["Alemania","🇩🇪"], CUW:["Curazao","🇨🇼"], CIV:["Costa de Marfil","🇨🇮"], ECU:["Ecuador","🇪🇨"],
+  NED:["Países Bajos","🇳🇱"], JPN:["Japón","🇯🇵"], SWE:["Suecia","🇸🇪"], TUN:["Túnez","🇹🇳"],
+  BEL:["Bélgica","🇧🇪"], EGY:["Egipto","🇪🇬"], IRN:["Irán","🇮🇷"], NZL:["Nueva Zelanda","🇳🇿"],
+  ESP:["España","🇪🇸"], CPV:["Cabo Verde","🇨🇻"], KSA:["Arabia Saudita","🇸🇦"], URU:["Uruguay","🇺🇾"],
+  FRA:["Francia","🇫🇷"], SEN:["Senegal","🇸🇳"], IRQ:["Irak","🇮🇶"], NOR:["Noruega","🇳🇴"],
+  ARG:["Argentina","🇦🇷"], ALG:["Argelia","🇩🇿"], AUT:["Austria","🇦🇹"], JOR:["Jordania","🇯🇴"],
+  POR:["Portugal","🇵🇹"], COD:["RD Congo","🇨🇩"], UZB:["Uzbekistán","🇺🇿"], COL:["Colombia","🇨🇴"],
+  ENG:["Inglaterra","🏴󠁧󠁢󠁥󠁮󠁧󠁿"], CRO:["Croacia","🇭🇷"], GHA:["Ghana","🇬🇭"], PAN:["Panamá","🇵🇦"]
+};
+/* [id, fecha, hora HN, local, visita, grupo] — horario centro (UTC-6) */
+const PARTIDOS = [
+ ["m01","2026-06-11","13:00","MEX","RSA","A"],["m02","2026-06-11","20:00","KOR","CZE","A"],
+ ["m03","2026-06-12","13:00","CAN","BIH","B"],["m04","2026-06-12","19:00","USA","PAR","D"],
+ ["m05","2026-06-13","13:00","QAT","SUI","B"],["m06","2026-06-13","16:00","BRA","MAR","C"],
+ ["m07","2026-06-13","19:00","HAI","SCO","C"],["m08","2026-06-13","22:00","AUS","TUR","D"],
+ ["m09","2026-06-14","11:00","GER","CUW","E"],["m10","2026-06-14","14:00","NED","JPN","F"],
+ ["m11","2026-06-14","17:00","CIV","ECU","E"],["m12","2026-06-14","20:00","SWE","TUN","F"],
+ ["m13","2026-06-15","10:00","ESP","CPV","H"],["m14","2026-06-15","13:00","BEL","EGY","G"],
+ ["m15","2026-06-15","16:00","KSA","URU","H"],["m16","2026-06-15","19:00","IRN","NZL","G"],
+ ["m17","2026-06-16","13:00","FRA","SEN","I"],["m18","2026-06-16","16:00","IRQ","NOR","I"],
+ ["m19","2026-06-16","19:00","ARG","ALG","J"],["m20","2026-06-16","22:00","AUT","JOR","J"],
+ ["m21","2026-06-17","11:00","POR","COD","K"],["m22","2026-06-17","14:00","ENG","CRO","L"],
+ ["m23","2026-06-17","17:00","GHA","PAN","L"],["m24","2026-06-17","20:00","UZB","COL","K"],
+ ["m25","2026-06-18","10:00","CZE","RSA","A"],["m26","2026-06-18","13:00","SUI","BIH","B"],
+ ["m27","2026-06-18","16:00","CAN","QAT","B"],["m28","2026-06-18","19:00","MEX","KOR","A"],
+ ["m29","2026-06-19","13:00","USA","AUS","D"],["m30","2026-06-19","16:00","SCO","MAR","C"],
+ ["m31","2026-06-19","18:30","BRA","HAI","C"],["m32","2026-06-19","21:00","TUR","PAR","D"],
+ ["m33","2026-06-20","11:00","NED","SWE","F"],["m34","2026-06-20","14:00","GER","CIV","E"],
+ ["m35","2026-06-20","18:00","ECU","CUW","E"],["m36","2026-06-20","22:00","TUN","JPN","F"],
+ ["m37","2026-06-21","10:00","ESP","KSA","H"],["m38","2026-06-21","13:00","BEL","IRN","G"],
+ ["m39","2026-06-21","16:00","URU","CPV","H"],["m40","2026-06-21","19:00","NZL","EGY","G"],
+ ["m41","2026-06-22","11:00","ARG","AUT","J"],["m42","2026-06-22","15:00","FRA","IRQ","I"],
+ ["m43","2026-06-22","18:00","NOR","SEN","I"],["m44","2026-06-22","21:00","JOR","ALG","J"],
+ ["m45","2026-06-23","11:00","POR","UZB","K"],["m46","2026-06-23","14:00","ENG","GHA","L"],
+ ["m47","2026-06-23","17:00","PAN","CRO","L"],["m48","2026-06-23","20:00","COL","COD","K"],
+ ["m49","2026-06-24","13:00","SUI","CAN","B"],["m50","2026-06-24","13:00","BIH","QAT","B"],
+ ["m51","2026-06-24","16:00","SCO","BRA","C"],["m52","2026-06-24","16:00","MAR","HAI","C"],
+ ["m53","2026-06-24","19:00","CZE","MEX","A"],["m54","2026-06-24","19:00","RSA","KOR","A"],
+ ["m55","2026-06-25","14:00","CUW","CIV","E"],["m56","2026-06-25","14:00","ECU","GER","E"],
+ ["m57","2026-06-25","17:00","JPN","SWE","F"],["m58","2026-06-25","17:00","TUN","NED","F"],
+ ["m59","2026-06-25","20:00","TUR","USA","D"],["m60","2026-06-25","20:00","PAR","AUS","D"],
+ ["m61","2026-06-26","13:00","NOR","FRA","I"],["m62","2026-06-26","13:00","SEN","IRQ","I"],
+ ["m63","2026-06-26","18:00","CPV","KSA","H"],["m64","2026-06-26","18:00","URU","ESP","H"],
+ ["m65","2026-06-26","21:00","EGY","IRN","G"],["m66","2026-06-26","21:00","NZL","BEL","G"],
+ ["m67","2026-06-27","15:00","PAN","ENG","L"],["m68","2026-06-27","15:00","CRO","GHA","L"],
+ ["m69","2026-06-27","17:30","COL","POR","K"],["m70","2026-06-27","17:30","COD","UZB","K"],
+ ["m71","2026-06-27","20:00","ALG","AUT","J"],["m72","2026-06-27","20:00","JOR","ARG","J"]
+];
+const DIAS_SEM = ["dom","lun","mar","mié","jue","vie","sáb"];
+const DIAS_LARGO = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const FECHAS = [...new Set(PARTIDOS.map(p => p[1]))];
+
+/* ================== ALMACENAMIENTO ================== */
+const memFallback = {};
+const tieneStorage = typeof window.storage !== "undefined";
+async function stGet(k, shared){
+  if(!tieneStorage) return memFallback[k] ?? null;
+  try{ const r = await window.storage.get(k, !!shared); return r ? r.value : null; }catch(e){ return null; }
+}
+async function stSet(k, v, shared){
+  if(!tieneStorage){ memFallback[k] = v; return true; }
+  try{ const r = await window.storage.set(k, v, !!shared); return !!r; }catch(e){ return false; }
+}
+
+
+/* ================== CAPA DE DATOS MULTIUSUARIO ================== */
+async function dbGetParticipantes(){
+  if(!modoNube()){
+    const lp = await stGet("mundial:participantes", true);
+    return lp ? JSON.parse(lp).users : [];
+  }
+  const {data, error} = await SB.from("quiniela_participantes")
+    .select("id,nombre,area,created_at")
+    .order("created_at", {ascending:true});
+  if(error) throw error;
+  return (data || []).map(u => ({id:u.id, nombre:u.nombre, area:u.area || "", t:new Date(u.created_at).getTime()}));
+}
+async function dbRegistrarParticipante(u){
+  if(!modoNube()){
+    const lp = await stGet("mundial:participantes", true);
+    const lista = lp ? JSON.parse(lp) : {users:[]};
+    lista.users.push({...u, t:Date.now()});
+    return await stSet("mundial:participantes", JSON.stringify(lista), true);
+  }
+  const {error} = await SB.from("quiniela_participantes").insert({id:u.id, nombre:u.nombre, area:u.area || ""});
+  if(error) throw error;
+  return true;
+}
+async function dbGetResultados(){
+  if(!modoNube()){
+    const lr = await stGet("mundial:resultados", true);
+    return lr ? JSON.parse(lr) : {};
+  }
+  const {data, error} = await SB.from("quiniela_resultados").select("match_id,goles_local,goles_visita");
+  if(error) throw error;
+  const out = {};
+  (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita)]);
+  return out;
+}
+async function dbGetMisPred(userId){
+  if(!modoNube()){
+    const mp = await stGet("mundial:pred:" + userId, true);
+    return mp ? JSON.parse(mp) : {};
+  }
+  const {data, error} = await SB.from("quiniela_predicciones")
+    .select("match_id,goles_local,goles_visita,updated_at")
+    .eq("user_id", userId);
+  if(error) throw error;
+  const out = {};
+  (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita), new Date(r.updated_at).getTime()]);
+  return out;
+}
+async function dbGetPredsTodos(){
+  if(!modoNube()){
+    const out = {};
+    await Promise.all(participantes.map(async u => {
+      const raw = await stGet("mundial:pred:" + u.id, true);
+      out[u.id] = raw ? JSON.parse(raw) : {};
+    }));
+    return out;
+  }
+  const {data, error} = await SB.from("quiniela_predicciones")
+    .select("user_id,match_id,goles_local,goles_visita,updated_at");
+  if(error) throw error;
+  const out = {};
+  (data || []).forEach(r => {
+    if(!out[r.user_id]) out[r.user_id] = {};
+    out[r.user_id][r.match_id] = [String(r.goles_local), String(r.goles_visita), new Date(r.updated_at).getTime()];
+  });
+  return out;
+}
+async function dbGuardarApuesta(userId, matchId, h, a){
+  if(!modoNube()){
+    const previo = await stGet("mundial:pred:" + userId, true);
+    const base = previo ? JSON.parse(previo) : {};
+    base[matchId] = [String(h), String(a), Date.now()];
+    return await stSet("mundial:pred:" + userId, JSON.stringify(base), true);
+  }
+  const {error} = await SB.rpc("guardar_prediccion", {p_user_id:userId, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
+  if(error) throw error;
+  return true;
+}
+async function dbAdminPinExiste(){
+  if(!modoNube()){
+    const conf = await stGet("mundial:config", true);
+    return !!(conf && JSON.parse(conf).pin);
+  }
+  const {data, error} = await SB.rpc("admin_pin_exists");
+  if(error) throw error;
+  return !!data;
+}
+async function dbCrearAdminPin(pin){
+  if(!modoNube()) return await stSet("mundial:config", JSON.stringify({pin, creado:Date.now()}), true);
+  const {data, error} = await SB.rpc("set_admin_pin", {p_pin:pin});
+  if(error) throw error;
+  return !!data;
+}
+async function dbValidarAdminPin(pin){
+  if(!modoNube()){
+    const conf = await stGet("mundial:config", true);
+    const cfg = conf ? JSON.parse(conf) : null;
+    return !!(cfg && cfg.pin && cfg.pin === pin);
+  }
+  const {data, error} = await SB.rpc("validar_admin_pin", {p_pin:pin});
+  if(error) throw error;
+  return !!data;
+}
+async function dbGuardarResultado(pin, matchId, h, a){
+  if(!modoNube()){
+    const limpio = await dbGetResultados();
+    limpio[matchId] = [String(h), String(a)];
+    return await stSet("mundial:resultados", JSON.stringify(limpio), true);
+  }
+  const {data, error} = await SB.rpc("guardar_resultado_admin", {p_pin:pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
+  if(error) throw error;
+  return !!data;
+}
+function activarTiempoReal(){
+  if(!modoNube()) return;
+  SB.channel("quiniela-live")
+    .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_participantes"}, refrescarVistaActual)
+    .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_predicciones"}, refrescarVistaActual)
+    .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_resultados"}, refrescarVistaActual)
+    .subscribe();
+}
+function refrescarVistaActual(){
+  const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
+  if(pag === "inicio") cargarInicio();
+  if(pag === "quiniela") cargarQuiniela();
+  if(pag === "apuestas") cargarApuestas();
+  if(pag === "posiciones") cargarTabla();
+}
+
+/* ================== ESTADO ================== */
+let yo = null;                 // {id, nombre, area}
+let participantes = [];        // [{id, nombre, area, t}]
+let resultados = {};           // {matchId:[h,a]}
+let misPred = {};              // {matchId:[h,a,t]}
+let predsTodos = {};           // {userId:{matchId:[h,a,t]}}
+let diaQuin = null, diaApu = null;
+let resaltarMatch = null;
+
+const $ = id => document.getElementById(id);
+const fechaPartido = p => new Date(p[1] + "T" + p[2] + ":00-06:00");
+const cerrado = p => Date.now() >= fechaPartido(p).getTime();
+function hoyHN(){ const d = new Date(Date.now() - 6*3600*1000); return d.toISOString().slice(0,10); }
+function estadoDia(f){ const h = hoyHN(); return f < h ? "pasado" : (f === h ? "hoy" : "futuro"); }
+function nombreDia(f){ const d = new Date(f + "T12:00:00-06:00"); return DIAS_LARGO[d.getDay()] + " " + d.getDate() + " de " + MESES[d.getMonth()]; }
+function horaApuesta(t){
+  const d = new Date(t);
+  try{ return d.toLocaleString("es-HN",{timeZone:"America/Tegucigalpa", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}); }
+  catch(e){ return d.toLocaleString(); }
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("ver"); setTimeout(()=>t.classList.remove("ver"), 3200); }
+function diaDefecto(){ const h = hoyHN(); if(h < FECHAS[0]) return FECHAS[0]; if(h > FECHAS[FECHAS.length-1]) return FECHAS[FECHAS.length-1]; return FECHAS.includes(h) ? h : FECHAS.find(f => f >= h) || FECHAS[FECHAS.length-1]; }
+
+/* ================== NAVEGACIÓN ================== */
+document.querySelectorAll("#nav button").forEach(b => b.addEventListener("click", () => irA(b.dataset.pag)));
+function irA(p){
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("activo", b.dataset.pag === p));
+  document.querySelectorAll(".pagina").forEach(s => s.classList.toggle("visible", s.id === "pag-" + p));
+  window.scrollTo({top:0});
+  if(p === "quiniela") cargarQuiniela();
+  if(p === "apuestas") cargarPronósticos();
+  if(p === "posiciones") cargarTabla();
+  if(p === "resultados") prepararAdmin();
+  if(p === "inicio") cargarInicio();
+}
+
+/* ================== SELECTOR DE DÍAS ================== */
+function pintarDias(contId, sel, fn){
+  let h = "";
+  FECHAS.forEach(f => {
+    const d = new Date(f + "T12:00:00-06:00");
+    const ed = estadoDia(f);
+    const cls = [(f === sel ? "on" : ""), (ed === "hoy" ? "hoy" : ""), (ed === "futuro" ? "futuro" : "")].filter(Boolean).join(" ");
+    h += '<button class="'+cls+'" onclick="'+fn+'(\''+f+'\')">'+DIAS_SEM[d.getDay()]+' '+d.getDate()+
+      '<small>'+(ed==="hoy"?"HOY":ed==="futuro"?"PRÓX.":"jugado")+'</small></button>';
+  });
+  $(contId).innerHTML = h;
+}
+
+/* ================== INICIO ================== */
+async function cargarInicio(){
+  try{
+    participantes = await dbGetParticipantes();
+    resultados = await dbGetResultados();
+    $("st-part").textContent = participantes.length;
+    $("st-jug").textContent = Object.keys(resultados).length;
+    $("st-hoy").textContent = PARTIDOS.filter(p => p[1] === hoyHN()).length;
+    iniciarReloj();
+  }catch(e){ toast("No se pudo cargar la nube: " + (e.message || e)); }
+}
+let relojInt = null;
+function iniciarReloj(){
+  const prox = PARTIDOS.find(p => !cerrado(p));
+  const caja = $("reloj");
+  if(!prox){ caja.style.display = "none"; return; }
+  caja.style.display = "block";
+  const eh = EQUIPOS[prox[3]], ea = EQUIPOS[prox[4]];
+  $("reloj-partido").textContent = eh[1] + " " + eh[0] + "  vs  " + ea[0] + " " + ea[1];
+  $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
+  if(relojInt) clearInterval(relojInt);
+  const tick = () => {
+    let ms = fechaPartido(prox).getTime() - Date.now();
+    if(ms <= 0){ iniciarReloj(); return; }
+    const s = Math.floor(ms/1000);
+    $("cd-d").textContent = Math.floor(s/86400);
+    $("cd-h").textContent = Math.floor(s%86400/3600);
+    $("cd-m").textContent = Math.floor(s%3600/60);
+    $("cd-s").textContent = s%60;
+  };
+  tick(); relojInt = setInterval(tick, 1000);
+}
+
+/* ================== REGISTRO ================== */
+async function cargarQuiniela(){
+  const y = await stGet("mundial:yo", false);
+  yo = y ? JSON.parse(y) : null;
+  if(!yo){ $("zona-registro").style.display = "block"; $("zona-juego").style.display = "none"; return; }
+  $("zona-registro").style.display = "none";
+  $("zona-juego").style.display = "block";
+  $("yo-nombre").textContent = yo.nombre;
+  $("yo-area").textContent = yo.area || "Sin área";
+  $("yo-ini").textContent = yo.nombre.trim().charAt(0).toUpperCase();
+  try{
+    resultados = await dbGetResultados();
+    misPred = await dbGetMisPred(yo.id);
+  }catch(e){ toast("No se pudieron cargar tus pronósticos: " + (e.message || e)); }
+  if(!diaQuin) diaQuin = diaDefecto();
+  pintarDias("dias-quiniela", diaQuin, "setDiaQuin");
+  pintarPartidos();
+}
+function setDiaQuin(f){ diaQuin = f; pintarDias("dias-quiniela", diaQuin, "setDiaQuin"); pintarPartidos(); }
+async function registrar(){
+  const nombre = $("reg-nombre").value.trim();
+  const area = $("reg-area").value.trim();
+  const av = $("reg-aviso"); av.className = "aviso";
+  if(nombre.length < 2){ av.className = "aviso err"; av.textContent = "Escribe tu nombre para inscribirte."; return; }
+  const id = "u" + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  yo = {id, nombre, area};
+  try{
+    const okYo = await stSet("mundial:yo", JSON.stringify(yo), false);
+    const okLista = await dbRegistrarParticipante(yo);
+    if(!okYo || !okLista) throw new Error("No se pudo guardar el registro.");
+    cargarQuiniela();
+  }catch(e){ av.className = "aviso err"; av.textContent = "No se pudo guardar el registro: " + (e.message || e); }
+}
+async function salir(){
+  if(!confirm("¿Cambiar de usuario en este dispositivo? Tus apuestas guardadas no se pierden.")) return;
+  await stSet("mundial:yo", "", false);
+  yo = null; cargarQuiniela();
+}
+
+/* ================== MI QUINIELA (por día) ================== */
+function puntosDe(pred, res){
+  if(!pred || !res || pred[0]===""||pred[1]===""||pred[0]==null||pred[1]==null) return null;
+  const ph=+pred[0], pa=+pred[1], rh=+res[0], ra=+res[1];
+  if(ph===rh && pa===ra) return 3;
+  if(Math.sign(ph-pa) === Math.sign(rh-ra)) return 1;
+  return 0;
+}
+function pintarPartidos(){
+  const f = diaQuin;
+  const lista = PARTIDOS.filter(p => p[1] === f);
+  const ed = estadoDia(f);
+  let html = '<div class="dia-sep">' + nombreDia(f) +
+    '<span>' + (ed==="hoy" ? "JORNADA DE HOY · ¡A APOSTAR!" : ed==="futuro" ? "SE ACTIVA ESE DÍA" : "JORNADA JUGADA") + '</span></div><div class="partidos">';
+  lista.forEach(p => {
+    const [id, fecha, hora, h, a, g] = p;
+    const eh = EQUIPOS[h], ea = EQUIPOS[a];
+    const lock = cerrado(p);
+    const futuro = ed === "futuro";
+    const pred = misPred[id] || ["","",null];
+    let estado, caja;
+    if(futuro){
+      estado = '<span class="pill futuro">🔒 Se activa el ' + nombreDia(fecha) + '</span>';
+      caja = '<div class="fijo gris">–</div><span class="vs">VS</span><div class="fijo gris">–</div>';
+    } else if(lock){
+      const res = resultados[id];
+      const pts = res ? puntosDe(pred, res) : null;
+      estado = (res
+        ? (pts===null ? '<span class="pill cerrado">Sin apuesta</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') + ' <span>Resultado: '+res[0]+'–'+res[1]+'</span>'
+        : '<span class="pill cerrado">Cerrado · esperando resultado</span>');
+      if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
+      estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver apuestas de todos</button>';
+      caja = '<div class="fijo">'+(pred[0]===""?"–":esc(pred[0]))+'</div><span class="vs">VS</span><div class="fijo">'+(pred[1]===""?"–":esc(pred[1]))+'</div>';
+    } else {
+      estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
+      if(pred[2]) estado += ' <span>✓ Registrado el '+horaApuesta(pred[2])+'</span>';
+      estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver apuestas de todos</button>';
+      caja = '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setPred(\''+id+'\',0,this.value)">' +
+        '<span class="vs">VS</span>' +
+        '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setPred(\''+id+'\',1,this.value)">';
+    }
+    html += '<div class="pcard'+(lock?' cerrado':'')+(futuro?' bloqueado':'')+'">' +
+      '<div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">GRUPO '+g+'</span></span></div>' +
+      '<div class="marcador">'+caja+'</div>' +
+      '<div class="eq der"><span class="bandera">'+ea[1]+'</span><span class="nom">'+ea[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
+      '<div class="meta-p">'+estado+'</div></div>';
+  });
+  html += '</div>';
+  $("lista-partidos").innerHTML = html;
+}
+function setPred(id, lado, val){
+  if(!misPred[id]) misPred[id] = ["","",null];
+  const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
+  misPred[id][lado] = v === "" ? "" : String(v);
+  if(misPred[id][0] !== "" && misPred[id][1] !== "") guardarApuesta(id);
+}
+async function guardarApuesta(id){
+  const p = PARTIDOS.find(x => x[0] === id);
+  if(!yo || !p || cerrado(p) || estadoDia(p[1]) !== "hoy" && estadoDia(p[1]) !== "pasado"){ /* solo día activo */ }
+  if(!yo || !p || cerrado(p)) return;
+  misPred[id][2] = Date.now();
+  // leer-fusionar-escribir para no pisar apuestas de otros partidos
+  const previo = await stGet("mundial:pred:" + yo.id, true);
+  const base = previo ? JSON.parse(previo) : {};
+  base[id] = misPred[id];
+  const ok = await stSet("mundial:pred:" + yo.id, JSON.stringify(base), true);
+  misPred = base;
+  if(ok){
+    const eh = EQUIPOS[p[3]], ea = EQUIPOS[p[4]];
+    toast("✓ Pronóstico registrado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + " · " + horaApuesta(misPred[id][2]));
+    setTimeout(() => verPronósticosDe(p[1], id), 900);
+  } else {
+    toast("⚠ No se pudo guardar el pronóstico. Intenta de nuevo.");
+  }
+}
+
+/* ================== APUESTAS DE LA OFICINA ================== */
+function verPronósticosDe(fecha, matchId){
+  diaApu = fecha; resaltarMatch = matchId || null;
+  irA("apuestas");
+}
+async function cargarPronósticos(forzar){
+  if(!diaApu) diaApu = diaDefecto();
+  pintarDias("dias-apuestas", diaApu, "setDiaApu");
+  const zona = $("lista-apuestas");
+  zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
+  const lp = await stGet("mundial:participantes", true);
+  participantes = lp ? JSON.parse(lp).users : [];
+  const lr = await stGet("mundial:resultados", true);
+  resultados = lr ? JSON.parse(lr) : {};
+  predsTodos = {};
+  await Promise.all(participantes.map(async u => {
+    const raw = await stGet("mundial:pred:" + u.id, true);
+    predsTodos[u.id] = raw ? JSON.parse(raw) : {};
+  }));
+  pintarPronósticos();
+}
+function setDiaApu(f){ diaApu = f; resaltarMatch = null; pintarDias("dias-apuestas", diaApu, "setDiaApu"); pintarPronósticos(); }
+function pintarPronósticos(){
+  const zona = $("lista-apuestas");
+  const lista = PARTIDOS.filter(p => p[1] === diaApu);
+  if(!participantes.length){
+    zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en pronosticar!</div>';
+    return;
+  }
+  let html = '<div class="dia-sep">' + nombreDia(diaApu) + '<span>PRONÓSTICOS REGISTRADOS · ORDEN POR HORA</span></div>';
+  lista.forEach(p => {
+    const [id, fecha, hora, h, a, g] = p;
+    const eh = EQUIPOS[h], ea = EQUIPOS[a];
+    const res = resultados[id];
+    const lock = cerrado(p);
+    // recolectar apuestas de todos
+    const filas = [];
+    participantes.forEach(u => {
+      const pr = (predsTodos[u.id] || {})[id];
+      if(pr && pr[0] !== "" && pr[1] !== "" && pr[0] != null && pr[1] != null){
+        filas.push({u, h: pr[0], a: pr[1], t: pr[2] || 0});
+      }
+    });
+    filas.sort((x,y) => (x.t||9e15) - (y.t||9e15));
+    // prioridad: primer registro de cada marcador repetido
+    const vistos = {};
+    filas.forEach(f => {
+      const clave = f.h + "-" + f.a;
+      if(vistos[clave] == null){ vistos[clave] = f.u.id; f.prim = true; f.rep = false; }
+      else { f.prim = false; f.rep = true; }
+    });
+    let head = '<div class="mcard-head"><div class="vsx">' + eh[1] + ' ' + eh[0] + ' <span style="color:#A99C93">vs</span> ' + ea[0] + ' ' + ea[1] +
+      '</div><span style="font-size:12px; color:#B7AAA2">Grupo ' + g + ' · ' + hora + ' HN' + (lock ? ' · CERRADO' : ' · ABIERTO') + '</span>' +
+      (res ? '<div class="res">Final: ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
+    let cuerpo;
+    if(!filas.length){
+      cuerpo = '<div class="sin">Todavía nadie ha pronosticado en este partido' + (lock ? '.' : ' — ¡sé la primera persona y asegura la prioridad! ⏱️') + '</div>';
+    } else {
+      cuerpo = '<table><thead><tr><th>#</th><th>Participante</th><th>Apuesta</th><th>Hora del registro</th>' + (res ? '<th>Puntos</th>' : '') + '</tr></thead><tbody>';
+      filas.forEach((f, i) => {
+        const mio = yo && f.u.id === yo.id;
+        let marca = "";
+        if(filas.filter(x => x.h===f.h && x.a===f.a).length > 1){
+          marca = f.prim ? '<span class="badge-prim">🥇 1° con este marcador</span>' : '<span class="badge-rep">repetida</span>';
+        }
+        let pts = "";
+        if(res){
+          const pu = puntosDe([f.h, f.a], res);
+          pts = '<td><span class="pill pts'+pu+'">'+(pu===3?'+3':pu===1?'+1':'0')+'</span></td>';
+        }
+        cuerpo += '<tr class="'+(mio?'mio':'')+'"><td>'+(i+1)+'</td><td><b>'+esc(f.u.nombre)+'</b>' + (mio ? ' (tú)' : '') +
+          '<br><span style="color:var(--gris); font-size:11.5px">'+esc(f.u.area||"")+'</span></td>' +
+          '<td class="ap">'+esc(f.h)+'–'+esc(f.a)+marca+'</td>' +
+          '<td class="hora-ap">'+(f.t ? horaApuesta(f.t) : "—")+'</td>' + pts + '</tr>';
+      });
+      cuerpo += '</tbody></table>';
+    }
+    html += '<div class="mcard' + (resaltarMatch === id ? ' resaltado' : '') + '" id="apu-' + id + '">' + head + cuerpo + '</div>';
+  });
+  zona.innerHTML = html;
+  if(resaltarMatch){
+    const el = document.getElementById("apu-" + resaltarMatch);
+    if(el) setTimeout(() => el.scrollIntoView({behavior:"smooth", block:"center"}), 150);
+  }
+}
+
+/* ================== TABLA ================== */
+async function cargarTabla(){
+  const zona = $("tabla-zona");
+  zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
+  try{
+    participantes = await dbGetParticipantes();
+    resultados = await dbGetResultados();
+    predsTodos = await dbGetPredsTodos();
+  }catch(e){ zona.innerHTML = '<div class="vacio">No se pudo calcular la tabla: '+esc(e.message || e)+'</div>'; return; }
+  if(!participantes.length){ zona.innerHTML = '<div class="vacio">Aún no hay participantes inscritos. ¡Sé la primera persona en llenar sus pronósticos!</div>'; return; }
+  const filas = participantes.map(u => {
+    const preds = predsTodos[u.id] || {};
+    let pts = 0, exactos = 0, aciertos = 0, jugados = 0;
+    Object.keys(resultados).forEach(mid => {
+      const pu = puntosDe(preds[mid], resultados[mid]);
+      if(pu === null) return;
+      jugados++;
+      if(pu === 3){ pts += 3; exactos++; }
+      else if(pu === 1){ pts += 1; aciertos++; }
+    });
+    return {u, pts, exactos, aciertos, jugados};
+  });
+  filas.sort((a,b) => b.pts - a.pts || b.exactos - a.exactos || a.u.t - b.u.t);
+  let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pronósticos<br>evaluadas</th><th class="num">Puntos</th></tr></thead><tbody>';
+  filas.forEach((f,i) => {
+    const cls = [];
+    if(i===0) cls.push("podio-1"); if(i===1) cls.push("podio-2"); if(i===2) cls.push("podio-3");
+    if(yo && f.u.id === yo.id) cls.push("yo");
+    h += '<tr class="'+cls.join(" ")+'"><td class="pos">'+(i+1)+'</td><td><b>'+esc(f.u.nombre)+'</b></td><td>'+esc(f.u.area||"—")+'</td>' +
+      '<td class="num">'+f.exactos+'</td><td class="num">'+f.aciertos+'</td><td class="num">'+f.jugados+'</td><td class="num total">'+f.pts+'</td></tr>';
+  });
+  h += '</tbody></table></div>';
+  if(!Object.keys(resultados).length) h += '<p style="margin-top:12px; font-size:13px; color:var(--gris)">Todavía no se ha capturado ningún resultado oficial: todos arrancan en cero. La tabla cobrará vida con el primer partido. ⚽</p>';
+  zona.innerHTML = h;
+}
+
+/* ================== ADMIN ================== */
+let adminOk = false;
+async function prepararAdmin(){
+  if(adminOk){ pintarAdmin(); return; }
+  try{
+    const hayPin = await dbAdminPinExiste();
+    $("pin-crear-zona").style.display = hayPin ? "none" : "block";
+    $("pin-entrar-zona").style.display = hayPin ? "block" : "none";
+    $("btn-pin").textContent = hayPin ? "Entrar" : "Crear PIN y entrar";
+  }catch(e){ $("pin-aviso").className="aviso err"; $("pin-aviso").textContent="No se pudo validar la configuración: "+(e.message||e); }
+}
+let adminPinActual = null;
+async function validarPin(){
+  const av = $("pin-aviso"); av.className = "aviso";
+  try{
+    const hayPin = await dbAdminPinExiste();
+    if(hayPin){
+      const pin = $("pin-input").value.trim();
+      const ok = await dbValidarAdminPin(pin);
+      if(ok){ adminOk = true; adminPinActual = pin; mostrarAdmin(); }
+      else { av.className = "aviso err"; av.textContent = "PIN incorrecto."; }
+    } else {
+      const nuevo = $("pin-nuevo").value.trim();
+      if(!/^\d{4,8}$/.test(nuevo)){ av.className = "aviso err"; av.textContent = "El PIN debe tener entre 4 y 8 dígitos."; return; }
+      const ok = await dbCrearAdminPin(nuevo);
+      if(!ok){ av.className = "aviso err"; av.textContent = "No se pudo guardar el PIN. Intenta de nuevo."; return; }
+      adminOk = true; adminPinActual = nuevo; mostrarAdmin();
+    }
+  }catch(e){ av.className = "aviso err"; av.textContent = "Error de administrador: " + (e.message || e); }
+}
+async function mostrarAdmin(){
+  $("admin-gate").style.display = "none";
+  $("admin-zona").style.display = "block";
+  resultados = await dbGetResultados();
+  pintarAdmin();
+}
+function pintarAdmin(){
+  if(!adminOk) return;
+  $("admin-gate").style.display = "none";
+  $("admin-zona").style.display = "block";
+  let h = ""; let diaAct = "";
+  PARTIDOS.forEach(p => {
+    const [id, fecha, hora, ho, aw] = p;
+    if(fecha !== diaAct){
+      if(diaAct !== "") h += '</div>';
+      diaAct = fecha;
+      h += '<div class="dia-sep">' + nombreDia(fecha) + '<span>CAPTURA DE RESULTADOS</span></div><div class="partidos">';
+    }
+    const eh = EQUIPOS[ho], ea = EQUIPOS[aw];
+    const r = resultados[id] || ["",""];
+    h += '<div class="pcard"><div class="eq"><span class="bandera">'+eh[1]+'</span><span class="nom">'+eh[0]+'<span class="grupo">'+hora+' HN</span></span></div>' +
+      '<div class="marcador"><input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setRes(\''+id+'\',0,this.value)"><span class="vs">–</span>' +
+      '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setRes(\''+id+'\',1,this.value)"></div>' +
+      '<div class="eq der"><span class="bandera">'+ea[1]+'</span><span class="nom">'+ea[0]+'</span></div></div>';
+  });
+  h += '</div>';
+  $("admin-lista").innerHTML = h;
+}
+function setRes(id, lado, val){
+  if(!resultados[id]) resultados[id] = ["",""];
+  const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
+  resultados[id][lado] = v === "" ? "" : String(v);
+  if(resultados[id][0]==="" && resultados[id][1]==="") delete resultados[id];
+}
+async function guardarResultados(){
+  const av = $("adm-aviso");
+  const limpio = {};
+  Object.keys(resultados).forEach(k => { const r = resultados[k]; if(r[0]!=="" && r[1]!=="") limpio[k] = r; });
+  try{
+    for(const k of Object.keys(limpio)){
+      await dbGuardarResultado(adminPinActual, k, limpio[k][0], limpio[k][1]);
+    }
+    resultados = await dbGetResultados();
+    av.className = "aviso ok";
+    av.textContent = "✓ Resultados guardados. La tabla de posiciones ya está actualizada.";
+  }catch(e){
+    av.className = "aviso err";
+    av.textContent = "No se pudo guardar: " + (e.message || e);
+  }
+  setTimeout(()=>{ av.className = "aviso"; }, 5000);
+}
+
+/* ================== ARRANQUE ================== */
+activarTiempoReal();
+cargarInicio();
+</script>
+</body>
+</html>
