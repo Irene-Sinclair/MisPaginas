@@ -43,10 +43,11 @@
   @media (prefers-reduced-motion: reduce){ .pagina.visible{animation:none} }
 
   .hero{background:var(--asfalto); color:#fff; border-radius:14px; overflow:hidden; margin-bottom:28px}
-  .hero-int{padding:42px 36px 36px; position:relative}
-  .hero h1{font-family:var(--display); font-size:clamp(30px,5.5vw,58px); line-height:.98; text-transform:uppercase}
+  .hero-int{padding:42px 36px 36px; position:relative; display:grid; grid-template-columns:minmax(0,1.55fr) minmax(330px,.78fr); gap:34px; align-items:stretch}
+  .hero-copy{min-width:0; display:flex; flex-direction:column; align-items:flex-start}
+  .hero h1{font-family:var(--display); font-size:clamp(30px,5.2vw,58px); line-height:.98; text-transform:uppercase}
   .hero h1 .amar{color:var(--amarillo)}
-  .hero p.sub{margin-top:14px; color:#D8CEC7; font-size:16px; max-width:560px}
+  .hero p.sub{margin-top:14px; color:#D8CEC7; font-size:16px; max-width:650px}
   .hero .cta{margin-top:24px; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
   .btn{font-family:var(--body); font-weight:700; font-size:14px; letter-spacing:.04em; border:none; cursor:pointer;
     padding:13px 22px; border-radius:8px; background:var(--rojo); color:#fff; transition:transform .12s ease, background .12s ease}
@@ -57,7 +58,7 @@
   .btn.peq{padding:8px 14px; font-size:13px}
   .btn:disabled{opacity:.45; cursor:not-allowed; transform:none}
 
-  .reloj{margin-top:30px; background:var(--humo); border:1px solid var(--linea); border-radius:10px; padding:18px 20px; max-width:560px}
+  .reloj{margin-top:30px; background:var(--humo); border:1px solid var(--linea); border-radius:10px; padding:18px 20px; width:min(100%,700px)}
   .reloj .et{font-size:11px; font-weight:700; letter-spacing:.2em; color:var(--amarillo); text-transform:uppercase}
   .reloj .partido{font-family:var(--display); font-size:20px; margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
   .reloj .partido .flag-img.mini{width:38px; min-width:38px; height:28px; margin:0 2px}
@@ -65,6 +66,35 @@
   .reloj .d{text-align:center}
   .reloj .d b{font-family:var(--display); font-size:30px; font-variant-numeric:tabular-nums; display:block; color:#fff}
   .reloj .d span{font-size:10px; letter-spacing:.15em; color:#A99C93; text-transform:uppercase}
+
+  .hero-live{display:flex; flex-direction:column; min-width:0; min-height:330px; background:#1B1512; border:1px solid #493A33; border-radius:14px; overflow:hidden; box-shadow:0 18px 42px rgba(0,0,0,.28)}
+  .hero-live.ver{border-color:rgba(204,31,43,.75); box-shadow:0 18px 46px rgba(204,31,43,.15)}
+  .hero-live-head{padding:17px 18px; background:#251D19; border-bottom:1px solid #493A33; display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .hero-live-title{min-width:0}
+  .hero-live-head h3{margin:0; color:#fff; font-family:var(--display); font-size:18px; text-transform:uppercase; display:flex; align-items:center; gap:9px}
+  .hero-live-head p{margin:4px 0 0; color:#AFA19A; font-size:10.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase}
+  .hero-live-icon{width:10px; height:10px; flex:0 0 10px; border-radius:50%; background:#756760; box-shadow:0 0 0 4px rgba(117,103,96,.12)}
+  .hero-live.ver .hero-live-icon{background:#29C66F; animation:livePulse 1.8s infinite}
+  .hero-live-status{flex:0 0 auto; color:#D8CEC7; border:1px solid #5A4941; background:#17110F; padding:6px 9px; border-radius:20px; font-size:9.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase}
+  .hero-live.ver .hero-live-status{color:#101B14; background:#7BE6A5; border-color:#7BE6A5}
+  .hero-live-body{flex:1; display:flex; align-items:center; justify-content:center; padding:18px; background:radial-gradient(circle at 50% 20%,rgba(245,194,0,.06),transparent 48%),#17120F}
+  .hero-live-empty{text-align:center; width:100%; padding:28px 18px; color:#C9BDB5}
+  .hero-live-empty-mark{width:52px; height:52px; margin:0 auto 14px; border:2px solid #594940; border-radius:50%; position:relative; opacity:.9}
+  .hero-live-empty-mark::before,.hero-live-empty-mark::after{content:""; position:absolute; background:#594940; left:50%; top:50%; transform:translate(-50%,-50%)}
+  .hero-live-empty-mark::before{width:24px; height:2px}
+  .hero-live-empty-mark::after{width:2px; height:24px}
+  .hero-live-empty b{display:block; color:#fff; font-family:var(--display); font-size:17px; text-transform:uppercase; margin-bottom:7px}
+  .hero-live-empty p{margin:0 auto; max-width:260px; color:#AFA19A; font-size:13px; line-height:1.5}
+  .hero-live-list{display:grid; width:100%; gap:12px}
+  .hero-live-match{width:100%; background:#211916; border:1px solid #4B3C35; border-left:5px solid var(--rojo); border-radius:11px; padding:14px}
+  .hero-live-match-top{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:15px}
+  .hero-live-phase{color:#BDB0A8; font-size:10.5px; text-align:right}
+  .hero-scoreboard{display:grid; grid-template-columns:minmax(0,1fr) auto minmax(0,1fr); gap:10px; align-items:center}
+  .hero-team{display:flex; flex-direction:column; align-items:center; gap:8px; min-width:0; text-align:center}
+  .hero-team strong{font-family:var(--display); font-size:13px; line-height:1.1; color:#fff; overflow-wrap:anywhere}
+  .hero-team .flag-img.mini{width:46px; min-width:46px; height:32px; margin:0}
+  .hero-score{display:flex; align-items:center; gap:7px; color:#fff; font-family:var(--display); font-size:clamp(30px,3.2vw,44px); font-variant-numeric:tabular-nums; white-space:nowrap}
+  .hero-score span{color:var(--amarillo); font-size:.62em}
 
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-bottom:32px}
   .stat{background:var(--papel); border:1px solid var(--gris-c); border-radius:12px; padding:20px}
@@ -102,6 +132,15 @@
   .campo label{display:block; font-size:13px; font-weight:700; margin-bottom:6px; letter-spacing:.03em}
   .campo input{width:100%; padding:12px 14px; font-family:var(--body); font-size:15px; border:2px solid var(--gris-c); border-radius:8px; background:var(--hueso)}
   .campo input:focus{border-color:var(--rojo)}
+  .password-box{position:relative}
+  .password-box input{padding-right:50px}
+  .password-toggle{position:absolute; right:7px; top:50%; transform:translateY(-50%); width:38px; height:38px; border:none; border-radius:8px;
+    background:transparent; color:var(--gris); display:flex; align-items:center; justify-content:center; cursor:pointer}
+  .password-toggle:hover{background:#EEE8DF; color:var(--rojo)}
+  .password-toggle:focus-visible{outline:3px solid var(--amarillo); outline-offset:1px}
+  .password-toggle svg{width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round}
+  .password-toggle .eye-slash{display:none}
+  .password-toggle.visible .eye-slash{display:block}
   .aviso{margin-top:14px; padding:12px 14px; border-radius:8px; font-size:13.5px; line-height:1.5; display:none}
   .aviso.err{display:block; background:#FBE9EA; color:var(--rojo-d); border:1px solid #F0C2C6}
   .aviso.ok{display:block; background:#E8F6EE; color:var(--verde); border:1px solid #BFE4CE}
@@ -270,6 +309,40 @@
   .btn.peligro{background:#7D1B1B; color:#fff}
   .btn.peligro:hover{background:#5F1111}
 
+  /* Puntuación en vivo */
+  .live-score{background:var(--papel); border:1px solid var(--gris-c); border-radius:14px; overflow:hidden; margin:0 0 32px; box-shadow:0 8px 22px rgba(21,17,15,.07)}
+  .live-score-head{background:var(--asfalto); color:#fff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap}
+  .live-score-head h2{font-family:var(--display); font-size:20px; text-transform:uppercase; display:flex; align-items:center; gap:9px}
+  .live-score-head p{font-size:12.5px; color:#B7AAA2; margin-top:4px}
+  .live-status{display:inline-flex; align-items:center; gap:7px; color:var(--amarillo); font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase}
+  .live-dot{width:10px; height:10px; border-radius:50%; background:#29C66F; box-shadow:0 0 0 0 rgba(41,198,111,.55); animation:livePulse 1.8s infinite}
+  @keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(41,198,111,.55)}70%{box-shadow:0 0 0 9px rgba(41,198,111,0)}100%{box-shadow:0 0 0 0 rgba(41,198,111,0)}}
+  .live-score-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; padding:16px}
+  .live-card{border:1px solid var(--gris-c); border-radius:11px; overflow:hidden; background:var(--hueso)}
+  .live-card h3{font-family:var(--display); font-size:14px; text-transform:uppercase; padding:12px 14px; background:#fff; border-bottom:1px solid var(--gris-c)}
+  .live-card h3 small{display:block; font-family:var(--body); color:var(--gris); font-size:10.5px; margin-top:3px; letter-spacing:.04em}
+  .live-table{width:100%; border-collapse:collapse; font-size:12.5px}
+  .live-table th{font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); padding:8px 10px; text-align:left; background:#F1ECE4}
+  .live-table td{padding:9px 10px; border-top:1px solid var(--gris-c)}
+  .live-table td.num,.live-table th.num{text-align:center; font-variant-numeric:tabular-nums}
+  .live-table tr.live-me td{background:#FFF3C4}
+  .live-pos{font-family:var(--display); color:var(--rojo)}
+  .live-empty{padding:18px; color:var(--gris); font-size:13px; line-height:1.5}
+  .live-placeholder{background:#130F0D; overflow:hidden}
+  .live-placeholder img{display:block; width:100%; height:auto; object-fit:contain}
+  .live-foot{padding:0 16px 14px; color:var(--gris); font-size:11.5px; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+.live-next{margin-top:0; max-width:none; background:var(--humo)}
+.live-next-note{margin-top:8px; color:var(--gris); font-size:12px; line-height:1.45}
+  .live-partidos{display:grid; gap:10px; padding:14px}
+  .live-partido{background:var(--asfalto); color:#fff; border-radius:11px; padding:13px 14px; border-left:5px solid var(--rojo)}
+  .live-partido-top{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap}
+  .live-partido-equipos{display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-weight:800}
+  .live-partido-marcador{font-family:var(--display); font-size:22px; color:var(--amarillo); white-space:nowrap}
+  .live-partido-meta{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; color:#CFC5BE; font-size:11.5px}
+  .live-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(204,31,43,.18); border:1px solid rgba(204,31,43,.45); color:#FFD8DB; padding:4px 8px; border-radius:20px; font-size:10.5px; font-weight:800; letter-spacing:.08em}
+  .live-badge::before{content:""; width:8px; height:8px; border-radius:50%; background:#FF3547; animation:livePulse 1.3s infinite}
+
+
 
   footer{background:var(--asfalto); color:#A99C93; font-size:12.5px; text-align:center; padding:22px}
   footer b{color:var(--amarillo)}
@@ -278,6 +351,11 @@
     padding:13px 20px; border-radius:10px; font-size:14px; font-weight:600; box-shadow:0 10px 26px rgba(0,0,0,.35);
     z-index:99; display:none; border-left:5px solid var(--amarillo)}
   .toast.ver{display:block; animation:entra .2s ease}
+
+  @media(max-width:980px){
+    .hero-int{grid-template-columns:1fr; gap:26px}
+    .hero-live{min-height:290px}
+  }
 
   @media(max-width:640px){
     .barra{padding:10px 14px} nav{width:100%; justify-content:space-between} nav button{padding:8px 7px; font-size:11.5px}
@@ -289,6 +367,13 @@
     .mcard-head .res{margin-left:0; width:100%}
     .partido-nav{padding:8px}
     .partido-nav button{min-width:118px; padding:8px 9px; font-size:12px}
+    .live-score-head{padding:14px 16px}
+    .live-score-grid{padding:12px; grid-template-columns:1fr}
+    .hero-int{grid-template-columns:1fr; padding:28px 22px; gap:24px}
+    .hero-live{min-height:300px}
+    .hero-live-body{padding:14px}
+    .hero-scoreboard{gap:7px}
+    .hero-team strong{font-size:12px}
   }
 </style>
 </head>
@@ -317,22 +402,42 @@
   <section class="pagina visible" id="pag-inicio">
     <div class="hero">
       <div class="hero-int">
-        <h1>El Mundial<br>se juega también<br><span class="amar">en la oficina.</span></h1>
-        <p class="sub">Cada día se activan los partidos de la jornada: pronostica el marcador, mira al instante los pronósticos de tus compañeros y pelea el primer lugar de CREDIDEMO. Actividad recreativa interna, sin dinero de por medio. Estados Unidos, México y Canadá · 11 de junio – 19 de julio.</p>
-        <div class="cta">
-          <button class="btn" onclick="irA('quiniela')">Registrar pronósticos de hoy</button>
-          <button class="btn sec" onclick="irA('apuestas')">Ver pronósticos de la oficina</button>
-        </div>
-        <div class="reloj" id="reloj" style="display:none">
-          <div class="et" id="reloj-et">Próximo partido</div>
-          <div class="partido" id="reloj-partido">—</div>
-          <div class="digitos">
-            <div class="d"><b id="cd-d">0</b><span>días</span></div>
-            <div class="d"><b id="cd-h">0</b><span>horas</span></div>
-            <div class="d"><b id="cd-m">0</b><span>min</span></div>
-            <div class="d"><b id="cd-s">0</b><span>seg</span></div>
+        <div class="hero-copy">
+          <h1>El Mundial<br>se juega también<br><span class="amar">en la oficina.</span></h1>
+          <p class="sub">Cada día se activan los partidos de la jornada: pronostica el marcador, mira al instante los pronósticos de tus compañeros y pelea el primer lugar de CREDIDEMO. Actividad recreativa interna, sin dinero de por medio. Estados Unidos, México y Canadá · 11 de junio – 19 de julio.</p>
+          <div class="cta">
+            <button class="btn" onclick="irA('quiniela')">Registrar pronósticos de hoy</button>
+            <button class="btn sec" onclick="irA('apuestas')">Ver pronósticos de la oficina</button>
+          </div>
+
+          <div class="reloj" id="reloj" style="display:none">
+            <div class="et" id="reloj-et">Próximo partido</div>
+            <div class="partido" id="reloj-partido">—</div>
+            <div class="digitos">
+              <div class="d"><b id="cd-d">0</b><span>días</span></div>
+              <div class="d"><b id="cd-h">0</b><span>horas</span></div>
+              <div class="d"><b id="cd-m">0</b><span>min</span></div>
+              <div class="d"><b id="cd-s">0</b><span>seg</span></div>
+            </div>
           </div>
         </div>
+
+        <aside class="hero-live" id="hero-live" aria-live="polite">
+          <div class="hero-live-head">
+            <div class="hero-live-title">
+              <h3><span class="hero-live-icon"></span>Partidos en vivo</h3>
+              <p>Jornada actual</p>
+            </div>
+            <div class="hero-live-status" id="hero-live-status">En espera</div>
+          </div>
+          <div class="hero-live-body" id="live-hero-zona">
+            <div class="hero-live-empty">
+              <div class="hero-live-empty-mark" aria-hidden="true"></div>
+              <b>Aún no hay partidos en vivo</b>
+              <p>El marcador aparecerá aquí cuando comience el encuentro.</p>
+            </div>
+          </div>
+        </aside>
       </div>
       <div class="franja"></div>
     </div>
@@ -344,13 +449,24 @@
       <div class="stat"><b id="st-total">—</b><span>Partidos configurados</span></div>
     </div>
 
+    <div class="live-score" aria-live="polite">
+      <div class="live-score-head">
+        <div>
+          <h2><span class="live-dot"></span>Posiciones en vivo</h2>
+          <p>Sigue cómo se mueve la jornada y la tabla general.</p>
+        </div>
+        <div class="live-status">Actualizando</div>
+      </div>
+      <div id="live-score-zona"><div class="live-empty">Cargando posiciones en vivo…</div></div>
+    </div>
+
     <div class="cinta-mini"></div>
     <h2 class="titulo">¿Cómo funciona?</h2>
     <p class="bajada">Cada día del Mundial es una nueva jornada de pronósticos.</p>
     <div class="pasos">
-      <div class="paso"><h3>1 · Regístrate</h3><p>Entra a "Mis pronósticos", escribe tu nombre y tu área. Solo se hace una vez en este dispositivo.</p></div>
+      <div class="paso"><h3>1 · Regístrate</h3><p>Crea tu usuario con nombre, área y PIN personal. Después solo entrarás con usuario y PIN.</p></div>
       <div class="paso"><h3>2 · Pronostica el día</h3><p>Solo están activos los partidos del día en curso. Escribe el marcador, presiona guardar y tu pronóstico queda registrado con fecha y hora.</p></div>
-      <div class="paso"><h3>3 · Compara y compite</h3><p>Al registrar verás de inmediato los pronósticos de toda la oficina. Si dos personas repiten marcador, la prioridad es de quien registró primero.</p></div>
+      <div class="paso"><h3>3 · Compara y compite</h3><p>Después de completar la jornada podrás comparar pronósticos y seguir la puntuación provisional en vivo.</p></div>
     </div>
   </section>
 
@@ -417,12 +533,22 @@
       <div class="tarjeta">
         <div class="campo" id="pin-crear-zona" style="display:none">
           <label for="pin-nuevo">Crea el PIN del administrador (4–8 dígitos)</label>
-          <input id="pin-nuevo" maxlength="8" inputmode="numeric" placeholder="Ej. 2026">
+          <div class="password-box">
+            <input id="pin-nuevo" type="password" maxlength="8" inputmode="numeric" autocomplete="new-password" placeholder="••••">
+            <button type="button" class="password-toggle" onclick="togglePinVisibility('pin-nuevo', this)" aria-label="Mostrar PIN" title="Mostrar PIN">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle><path class="eye-slash" d="M4 4l16 16"></path></svg>
+            </button>
+          </div>
           <p style="font-size:12.5px; color:var(--gris); margin-top:6px">Aún no existe un PIN. La primera persona que lo cree será quien administre los resultados.</p>
         </div>
         <div class="campo" id="pin-entrar-zona" style="display:none">
           <label for="pin-input">PIN del administrador</label>
-          <input id="pin-input" maxlength="8" inputmode="numeric" placeholder="••••">
+          <div class="password-box">
+            <input id="pin-input" type="password" maxlength="8" inputmode="numeric" autocomplete="current-password" placeholder="••••">
+            <button type="button" class="password-toggle" onclick="togglePinVisibility('pin-input', this)" aria-label="Mostrar PIN" title="Mostrar PIN">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle><path class="eye-slash" d="M4 4l16 16"></path></svg>
+            </button>
+          </div>
         </div>
         <button class="btn" id="btn-pin" onclick="validarPin()">Entrar</button>
         <div class="aviso" id="pin-aviso"></div>
@@ -464,7 +590,7 @@
 
       <div class="cinta-mini"></div>
       <h2 class="titulo">Captura de resultados</h2>
-      <p class="bajada">Captura los marcadores reales. Al guardar, Supabase actualiza la tabla general y los ganadores por día.</p>
+      <p class="bajada">Captura o corrige los marcadores oficiales y consulta la clasificación.</p>
       <div id="admin-lista"></div>
       <div class="guardar-flot"><button class="btn" onclick="guardarResultados()">Guardar resultados</button></div>
       <div class="aviso" id="adm-aviso"></div>
@@ -494,6 +620,8 @@
   Quiniela interna · <b>CREDIDEMO</b> · Mundial Estados Unidos, México y Canadá 2026 · Hecho por <b>Irene Sinclair</b> · Hecho con ⚽ para la oficina
 </footer>
 
+
+
 <div class="toast" id="toast"></div>
 
 <div class="auth-modal" id="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
@@ -506,13 +634,15 @@
       <button class="auth-close" onclick="cerrarAuthModal()">Cerrar</button>
     </div>
     <div class="auth-body">
-      <div class="auth-msg">Para ver pronósticos de la oficina primero debes registrar tus propios marcadores de la jornada activa. Todo queda guardado en Supabase por usuario y partido.</div>
+      <div class="auth-msg">Para ver los pronósticos de la oficina primero debes registrar tus propios marcadores de la jornada activa.</div>
       <div class="login-grid">
         <div class="tarjeta">
           <h3>Ya estoy registrado</h3>
           <p class="nota">Después del primer registro solo necesitas tu usuario y PIN personal.</p>
           <div class="campo"><label for="login-usuario">Usuario</label><input id="login-usuario" maxlength="30" autocomplete="username" placeholder="Ej. irene"></div>
-          <div class="campo"><label for="login-pin">PIN personal</label><input id="login-pin" maxlength="8" inputmode="numeric" autocomplete="current-password" placeholder="••••"></div>
+          <div class="campo"><label for="login-pin">PIN personal</label><div class="password-box"><input id="login-pin" type="password" maxlength="8" inputmode="numeric" autocomplete="current-password" placeholder="••••"><button type="button" class="password-toggle" onclick="togglePinVisibility('login-pin', this)" aria-label="Mostrar PIN" title="Mostrar PIN">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle><path class="eye-slash" d="M4 4l16 16"></path></svg>
+            </button></div></div>
           <button class="btn" onclick="loginParticipante()">Entrar</button>
           <div class="aviso" id="login-aviso"></div>
         </div>
@@ -522,7 +652,9 @@
           <p class="nota">El área solo se pide al crear el usuario. Luego entrarás únicamente con usuario y PIN.</p>
           <div class="campo"><label for="reg-nombre">Tu nombre</label><input id="reg-nombre" maxlength="40" autocomplete="name" placeholder="Ej. Irene Sinclair"></div>
           <div class="campo"><label for="reg-usuario">Usuario</label><input id="reg-usuario" maxlength="30" autocomplete="username" placeholder="Ej. irene"></div>
-          <div class="campo"><label for="reg-pin">PIN personal (4–8 dígitos)</label><input id="reg-pin" maxlength="8" inputmode="numeric" autocomplete="new-password" placeholder="Ej. 2026"></div>
+          <div class="campo"><label for="reg-pin">PIN personal (4–8 dígitos)</label><div class="password-box"><input id="reg-pin" type="password" maxlength="8" inputmode="numeric" autocomplete="new-password" placeholder="••••"><button type="button" class="password-toggle" onclick="togglePinVisibility('reg-pin', this)" aria-label="Mostrar PIN" title="Mostrar PIN">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle><path class="eye-slash" d="M4 4l16 16"></path></svg>
+            </button></div></div>
           <div class="campo"><label for="reg-area">Área o departamento</label><input id="reg-area" maxlength="40" placeholder="Ej. Inteligencia de Negocios"></div>
           <button class="btn" onclick="registrar()">Crear usuario</button>
           <div class="aviso" id="reg-aviso"></div>
@@ -813,6 +945,32 @@ async function dbGetResultados(){
   (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita)]);
   return out;
 }
+async function dbGetLiveSync(){
+  if(!modoNube()) return {};
+  const {data, error} = await SB.from("quiniela_live_sync")
+    .select("match_id,provider_fixture_id,status_short,status_long,elapsed,extra,goles_local,goles_visita,is_live,is_finished,last_provider_at,updated_at,provider_home,provider_away");
+  if(error) throw error;
+  const out = {};
+  (data || []).forEach(r => {
+    out[r.match_id] = {
+      fixtureId: r.provider_fixture_id,
+      statusShort: r.status_short || "",
+      statusLong: r.status_long || "",
+      elapsed: r.elapsed,
+      extra: r.extra,
+      golesLocal: r.goles_local,
+      golesVisita: r.goles_visita,
+      isLive: !!r.is_live,
+      isFinished: !!r.is_finished,
+      providerHome: r.provider_home || "",
+      providerAway: r.provider_away || "",
+      lastProviderAt: r.last_provider_at ? new Date(r.last_provider_at).getTime() : null,
+      updatedAt: r.updated_at ? new Date(r.updated_at).getTime() : null
+    };
+  });
+  return out;
+}
+
 async function dbGetMisPred(userId){
   if(!modoNube()){
     const mp = await stGet("mundial:pred:" + userId, true);
@@ -898,11 +1056,12 @@ function activarTiempoReal(){
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_participantes"}, refrescarVistaActual)
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_predicciones"}, refrescarVistaActual)
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_resultados"}, refrescarVistaActual)
+    .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_live_sync"}, refrescarVistaActual)
     .subscribe();
 }
 function refrescarVistaActual(){
   const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
-  if(pag === "inicio") cargarInicio();
+  if(pag === "inicio") refrescarInicioEnVivo();
   if(pag === "quiniela") cargarQuiniela();
   if(pag === "apuestas") cargarPronósticos();
   if(pag === "posiciones") cargarTabla();
@@ -912,7 +1071,8 @@ function refrescarVistaActual(){
 /* ================== ESTADO ================== */
 let yo = null;                 // {id, nombre, area}
 let participantes = [];        // [{id, nombre, area, t}]
-let resultados = {};           // {matchId:[h,a]}
+let resultados = {};           // resultados oficiales {matchId:[h,a]}
+let liveSync = {};             // marcador automático por partido
 let misPred = {};              // {matchId:[h,a,t]}
 let predsTodos = {};           // {userId:{matchId:[h,a,t]}}
 let editandoPred = {};          // {matchId:true} para habilitar edición visual antes del cierre
@@ -949,6 +1109,7 @@ function irA(p){
   if(p === "inicio") cargarInicio();
 }
 
+
 function abrirAuthModal(){
   const modal = $("auth-modal");
   if(modal) modal.classList.add("ver");
@@ -958,10 +1119,30 @@ function cerrarAuthModal(){
   const modal = $("auth-modal");
   if(modal) modal.classList.remove("ver");
 }
+function sesionGet(){
+  try{ return window.sessionStorage.getItem("mundial:sesion"); }catch(e){ return null; }
+}
+function sesionSet(data){
+  try{ window.sessionStorage.setItem("mundial:sesion", JSON.stringify(data)); return true; }catch(e){ return false; }
+}
+function sesionClear(){
+  try{ window.sessionStorage.removeItem("mundial:sesion"); }catch(e){}
+}
 async function cargarSesionLocal(){
-  const y = await stGet("mundial:yo", false);
-  yo = y ? JSON.parse(y) : null;
-  if(yo && (!yo.usuario || !yo.pin)){ await stSet("mundial:yo", "", false); yo = null; }
+  let raw = sesionGet();
+
+  // Migra una sesión antigua guardada en localStorage y elimina el PIN persistente.
+  if(!raw){
+    const anterior = await stGet("mundial:yo", false);
+    if(anterior){
+      raw = anterior;
+      await stSet("mundial:yo", "", false);
+      try{ const tmp = JSON.parse(anterior); if(tmp && tmp.usuario && tmp.pin) sesionSet(tmp); }catch(e){}
+    }
+  }
+
+  try{ yo = raw ? JSON.parse(raw) : null; }catch(e){ yo = null; }
+  if(yo && (!yo.usuario || !yo.pin)){ sesionClear(); yo = null; }
   updateAuthUI();
   return yo;
 }
@@ -980,6 +1161,17 @@ function toggleAuth(){
   if(yo && yo.usuario) salir();
   else abrirAuthModal();
 }
+function togglePinVisibility(inputId, button){
+  const input = $(inputId);
+  if(!input || !button) return;
+  const mostrar = input.type === "password";
+  input.type = mostrar ? "text" : "password";
+  button.classList.toggle("visible", mostrar);
+  const texto = mostrar ? "Ocultar PIN" : "Mostrar PIN";
+  button.setAttribute("aria-label", texto);
+  button.title = texto;
+  input.focus();
+}
 
 /* ================== SELECTOR DE DÍAS ================== */
 function pintarDias(contId, sel, fn){
@@ -995,38 +1187,140 @@ function pintarDias(contId, sel, fn){
 }
 
 /* ================== INICIO ================== */
-async function cargarInicio(){
+function filasLiveHtml(ranking){
+  if(!ranking.length) return '<div class="live-empty">Todavía no hay pronósticos evaluados.</div>';
+  const visibles = ranking.slice(0,3);
+  const posYo = yo ? ranking.findIndex(r => r.u.id === yo.id) : -1;
+  if(posYo >= 3) visibles.push(ranking[posYo]);
+  return '<table class="live-table"><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th></tr></thead><tbody>' +
+    visibles.map(r => {
+      const pos = ranking.findIndex(x => x.u.id === r.u.id) + 1;
+      return '<tr class="'+(yo && r.u.id === yo.id ? 'live-me' : '')+'"><td class="live-pos">'+pos+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:10.5px">'+esc(r.u.area||'—')+'</span></td><td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td></tr>';
+    }).join('') + '</tbody></table>';
+}
+function pintarPartidoPrimeraPlana(){
+  const caja = $("hero-live");
+  const zona = $("live-hero-zona");
+  const estado = $("hero-live-status");
+  if(!caja || !zona) return;
+
+  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive);
+  if(!vivos.length){
+    caja.classList.remove("ver");
+    if(estado) estado.textContent = "En espera";
+    zona.innerHTML = '<div class="hero-live-empty">' +
+      '<div class="hero-live-empty-mark" aria-hidden="true"></div>' +
+      '<b>Aún no hay partidos en vivo</b>' +
+      '<p>El marcador aparecerá aquí cuando comience el encuentro.</p>' +
+      '</div>';
+    return;
+  }
+
+  caja.classList.add("ver");
+  if(estado) estado.textContent = vivos.length > 1 ? vivos.length + " en vivo" : "En vivo";
+  zona.innerHTML = '<div class="hero-live-list">' + vivos.map(p => {
+    const live = liveDe(p[0]);
+    const eh = equipo(p[3]), ea = equipo(p[4]);
+    return '<div class="hero-live-match">' +
+      '<div class="hero-live-match-top"><span class="live-badge">'+esc(minutoLive(live))+'</span><span class="hero-live-phase">'+esc(live.statusLong || "Partido en vivo")+'</span></div>' +
+      '<div class="hero-scoreboard">' +
+        '<div class="hero-team">'+banderaEquipo(p[3],"mini")+'<strong>'+esc(eh[0])+'</strong></div>' +
+        '<div class="hero-score"><b>'+esc(live.golesLocal)+'</b><span>–</span><b>'+esc(live.golesVisita)+'</b></div>' +
+        '<div class="hero-team">'+banderaEquipo(p[4],"mini")+'<strong>'+esc(ea[0])+'</strong></div>' +
+      '</div>' +
+      '</div>';
+  }).join("") + '</div>';
+}
+
+function pintarPuntuacionVivo(){
+  pintarPartidoPrimeraPlana();
+  const zona = $("live-score-zona");
+  if(!zona) return;
+
+  const idsGenerales = idsConMarcadorActual();
+  const fechasConMarcador = fechasDisponibles().filter(f =>
+    PARTIDOS.some(p => p[1] === f && resultadoActual(p[0]))
+  );
+  const fechaJornada = fechasConMarcador.includes(hoyHN())
+    ? hoyHN()
+    : fechasConMarcador[fechasConMarcador.length - 1];
+  const idsJornada = fechaJornada
+    ? PARTIDOS.filter(p => p[1] === fechaJornada && resultadoActual(p[0])).map(p => p[0])
+    : [];
+
+  const rankingDia = calcularRanking(idsJornada).filter(r => r.jugados > 0);
+  const rankingGeneral = calcularRanking(idsGenerales).filter(r => r.jugados > 0);
+  zona.innerHTML =
+    '<div class="live-score-grid">' +
+      '<div class="live-card"><h3>Jornada en vivo<small>'+(fechaJornada ? esc(nombreDia(fechaJornada)) : 'Próxima jornada')+'</small></h3>'+filasLiveHtml(rankingDia)+'</div>' +
+      '<div class="live-card"><h3>Tabla general<small>Clasificación acumulada</small></h3>'+filasLiveHtml(rankingGeneral)+'</div>' +
+    '</div>';
+}
+async function refrescarInicioEnVivo(){
   try{
-    await cargarSesionLocal();
     await cargarPartidos();
     participantes = await dbGetParticipantes();
     resultados = await dbGetResultados();
+    liveSync = await dbGetLiveSync();
+    predsTodos = await dbGetPredsTodos();
     $("st-part").textContent = participantes.length;
     $("st-jug").textContent = Object.keys(resultados).length;
     $("st-hoy").textContent = PARTIDOS.filter(p => p[1] === hoyHN()).length;
     if($("st-total")) $("st-total").textContent = PARTIDOS.length;
     iniciarReloj();
+    pintarPuntuacionVivo();
+  }catch(e){
+    const zona = $("live-score-zona");
+    const hero = $("hero-live");
+    const heroZona = $("live-hero-zona");
+    const heroEstado = $("hero-live-status");
+    if(hero) hero.classList.remove("ver");
+    if(heroEstado) heroEstado.textContent = "En espera";
+    if(heroZona) heroZona.innerHTML = '<div class="hero-live-empty"><div class="hero-live-empty-mark" aria-hidden="true"></div><b>Aún no hay partidos en vivo</b><p>El marcador aparecerá aquí cuando comience el encuentro.</p></div>';
+    if(zona) zona.innerHTML = '<div class="live-empty">Las posiciones se actualizarán en breve.</div>';
+  }
+}
+async function cargarInicio(){
+  try{
+    await cargarSesionLocal();
+    await refrescarInicioEnVivo();
     if(!yo) setTimeout(()=>abrirAuthModal(), 550);
   }catch(e){ toast("No se pudo cargar la nube: " + (e.message || e)); }
 }
 let relojInt = null;
 function iniciarReloj(){
-  const prox = PARTIDOS.find(p => !cerrado(p));
   const caja = $("reloj");
-  if(!prox){ caja.style.display = "none"; return; }
-  caja.style.display = "block";
+  const prox = PARTIDOS.find(p => !cerrado(p));
+  if(!prox){
+    if(caja) caja.style.display = "none";
+    return;
+  }
+  if(caja) caja.style.display = "block";
   const eh = equipo(prox[3]), ea = equipo(prox[4]);
-  $("reloj-partido").innerHTML = banderaEquipo(prox[3], "mini") + " <span>" + esc(eh[0]) + "</span> <span style='color:#A99C93'>vs</span> " + banderaEquipo(prox[4], "mini") + " <span>" + esc(ea[0]) + "</span>";
-  $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
+  const partidoHtml = banderaEquipo(prox[3], "mini") + " <span>" + esc(eh[0]) + "</span> <span style='color:#A99C93'>vs</span> " + banderaEquipo(prox[4], "mini") + " <span>" + esc(ea[0]) + "</span>";
+  if($("reloj-partido")) $("reloj-partido").innerHTML = partidoHtml;
+  if($("reloj-et")) $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
+  if($("live-reloj-partido")) $("live-reloj-partido").innerHTML = partidoHtml;
+  if($("live-reloj-et")) $("live-reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
   if(relojInt) clearInterval(relojInt);
   const tick = () => {
     let ms = fechaPartido(prox).getTime() - Date.now();
     if(ms <= 0){ iniciarReloj(); return; }
     const s = Math.floor(ms/1000);
-    $("cd-d").textContent = Math.floor(s/86400);
-    $("cd-h").textContent = Math.floor(s%86400/3600);
-    $("cd-m").textContent = Math.floor(s%3600/60);
-    $("cd-s").textContent = s%60;
+    const vals = {
+      d: Math.floor(s/86400),
+      h: Math.floor(s%86400/3600),
+      m: Math.floor(s%3600/60),
+      ss: s%60
+    };
+    if($("cd-d")) $("cd-d").textContent = vals.d;
+    if($("cd-h")) $("cd-h").textContent = vals.h;
+    if($("cd-m")) $("cd-m").textContent = vals.m;
+    if($("cd-s")) $("cd-s").textContent = vals.ss;
+    if($("live-cd-d")) $("live-cd-d").textContent = vals.d;
+    if($("live-cd-h")) $("live-cd-h").textContent = vals.h;
+    if($("live-cd-m")) $("live-cd-m").textContent = vals.m;
+    if($("live-cd-s")) $("live-cd-s").textContent = vals.ss;
   };
   tick(); relojInt = setInterval(tick, 1000);
 }
@@ -1043,6 +1337,7 @@ async function cargarQuiniela(){
   $("yo-ini").textContent = yo.nombre.trim().charAt(0).toUpperCase();
   try{
     resultados = await dbGetResultados();
+    liveSync = await dbGetLiveSync();
     misPred = await dbGetMisPred(yo.id);
   }catch(e){ toast("No se pudieron cargar tus pronósticos: " + (e.message || e)); }
   if(!diaQuin) diaQuin = diaDefecto();
@@ -1064,7 +1359,9 @@ async function loginParticipante(){
   try{
     const data = await dbLoginParticipante(usuario, pin);
     yo = {id:data.id, nombre:data.nombre, usuario:data.usuario || usuario, area:data.area || "", pin};
-    await stSet("mundial:yo", JSON.stringify(yo), false);
+    sesionSet(yo);
+    await stSet("mundial:yo", "", false);
+    $("login-pin").value = "";
     toast("Bienvenido/a, " + yo.nombre + ".");
     cerrarAuthModal();
     updateAuthUI();
@@ -1083,7 +1380,9 @@ async function registrar(){
   try{
     const data = await dbRegistrarParticipante({nombre, usuario, area, pin});
     yo = {id:data.id, nombre:data.nombre, usuario:data.usuario || usuario, area:data.area || area, pin};
-    await stSet("mundial:yo", JSON.stringify(yo), false);
+    sesionSet(yo);
+    await stSet("mundial:yo", "", false);
+    $("reg-pin").value = "";
     toast("Usuario creado correctamente.");
     cerrarAuthModal();
     updateAuthUI();
@@ -1092,6 +1391,7 @@ async function registrar(){
 }
 async function salir(){
   if(!confirm("¿Cerrar sesión o cambiar de usuario en este dispositivo? Tus pronósticos guardados no se pierden.")) return;
+  sesionClear();
   await stSet("mundial:yo", "", false);
   yo = null; updateAuthUI(); cargarQuiniela();
 }
@@ -1105,6 +1405,70 @@ function puntosDe(pred, res){
   if(Math.sign(ph-pa) === Math.sign(rh-ra)) return 1;
   return 0;
 }
+function liveDe(matchId){
+  return liveSync[matchId] || null;
+}
+function resultadoActual(matchId){
+  const live = liveDe(matchId);
+  if(live && live.isLive && live.golesLocal != null && live.golesVisita != null){
+    return [String(live.golesLocal), String(live.golesVisita)];
+  }
+  if(resultados[matchId]) return resultados[matchId];
+  if(live && live.isFinished && live.golesLocal != null && live.golesVisita != null){
+    return [String(live.golesLocal), String(live.golesVisita)];
+  }
+  return null;
+}
+function idsConMarcadorActual(){
+  return PARTIDOS.map(p => p[0]).filter(id => !!resultadoActual(id));
+}
+function minutoLive(live){
+  if(!live) return "";
+  if(live.statusShort === "HT") return "Descanso";
+  if(live.statusShort === "P") return "Penales";
+  if(live.statusShort === "BT") return "Pausa";
+  if(live.elapsed == null) return live.statusLong || "En vivo";
+  return live.elapsed + (live.extra ? "+" + live.extra : "") + "′";
+}
+function ultimaActualizacionLive(){
+  const tiempos = Object.values(liveSync)
+    .map(x => x.lastProviderAt || x.updatedAt)
+    .filter(Boolean);
+  return tiempos.length ? Math.max(...tiempos) : null;
+}
+function proximoPartidoLiveHtml(){
+  const prox = PARTIDOS.find(p => !cerrado(p));
+  if(!prox){
+    return '<div class="live-empty">No hay más partidos programados en este momento.</div>';
+  }
+  const eh = equipo(prox[3]), ea = equipo(prox[4]);
+  return '<div class="reloj live-next">' +
+    '<div class="et" id="live-reloj-et">Próximo partido</div>' +
+    '<div class="partido" id="live-reloj-partido">'+banderaEquipo(prox[3], "mini")+' <span>'+esc(eh[0])+'</span> <span style="color:#A99C93">vs</span> ' + banderaEquipo(prox[4], "mini") + ' <span>'+esc(ea[0])+'</span></div>' +
+    '<div class="digitos">' +
+      '<div class="d"><b id="live-cd-d">0</b><span>días</span></div>' +
+      '<div class="d"><b id="live-cd-h">0</b><span>horas</span></div>' +
+      '<div class="d"><b id="live-cd-m">0</b><span>min</span></div>' +
+      '<div class="d"><b id="live-cd-s">0</b><span>seg</span></div>' +
+    '</div>' +
+    '<div class="live-next-note">Mientras arranca la jornada, aquí verás el siguiente partido del calendario.</div>' +
+  '</div>';
+}
+function partidosEnVivoHtml(){
+  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive);
+  if(!vivos.length){
+    return '<div class="live-empty">No hay partidos en vivo en este momento.</div>';
+  }
+  return '<div class="live-partidos">' + vivos.map(p => {
+    const live = liveDe(p[0]);
+    const eh = equipo(p[3]), ea = equipo(p[4]);
+    return '<div class="live-partido"><div class="live-partido-top">' +
+      '<div class="live-partido-equipos">'+banderaEquipo(p[3],"mini")+' '+esc(eh[0])+' <span style="color:#A99C93">vs</span> '+esc(ea[0])+' '+banderaEquipo(p[4],"mini")+'</div>' +
+      '<div class="live-partido-marcador">'+esc(live.golesLocal)+'–'+esc(live.golesVisita)+'</div>' +
+      '</div><div class="live-partido-meta"><span class="live-badge">'+esc(minutoLive(live))+'</span><span>'+esc(live.statusLong || "Partido en vivo")+'</span><span>Actualizado '+horaApuesta(live.lastProviderAt || live.updatedAt || Date.now())+'</span></div></div>';
+  }).join("") + '</div>';
+}
+
 function pintarPartidos(){
   const f = diaQuin;
   const lista = PARTIDOS.filter(p => p[1] === f);
@@ -1130,13 +1494,16 @@ function pintarPartidos(){
       estado = '<span class="pill futuro">🔒 Se activa el ' + nombreDia(fecha) + '</span>';
       caja = '<div class="fijo gris">–</div><span class="vs">VS</span><div class="fijo gris">–</div>';
     } else if(lock){
-      const res = resultados[id];
+      const live = liveDe(id);
+      const res = resultadoActual(id);
       const pts = res ? puntosDe(pred, res) : null;
       estado = (res
-        ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') + ' <span>Resultado: '+res[0]+'–'+res[1]+'</span>'
-        : '<span class="pill cerrado">Cerrado · esperando resultado</span>');
+        ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') +
+          ' <span>'+(live?.isLive ? '🔴 En vivo '+minutoLive(live)+' · Marcador' : 'Resultado')+': '+res[0]+'–'+res[1]+'</span>'
+        : '<span class="pill cerrado">Cerrado · esperando marcador</span>');
       if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
       estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
+      estado += '';
       caja = '<div class="fijo">'+(pred[0]===""?"–":esc(pred[0]))+'</div><span class="vs">VS</span><div class="fijo">'+(pred[1]===""?"–":esc(pred[1]))+'</div>';
     } else {
       const tienePred = predCompleto(pred);
@@ -1146,7 +1513,8 @@ function pintarPartidos(){
         estado = '<span class="pill abierto">✓ Registrado · editable hasta las ' + hora + ' HN</span>';
         estado += ' <span>Última actualización: '+horaApuesta(pred[2])+'</span>';
         estado += ' <span class="edit-actions"><button class="btn mini" onclick="editarPronostico(\''+id+'\')">Editar pronóstico</button>';
-        estado += '<button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button></span>';
+        estado += '<button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
+        estado += '</span>';
         caja = '<div class="fijo">'+esc(pred[0])+'</div><span class="vs">VS</span><div class="fijo">'+esc(pred[1])+'</div>';
       } else {
         estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
@@ -1272,9 +1640,7 @@ async function cargarPronósticos(forzar){
   zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
 
   try{
-    const y = await stGet("mundial:yo", false);
-    yo = y ? JSON.parse(y) : null;
-    if(yo && (!yo.usuario || !yo.pin)){ await stSet("mundial:yo", "", false); yo = null; }
+    await cargarSesionLocal();
 
     if(!yo){
       zona.innerHTML = '<div class="vacio"><b>Primero debes registrarte.</b><br>Para ver los pronósticos de la oficina, entra a “Mis pronósticos”, inicia sesión o crea tu usuario y completa tus marcadores de la jornada.</div>';
@@ -1283,6 +1649,7 @@ async function cargarPronósticos(forzar){
 
     participantes = await dbGetParticipantes();
     resultados = await dbGetResultados();
+    liveSync = await dbGetLiveSync();
     misPred = await dbGetMisPred(yo.id);
 
     const pendientes = pendientesParaVerPronosticos(diaApu, misPred);
@@ -1322,7 +1689,8 @@ function pintarPronósticos(){
   lista.filter(p => p[0] === partidoApuActivo).forEach(p => {
     const [id, fecha, hora, h, a, g] = p;
     const eh = equipo(h), ea = equipo(a);
-    const res = resultados[id];
+    const live = liveDe(id);
+    const res = resultadoActual(id);
     const lock = cerrado(p);
     // recolectar apuestas de todos
     const filas = [];
@@ -1341,8 +1709,9 @@ function pintarPronósticos(){
       else { f.prim = false; f.rep = true; }
     });
     let head = '<div class="mcard-head"><div class="vsx">' + banderaEquipo(h,'mini') + ' ' + esc(eh[0]) + ' <span style="color:#A99C93">vs</span> ' + esc(ea[0]) + ' ' + banderaEquipo(a,'mini') +
-      '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' + (lock ? ' · CERRADO' : ' · ABIERTO') + '</span>' +
-      (res ? '<div class="res">Final: ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
+      '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' +
+      (live?.isLive ? ' · 🔴 EN VIVO '+minutoLive(live) : (lock ? ' · CERRADO' : ' · ABIERTO')) + '</span>' +
+      (res ? '<div class="res">'+(live?.isLive ? 'En vivo' : 'Final')+': ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
     let cuerpo;
     if(!filas.length){
       cuerpo = '<div class="sin">Todavía nadie ha pronosticado en este partido' + (lock ? '.' : ' — ¡sé la primera persona y asegura la prioridad! ⏱️') + '</div>';
@@ -1381,7 +1750,7 @@ function desempateUsuario(u, matchIds){
 
   matchIds.forEach(mid => {
     const pr = preds[mid];
-    const res = resultados[mid];
+    const res = resultadoActual(mid);
     const pu = puntosDe(pr, res);
     if(pu === null) return;
 
@@ -1418,7 +1787,7 @@ function calcularRanking(matchIds){
     let pts = 0, exactos = 0, aciertos = 0, jugados = 0;
 
     matchIds.forEach(mid => {
-      const pu = puntosDe(preds[mid], resultados[mid]);
+      const pu = puntosDe(preds[mid], resultadoActual(mid));
       if(pu === null) return;
       jugados++;
       if(pu === 3){ pts += 3; exactos++; }
@@ -1433,9 +1802,11 @@ function pintarGanadoresPorDia(){
   const zona = $("ganadores-zona");
   if(!zona) return;
 
-  const fechasConResultado = fechasDisponibles().filter(f => PARTIDOS.some(p => p[1] === f && resultados[p[0]]));
+  const fechasConResultado = fechasDisponibles().filter(f =>
+    PARTIDOS.some(p => p[1] === f && resultadoActual(p[0]))
+  );
   if(!fechasConResultado.length){
-    zona.innerHTML = '<div class="vacio">Todavía no hay resultados oficiales. Cuando captures el primer marcador, aquí aparecerá el ganador de cada día.</div>';
+    zona.innerHTML = '<div class="vacio">Todavía no hay marcadores disponibles. Cuando inicie un partido, aquí aparecerá el líder provisional de la jornada.</div>';
     return;
   }
 
@@ -1443,31 +1814,36 @@ function pintarGanadoresPorDia(){
 
   fechasConResultado.forEach(f => {
     const partidosDia = PARTIDOS.filter(p => p[1] === f);
-    const idsEvaluados = partidosDia.filter(p => resultados[p[0]]).map(p => p[0]);
+    const idsEvaluados = partidosDia.filter(p => resultadoActual(p[0])).map(p => p[0]);
     const totalDia = partidosDia.length;
-    const capturados = idsEvaluados.length;
-    const completo = capturados === totalDia;
+    const oficiales = partidosDia.filter(p => resultados[p[0]]).length;
+    const hayVivo = partidosDia.some(p => liveDe(p[0])?.isLive);
+    const completo = oficiales === totalDia && !hayVivo;
     const ranking = calcularRanking(idsEvaluados).filter(x => x.jugados > 0);
 
     html += '<div class="gcard '+(completo ? 'final' : 'parcial')+'">';
     html += '<h3>'+nombreDia(f)+'</h3>';
-    html += '<div class="estado-dia">'+(completo ? 'Jornada finalizada' : 'Jornada parcial')+' · '+capturados+'/'+totalDia+' resultados capturados</div>';
+    const etiquetaEstado = hayVivo
+      ? 'Jornada en vivo · puntuación provisional'
+      : (completo ? 'Jornada finalizada' : 'Jornada parcial');
+    html += '<div class="estado-dia">'+etiquetaEstado+' · '+idsEvaluados.length+'/'+totalDia+' marcadores disponibles</div>';
 
     if(!ranking.length){
-      html += '<div class="vacio" style="padding:18px">Hay resultados capturados, pero todavía no hay pronósticos evaluados para esta fecha.</div>';
+      html += '<div class="vacio" style="padding:18px">Hay marcadores disponibles, pero todavía no hay pronósticos evaluados para esta fecha.</div>';
     } else if(ranking[0].pts <= 0){
-      html += '<div class="vacio" style="padding:18px">Jornada evaluada sin ganador: ningún participante sumó puntos todavía.</div>';
+      html += '<div class="vacio" style="padding:18px">Por ahora nadie suma puntos en esta jornada.</div>';
     } else {
       const top = ranking[0];
+      const titulo = completo ? 'Ganador del día' : 'Líder provisional del día';
 
-      html += '<div class="ganador"><span class="med">🏆</span><b>Ganador del día: '+esc(top.u.nombre)+'</b>' +
+      html += '<div class="ganador"><span class="med">🏆</span><b>'+titulo+': '+esc(top.u.nombre)+'</b>' +
         '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+top.jugados+' pronósticos evaluados</span>' +
         '<span>'+textoDesempate(top)+'</span></div>';
 
       html += '<table><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th><th class="num">Aciertos</th></tr></thead><tbody>';
       ranking.slice(0,5).forEach((r,i) => {
-        const nota = i === 0 ? '<br><span style="color:var(--rojo);font-size:11px;font-weight:700">Ganador único por criterio de desempate</span>' : '';
-        html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span>'+nota+'</td>'+ 
+        const nota = i === 0 ? '<br><span style="color:var(--rojo);font-size:11px;font-weight:700">'+(completo ? 'Ganador único' : 'Líder provisional')+' por criterio de desempate</span>' : '';
+        html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span>'+nota+'</td>'+
           '<td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td><td class="num">'+r.aciertos+'</td></tr>';
       });
       html += '</tbody></table>';
@@ -1485,28 +1861,31 @@ function pintarGanadorFinal(filas, idsGenerales){
   if(!zona) return;
 
   if(!idsGenerales.length || !filas.length){
-    zona.innerHTML = '<div class="vacio">Todavía no hay resultados oficiales. Cuando captures resultados, aquí aparecerá el líder general.</div>';
+    zona.innerHTML = '<div class="vacio">Todavía no hay marcadores disponibles. Cuando inicie el primer partido, aquí aparecerá el líder general.</div>';
     return;
   }
 
   const rankingConJuego = filas.filter(x => x.jugados > 0);
   if(!rankingConJuego.length){
-    zona.innerHTML = '<div class="vacio">Hay resultados capturados, pero todavía no hay pronósticos evaluados.</div>';
+    zona.innerHTML = '<div class="vacio">Hay marcadores disponibles, pero todavía no hay pronósticos evaluados.</div>';
     return;
   }
 
   const top = rankingConJuego[0];
   const totalConfigurados = PARTIDOS.length;
-  const totalCapturados = Object.keys(resultados).length;
+  const totalOficiales = Object.keys(resultados).length;
+  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive).length;
   const finalConfigurada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final');
   const finalCapturada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final' && resultados[p[0]]);
   const todosCapturados = totalConfigurados > 0 && PARTIDOS.every(p => !!resultados[p[0]]);
-  const esFinal = finalConfigurada && finalCapturada && todosCapturados;
+  const esFinal = finalConfigurada && finalCapturada && todosCapturados && vivos === 0;
 
   const titulo = esFinal ? 'Ganador final del Mundial' : 'Líder general provisional';
   const estado = esFinal
     ? 'Competencia finalizada: todos los partidos configurados ya tienen resultado oficial.'
-    : 'Aún es provisional: falta capturar resultados o agregar/cerrar la fase final.';
+    : (vivos > 0
+        ? 'Puntuación provisional: hay '+vivos+' partido'+(vivos===1?'':'s')+' en vivo.'
+        : 'Aún es provisional: faltan resultados o la fase final.');
 
   zona.innerHTML = '<div class="final-card '+(esFinal ? '' : 'provisional')+'">' +
     '<div class="tag">'+titulo+'</div>' +
@@ -1518,7 +1897,8 @@ function pintarGanadorFinal(filas, idsGenerales){
       '<span>'+top.exactos+' marcadores exactos</span>' +
       '<span>'+top.aciertos+' aciertos de resultado</span>' +
       '<span>'+top.jugados+' pronósticos evaluados</span>' +
-      '<span>'+totalCapturados+'/'+totalConfigurados+' resultados capturados</span>' +
+      '<span>'+totalOficiales+'/'+totalConfigurados+' resultados finales</span>' +
+      '<span>Partidos en vivo: '+vivos+'</span>' +
       '<span>Final configurada: '+(finalConfigurada ? 'sí' : 'no')+'</span>' +
     '</div>' +
   '</div>';
@@ -1536,6 +1916,7 @@ async function cargarTabla(){
   try{
     participantes = await dbGetParticipantes();
     resultados = await dbGetResultados();
+    liveSync = await dbGetLiveSync();
     predsTodos = await dbGetPredsTodos();
   }catch(e){
     const msg = '<div class="vacio">No se pudo calcular: '+esc(e.message || e)+'</div>';
@@ -1554,7 +1935,7 @@ async function cargarTabla(){
 
   pintarGanadoresPorDia();
 
-  const idsGenerales = Object.keys(resultados);
+  const idsGenerales = idsConMarcadorActual();
   const filas = calcularRanking(idsGenerales);
   pintarGanadorFinal(filas, idsGenerales);
 
@@ -1627,7 +2008,8 @@ function pintarAdmin(){
     h += '<div class="pcard"><div class="eq">'+banderaEquipo(ho)+'<span class="nom">'+esc(eh[0])+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="marcador"><input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setRes(\''+id+'\',0,this.value)"><span class="vs">–</span>' +
       '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setRes(\''+id+'\',1,this.value)"></div>' +
-      '<div class="eq der">'+banderaEquipo(aw)+'<span class="nom">'+esc(ea[0])+'</span></div></div>';
+      '<div class="eq der">'+banderaEquipo(aw)+'<span class="nom">'+esc(ea[0])+'</span></div>' +
+      '<div class="meta-p"><button class="btn mini" onclick="guardarResultadoIndividual(\''+id+'\')">Actualizar marcador en vivo</button><span>Al guardar, se recalculan los puntos de todos los participantes.</span></div></div>';
   });
   h += '</div>';
   $("admin-lista").innerHTML = h;
@@ -1637,6 +2019,19 @@ function setRes(id, lado, val){
   const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
   resultados[id][lado] = v === "" ? "" : String(v);
   if(resultados[id][0]==="" && resultados[id][1]==="") delete resultados[id];
+}
+async function guardarResultadoIndividual(matchId){
+  if(!adminOk || !adminPinActual){ toast("Primero entra con el PIN administrador."); return; }
+  const r = resultados[matchId];
+  if(!r || r[0] === "" || r[1] === ""){ toast("Completa ambos marcadores antes de actualizar."); return; }
+  try{
+    await dbGuardarResultado(adminPinActual, matchId, r[0], r[1]);
+    resultados = await dbGetResultados();
+    toast("✓ Marcador actualizado. La clasificación fue recalculada.");
+    pintarAdmin();
+  }catch(e){
+    toast("No se pudo actualizar el marcador: " + (e.message || e));
+  }
 }
 async function guardarResultados(){
   const av = $("adm-aviso");
@@ -1744,10 +2139,22 @@ function pintarCalendarioAdmin(){
   if(!$('cal-id').value) $('cal-id').value = sugerirIdPartido();
 }
 
+
+
 /* ================== ARRANQUE ================== */
+let livePollInt = null;
+function iniciarRefrescoPuntuacion(){
+  if(livePollInt) clearInterval(livePollInt);
+  livePollInt = setInterval(() => {
+    const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
+    if(pag === "inicio") refrescarInicioEnVivo();
+    if(pag === "posiciones") cargarTabla();
+  }, 30000);
+}
 async function iniciarApp(){
   try{ await cargarPartidos(); }catch(e){ toast("No se pudieron cargar los partidos: " + (e.message || e)); }
   activarTiempoReal();
+  iniciarRefrescoPuntuacion();
   cargarInicio();
 }
 iniciarApp();
