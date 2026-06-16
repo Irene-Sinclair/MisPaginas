@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Predicciones Mundial 2026 · CREDIDEMO</title>
+<meta name="app-version" content="2026.06.15-estable-1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -1198,20 +1199,72 @@ function filasLiveHtml(ranking){
       return '<tr class="'+(yo && r.u.id === yo.id ? 'live-me' : '')+'"><td class="live-pos">'+pos+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:10.5px">'+esc(r.u.area||'—')+'</span></td><td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td></tr>';
     }).join('') + '</tbody></table>';
 }
+function esFaseEliminatoria(p){
+  const fase = String((p && p[5]) || "").trim().toUpperCase();
+  return !/^[A-L]$/.test(fase);
+}
+function limiteVisualVivoMs(p){
+  return esFaseEliminatoria(p)
+    ? (4 * 60 * 60 * 1000 + 20 * 60 * 1000)
+    : (2 * 60 * 60 * 1000 + 50 * 60 * 1000);
+}
+function partidoEnVentanaHoraria(p){
+  if(!p) return false;
+  const inicio = fechaPartido(p).getTime();
+  const fin = inicio + limiteVisualVivoMs(p);
+  const live = liveDe(p[0]);
+  const tieneResultado = !!resultados[p[0]];
+  return Date.now() >= inicio && Date.now() <= fin && !live?.isFinished && !tieneResultado;
+}
+function partidoMostradoComoVivo(p){
+  if(!p) return false;
+  const live = liveDe(p[0]);
+  if(resultados[p[0]] || live?.isFinished) return false;
+
+  const inicio = fechaPartido(p).getTime();
+  const fin = inicio + limiteVisualVivoMs(p);
+  if(Date.now() < inicio || Date.now() > fin) return false;
+
+  return !!live?.isLive || partidoEnVentanaHoraria(p);
+}
+function partidosMostradosEnVivo(){
+  return PARTIDOS.filter(partidoMostradoComoVivo);
+}
+function marcadorVisibleEnVivo(p){
+  const live = liveDe(p[0]);
+  const gl = live?.golesLocal;
+  const gv = live?.golesVisita;
+  if(gl !== null && gl !== undefined && gv !== null && gv !== undefined && Number.isFinite(Number(gl)) && Number.isFinite(Number(gv))){
+    return [String(Number(gl)), String(Number(gv))];
+  }
+  return ["–", "–"];
+}
+function etiquetaPartidoEnVivo(){
+  return "EN VIVO";
+}
+function estadoPartidoEnVivo(p){
+  const live = liveDe(p[0]);
+  const corto = String(live?.statusShort || "").toUpperCase();
+  const largo = String(live?.statusLong || "").toUpperCase();
+  if(corto === "HT" || largo === "PAUSED") return "DESCANSO";
+  if(corto === "ET" || largo === "EXTRA_TIME") return "TIEMPO EXTRA";
+  if(corto === "PEN" || corto === "P" || largo === "PENALTY_SHOOTOUT") return "PENALES";
+  return "EN CURSO";
+}
 function pintarPartidoPrimeraPlana(){
   const caja = $("hero-live");
   const zona = $("live-hero-zona");
   const estado = $("hero-live-status");
   if(!caja || !zona) return;
 
-  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive);
+  const vivos = partidosMostradosEnVivo();
   if(!vivos.length){
     caja.classList.remove("ver");
     if(estado) estado.textContent = "En espera";
     zona.innerHTML = '<div class="hero-live-empty">' +
       '<div class="hero-live-empty-mark" aria-hidden="true"></div>' +
       '<b>Aún no hay partidos en vivo</b>' +
-      '<p>El marcador aparecerá aquí cuando comience el encuentro.</p>' +
+      '<p>El partido aparecerá aquí al comenzar.</p>' +
       '</div>';
     return;
   }
@@ -1219,13 +1272,13 @@ function pintarPartidoPrimeraPlana(){
   caja.classList.add("ver");
   if(estado) estado.textContent = vivos.length > 1 ? vivos.length + " en vivo" : "En vivo";
   zona.innerHTML = '<div class="hero-live-list">' + vivos.map(p => {
-    const live = liveDe(p[0]);
+    const marcador = marcadorVisibleEnVivo(p);
     const eh = equipo(p[3]), ea = equipo(p[4]);
     return '<div class="hero-live-match">' +
-      '<div class="hero-live-match-top"><span class="live-badge">'+esc(minutoLive(live))+'</span><span class="hero-live-phase">'+esc(live.statusLong || "Partido en vivo")+'</span></div>' +
+      '<div class="hero-live-match-top"><span class="live-badge">'+esc(etiquetaPartidoEnVivo())+'</span><span class="hero-live-phase">'+esc(estadoPartidoEnVivo(p))+'</span></div>' +
       '<div class="hero-scoreboard">' +
         '<div class="hero-team">'+banderaEquipo(p[3],"mini")+'<strong>'+esc(eh[0])+'</strong></div>' +
-        '<div class="hero-score"><b>'+esc(live.golesLocal)+'</b><span>–</span><b>'+esc(live.golesVisita)+'</b></div>' +
+        '<div class="hero-score"><b>'+esc(marcador[0])+'</b><span>–</span><b>'+esc(marcador[1])+'</b></div>' +
         '<div class="hero-team">'+banderaEquipo(p[4],"mini")+'<strong>'+esc(ea[0])+'</strong></div>' +
       '</div>' +
       '</div>';
@@ -1409,13 +1462,12 @@ function liveDe(matchId){
   return liveSync[matchId] || null;
 }
 function resultadoActual(matchId){
-  const live = liveDe(matchId);
-  if(live && live.isLive && live.golesLocal != null && live.golesVisita != null){
-    return [String(live.golesLocal), String(live.golesVisita)];
-  }
+  // El resultado oficial siempre tiene prioridad sobre cualquier estado atrasado del proveedor.
   if(resultados[matchId]) return resultados[matchId];
-  if(live && live.isFinished && live.golesLocal != null && live.golesVisita != null){
-    return [String(live.golesLocal), String(live.golesVisita)];
+
+  const live = liveDe(matchId);
+  if(live && live.golesLocal != null && live.golesVisita != null && (live.isLive || live.isFinished)){
+    return [String(Number(live.golesLocal)), String(Number(live.golesVisita))];
   }
   return null;
 }
@@ -1424,11 +1476,13 @@ function idsConMarcadorActual(){
 }
 function minutoLive(live){
   if(!live) return "";
-  if(live.statusShort === "HT") return "Descanso";
-  if(live.statusShort === "P") return "Penales";
-  if(live.statusShort === "BT") return "Pausa";
-  if(live.elapsed == null) return live.statusLong || "En vivo";
-  return live.elapsed + (live.extra ? "+" + live.extra : "") + "′";
+  const corto = String(live.statusShort || "").toUpperCase();
+  const largo = String(live.statusLong || "").toUpperCase();
+  if(corto === "HT" || largo === "PAUSED") return "Descanso";
+  if(corto === "PEN" || corto === "P" || largo === "PENALTY_SHOOTOUT") return "Penales";
+  if(corto === "ET" || largo === "EXTRA_TIME") return "Tiempo extra";
+  if(corto === "FT" || live.isFinished) return "Final";
+  return "En vivo";
 }
 function ultimaActualizacionLive(){
   const tiempos = Object.values(liveSync)
@@ -1455,17 +1509,20 @@ function proximoPartidoLiveHtml(){
   '</div>';
 }
 function partidosEnVivoHtml(){
-  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive);
+  const vivos = partidosMostradosEnVivo();
   if(!vivos.length){
     return '<div class="live-empty">No hay partidos en vivo en este momento.</div>';
   }
   return '<div class="live-partidos">' + vivos.map(p => {
     const live = liveDe(p[0]);
+    const marcador = marcadorVisibleEnVivo(p);
     const eh = equipo(p[3]), ea = equipo(p[4]);
     return '<div class="live-partido"><div class="live-partido-top">' +
       '<div class="live-partido-equipos">'+banderaEquipo(p[3],"mini")+' '+esc(eh[0])+' <span style="color:#A99C93">vs</span> '+esc(ea[0])+' '+banderaEquipo(p[4],"mini")+'</div>' +
-      '<div class="live-partido-marcador">'+esc(live.golesLocal)+'–'+esc(live.golesVisita)+'</div>' +
-      '</div><div class="live-partido-meta"><span class="live-badge">'+esc(minutoLive(live))+'</span><span>'+esc(live.statusLong || "Partido en vivo")+'</span><span>Actualizado '+horaApuesta(live.lastProviderAt || live.updatedAt || Date.now())+'</span></div></div>';
+      '<div class="live-partido-marcador">'+esc(marcador[0])+'–'+esc(marcador[1])+'</div>' +
+      '</div><div class="live-partido-meta"><span class="live-badge">'+esc(etiquetaPartidoEnVivo(p))+'</span><span>'+esc(estadoPartidoEnVivo(p))+'</span>' +
+      (live?.lastProviderAt || live?.updatedAt ? '<span>Actualizado '+horaApuesta(live.lastProviderAt || live.updatedAt)+'</span>' : '') +
+      '</div></div>';
   }).join("") + '</div>';
 }
 
@@ -1499,7 +1556,7 @@ function pintarPartidos(){
       const pts = res ? puntosDe(pred, res) : null;
       estado = (res
         ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') +
-          ' <span>'+(live?.isLive ? '🔴 En vivo '+minutoLive(live)+' · Marcador' : 'Resultado')+': '+res[0]+'–'+res[1]+'</span>'
+          ' <span>'+(partidoMostradoComoVivo(p) ? '🔴 En vivo '+etiquetaPartidoEnVivo(p)+' · Marcador' : 'Resultado')+': '+res[0]+'–'+res[1]+'</span>'
         : '<span class="pill cerrado">Cerrado · esperando marcador</span>');
       if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
       estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
@@ -1710,8 +1767,8 @@ function pintarPronósticos(){
     });
     let head = '<div class="mcard-head"><div class="vsx">' + banderaEquipo(h,'mini') + ' ' + esc(eh[0]) + ' <span style="color:#A99C93">vs</span> ' + esc(ea[0]) + ' ' + banderaEquipo(a,'mini') +
       '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' +
-      (live?.isLive ? ' · 🔴 EN VIVO '+minutoLive(live) : (lock ? ' · CERRADO' : ' · ABIERTO')) + '</span>' +
-      (res ? '<div class="res">'+(live?.isLive ? 'En vivo' : 'Final')+': ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
+      (partidoMostradoComoVivo(p) ? ' · 🔴 EN VIVO '+etiquetaPartidoEnVivo(p) : (lock ? ' · CERRADO' : ' · ABIERTO')) + '</span>' +
+      (res ? '<div class="res">'+(partidoMostradoComoVivo(p) ? 'En vivo' : 'Final')+': ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
     let cuerpo;
     if(!filas.length){
       cuerpo = '<div class="sin">Todavía nadie ha pronosticado en este partido' + (lock ? '.' : ' — ¡sé la primera persona y asegura la prioridad! ⏱️') + '</div>';
@@ -1817,7 +1874,7 @@ function pintarGanadoresPorDia(){
     const idsEvaluados = partidosDia.filter(p => resultadoActual(p[0])).map(p => p[0]);
     const totalDia = partidosDia.length;
     const oficiales = partidosDia.filter(p => resultados[p[0]]).length;
-    const hayVivo = partidosDia.some(p => liveDe(p[0])?.isLive);
+    const hayVivo = partidosDia.some(partidoMostradoComoVivo);
     const completo = oficiales === totalDia && !hayVivo;
     const ranking = calcularRanking(idsEvaluados).filter(x => x.jugados > 0);
 
@@ -1874,7 +1931,7 @@ function pintarGanadorFinal(filas, idsGenerales){
   const top = rankingConJuego[0];
   const totalConfigurados = PARTIDOS.length;
   const totalOficiales = Object.keys(resultados).length;
-  const vivos = PARTIDOS.filter(p => liveDe(p[0])?.isLive).length;
+  const vivos = partidosMostradosEnVivo().length;
   const finalConfigurada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final');
   const finalCapturada = PARTIDOS.some(p => String(p[5] || '').trim().toLowerCase() === 'final' && resultados[p[0]]);
   const todosCapturados = totalConfigurados > 0 && PARTIDOS.every(p => !!resultados[p[0]]);
