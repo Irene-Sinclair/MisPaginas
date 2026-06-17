@@ -1105,57 +1105,32 @@ async function dbGetPredsTodosLocal(){
 async function dbGetPredsTodos(){
   if(!modoNube()) return await dbGetPredsTodosLocal();
 
-  // FINAL: la tabla general se calcula sumando las mismas lecturas por jornada
-  // que usa “Pronósticos de la oficina”. Así, si en Pronósticos sale +3,
-  // en Posiciones también suma +3 para el mismo participante y partido.
+  // FUENTE ÚNICA PARA POSICIONES:
+  // Usa la misma lectura que “Pronósticos de la oficina”.
+  // Así, si ahí aparece +3, en Tabla general también suma +3.
+  // Para evitar lentitud, solo lee jornadas con marcador disponible.
+  const idsEvaluados = idsConMarcadorActual();
+  const fechasEvaluadas = [...new Set(
+    PARTIDOS.filter(p => idsEvaluados.includes(p[0])).map(p => p[1])
+  )];
+
+  if(!fechasEvaluadas.length) return {};
+
   let acumulado = {};
-  const fechas = fechasDisponibles();
-
-  for(const f of fechas){
-    try{
-      const datosDia = await dbGetPredsTodosJornada(f);
-      acumulado = mezclarPredicciones(acumulado, datosDia);
-    }catch(e){
+  const lecturas = await Promise.all(
+    fechasEvaluadas.map(f => dbGetPredsTodosJornada(f).catch(e => {
       console.warn("No se pudo leer la jornada " + f, e.message || e);
-    }
-  }
-  if(Object.keys(acumulado).length) return acumulado;
+      return {};
+    }))
+  );
 
-  // Respaldo general por si la lectura por jornadas no devuelve filas.
-  const lecturas = [
-    async () => {
-      const {data, error} = await SB.rpc("obtener_pronosticos_todos");
-      if(error) throw error;
-      return integrarFilasPronosticos(data || []);
-    },
-    async () => {
-      const {data, error} = await SB.from("quiniela_predicciones")
-        .select("user_id,match_id,goles_local,goles_visita,updated_at,quiniela_participantes!inner(id,nombre,usuario,area,created_at)")
-        .order("updated_at", {ascending:true})
-        .limit(10000);
-      if(error) throw error;
-      return integrarFilasPronosticos(data || []);
-    },
-    async () => {
-      const {data, error} = await SB.from("quiniela_predicciones")
-        .select("user_id,match_id,goles_local,goles_visita,updated_at")
-        .order("updated_at", {ascending:true})
-        .limit(10000);
-      if(error) throw error;
-      return integrarFilasPronosticos(data || []);
-    }
-  ];
+  lecturas.forEach(datosDia => {
+    acumulado = mezclarPredicciones(acumulado, datosDia);
+  });
 
-  for(const leer of lecturas){
-    try{
-      const datos = await leer();
-      acumulado = mezclarPredicciones(acumulado, datos);
-    }catch(e){
-      console.warn("Lectura general de pronósticos: probando alternativa", e.message || e);
-    }
-  }
   return acumulado;
 }
+
 async function dbGuardarApuesta(userId, matchId, h, a){
   if(!modoNube()){
     const previo = await stGet("mundial:pred:" + userId, true);
@@ -1212,13 +1187,38 @@ function activarTiempoReal(){
     .on("postgres_changes", {event:"*", schema:"public", table:"quiniela_live_sync"}, refrescarVistaActual)
     .subscribe();
 }
+let refreshTimer = null;
+let refreshRunning = false;
+let refreshQueued = false;
 function refrescarVistaActual(){
-  const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
-  if(pag === "inicio") refrescarInicioEnVivo();
-  if(pag === "quiniela") cargarQuiniela();
-  if(pag === "apuestas") cargarPronósticos();
-  if(pag === "posiciones") cargarTabla();
-  if(pag === "resultados" && adminOk) mostrarAdmin();
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(() => refrescarVistaActualDirecto(true), 1400);
+}
+async function refrescarVistaActualDirecto(silencioso=false){
+  if(refreshRunning){
+    refreshQueued = true;
+    return;
+  }
+  refreshRunning = true;
+  try{
+    const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
+    if(pag === "inicio") await refrescarInicioEnVivo();
+    if(pag === "quiniela") await cargarQuiniela();
+    if(pag === "apuestas") await cargarPronósticos(false, silencioso);
+    // Posiciones no se recarga por Realtime para evitar parpadeos y esperas.
+    // Se actualiza al entrar a la pestaña o al presionar el botón Actualizar.
+    if(pag === "posiciones") return;
+    if(pag === "resultados" && adminOk) await mostrarAdmin();
+  }catch(e){
+    console.warn("Refresco omitido:", e);
+  }finally{
+    refreshRunning = false;
+    if(refreshQueued){
+      refreshQueued = false;
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => refrescarVistaActualDirecto(true), 1800);
+    }
+  }
 }
 
 /* ================== ESTADO ================== */
@@ -1841,12 +1841,14 @@ function pintarBloqueoPronosticos(fecha, pendientes){
   }).join("");
   zona.innerHTML = '<div class="vacio" style="text-align:left"><b>Primero completa tus pronósticos de esta jornada.</b><br><br>Para ver los pronósticos de la oficina, debes registrar tus marcadores en todos los partidos de la jornada seleccionada. Pendientes:<ul style="margin:10px 0 0 22px">'+items+'</ul><br><button class="btn peq" onclick="irA(\'quiniela\')">Ir a Mis pronósticos</button></div>';
 }
-async function cargarPronósticos(forzar){
+async function cargarPronósticos(forzar, silencioso=false){
   await cargarPartidos();
   if(!diaApu) diaApu = diaDefecto();
   pintarDias("dias-apuestas", diaApu, "setDiaApu");
   const zona = $("lista-apuestas");
-  zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
+  if(!silencioso || !zona.innerHTML.trim()){
+    zona.innerHTML = '<div class="vacio">Cargando pronósticos de la oficina…</div>';
+  }
 
   try{
     await cargarSesionLocal();
@@ -2113,14 +2115,16 @@ function pintarGanadorFinal(filas, idsGenerales){
   '</div>';
 }
 
-async function cargarTabla(){
+async function cargarTabla(silencioso=false){
   await cargarPartidos();
   const zona = $("tabla-zona");
   const zonaGanadores = $("ganadores-zona");
   const zonaFinal = $("ganador-final-zona");
-  if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Calculando ganadores por día…</div>';
-  if(zonaFinal) zonaFinal.innerHTML = '<div class="vacio">Calculando ganador final…</div>';
-  zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
+  if(!silencioso || !zona.innerHTML.trim()){
+    if(zonaGanadores) zonaGanadores.innerHTML = '<div class="vacio">Calculando ganadores por día…</div>';
+    if(zonaFinal) zonaFinal.innerHTML = '<div class="vacio">Calculando ganador final…</div>';
+    zona.innerHTML = '<div class="vacio">Calculando posiciones…</div>';
+  }
 
   try{
     participantes = await dbGetParticipantes();
@@ -2357,8 +2361,7 @@ function iniciarRefrescoPuntuacion(){
   livePollInt = setInterval(() => {
     const pag = document.querySelector("#nav button.activo")?.dataset.pag || "inicio";
     if(pag === "inicio") refrescarInicioEnVivo();
-    if(pag === "posiciones") cargarTabla();
-  }, 30000);
+  }, 90000);
 }
 async function iniciarApp(){
   try{ await cargarPartidos(); }catch(e){ toast("No se pudieron cargar los partidos: " + (e.message || e)); }
