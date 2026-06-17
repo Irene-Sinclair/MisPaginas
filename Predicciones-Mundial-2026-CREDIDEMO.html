@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Predicciones Mundial 2026 · CREDIDEMO</title>
-<meta name="app-version" content="2026.06.17-pronosticos-rpc-1">
+<meta name="app-version" content="2026.06.17-final-unico-ranking-jornadas-1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -987,83 +987,174 @@ async function dbGetMisPred(userId){
 }
 function fusionarParticipantes(base, extras){
   const mapa = new Map();
-  (base || []).forEach(u => mapa.set(String(u.id), {...u, id:String(u.id)}));
+  (base || []).forEach(u => {
+    const id = String(u.id || "");
+    if(id) mapa.set(id, {...u, id});
+  });
   (extras || []).forEach(u => {
     const id = String(u.id || "");
     if(!id) return;
-    if(!mapa.has(id)) mapa.set(id, {...u, id});
+    if(!mapa.has(id)){
+      mapa.set(id, {id, nombre:u.nombre || u.usuario || "Participante", usuario:u.usuario || "", area:u.area || "", t:u.t || 0});
+    }else{
+      const prev = mapa.get(id);
+      mapa.set(id, {
+        ...prev,
+        nombre: prev.nombre || u.nombre || u.usuario || "Participante",
+        usuario: prev.usuario || u.usuario || "",
+        area: prev.area || u.area || "",
+        t: prev.t || u.t || 0
+      });
+    }
   });
   return [...mapa.values()].sort((a,b) => (a.t || 0) - (b.t || 0) || String(a.nombre || "").localeCompare(String(b.nombre || "")));
 }
+function normalizarFilaPronostico(r){
+  const relRaw = r.quiniela_participantes || r.participante || r.participantes || null;
+  const rel = Array.isArray(relRaw) ? (relRaw[0] || {}) : (relRaw || {});
+  const uid = String(r.user_id ?? r.participante_id ?? rel.id ?? "");
+  const mid = String(r.match_id ?? "");
+  const gl = r.goles_local;
+  const gv = r.goles_visita;
+  if(!uid || !mid || gl === null || gl === undefined || gv === null || gv === undefined) return null;
+  return {
+    uid,
+    mid,
+    pred: [String(gl), String(gv), r.updated_at ? new Date(r.updated_at).getTime() : 0],
+    participante: {
+      id: uid,
+      nombre: r.nombre || rel.nombre || rel.usuario || "Participante",
+      usuario: r.usuario || rel.usuario || "",
+      area: r.area || rel.area || "",
+      t: r.participante_created_at ? new Date(r.participante_created_at).getTime() : (rel.created_at ? new Date(rel.created_at).getTime() : 0)
+    }
+  };
+}
 function integrarFilasPronosticos(rows){
   const out = {};
-  const extras = {};
+  const extras = [];
   (rows || []).forEach(r => {
-    const uid = String(r.user_id || r.participante_id || "");
-    const mid = String(r.match_id || "");
-    if(!uid || !mid) return;
-    if(!out[uid]) out[uid] = {};
-    out[uid][mid] = [
-      String(r.goles_local),
-      String(r.goles_visita),
-      r.updated_at ? new Date(r.updated_at).getTime() : 0
-    ];
-    if(r.nombre || r.usuario || r.area){
-      extras[uid] = {
-        id: uid,
-        nombre: r.nombre || r.usuario || "Participante",
-        usuario: r.usuario || "",
-        area: r.area || "",
-        t: r.participante_created_at ? new Date(r.participante_created_at).getTime() : 0
-      };
-    }
+    const fila = normalizarFilaPronostico(r);
+    if(!fila) return;
+    if(!out[fila.uid]) out[fila.uid] = {};
+    out[fila.uid][fila.mid] = fila.pred;
+    extras.push(fila.participante);
   });
-  participantes = fusionarParticipantes(participantes, Object.values(extras));
+  if(extras.length) participantes = fusionarParticipantes(participantes, extras);
+  return out;
+}
+function mezclarPredicciones(base, extra){
+  const out = {...(base || {})};
+  Object.keys(extra || {}).forEach(uid => {
+    if(!out[uid]) out[uid] = {};
+    Object.assign(out[uid], extra[uid]);
+  });
+  return out;
+}
+async function dbGetPredsTodosJornada(fecha){
+  if(!modoNube()) return await dbGetPredsTodosLocal();
+  const ids = PARTIDOS.filter(p => p[1] === fecha).map(p => p[0]);
+  if(!ids.length) return {};
+
+  const lecturas = [
+    async () => {
+      const {data, error} = await SB.rpc("obtener_pronosticos_jornada", {p_fecha: fecha});
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    },
+    async () => {
+      const {data, error} = await SB.from("quiniela_predicciones")
+        .select("user_id,match_id,goles_local,goles_visita,updated_at,quiniela_participantes!inner(id,nombre,usuario,area,created_at)")
+        .in("match_id", ids)
+        .order("updated_at", {ascending:true})
+        .limit(10000);
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    },
+    async () => {
+      const {data, error} = await SB.from("quiniela_predicciones")
+        .select("user_id,match_id,goles_local,goles_visita,updated_at")
+        .in("match_id", ids)
+        .order("updated_at", {ascending:true})
+        .limit(10000);
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    }
+  ];
+
+  let acumulado = {};
+  for(const leer of lecturas){
+    try{
+      const datos = await leer();
+      acumulado = mezclarPredicciones(acumulado, datos);
+      if(Object.keys(datos).length) return acumulado;
+    }catch(e){
+      console.warn("Lectura de pronósticos de jornada: probando alternativa", e.message || e);
+    }
+  }
+  return acumulado;
+}
+async function dbGetPredsTodosLocal(){
+  const out = {};
+  await Promise.all(participantes.map(async u => {
+    const raw = await stGet("mundial:pred:" + u.id, true);
+    out[u.id] = raw ? JSON.parse(raw) : {};
+  }));
   return out;
 }
 async function dbGetPredsTodos(){
-  if(!modoNube()){
-    const out = {};
-    await Promise.all(participantes.map(async u => {
-      const raw = await stGet("mundial:pred:" + u.id, true);
-      out[u.id] = raw ? JSON.parse(raw) : {};
-    }));
-    return out;
+  if(!modoNube()) return await dbGetPredsTodosLocal();
+
+  // FINAL: la tabla general se calcula sumando las mismas lecturas por jornada
+  // que usa “Pronósticos de la oficina”. Así, si en Pronósticos sale +3,
+  // en Posiciones también suma +3 para el mismo participante y partido.
+  let acumulado = {};
+  const fechas = fechasDisponibles();
+
+  for(const f of fechas){
+    try{
+      const datosDia = await dbGetPredsTodosJornada(f);
+      acumulado = mezclarPredicciones(acumulado, datosDia);
+    }catch(e){
+      console.warn("No se pudo leer la jornada " + f, e.message || e);
+    }
   }
+  if(Object.keys(acumulado).length) return acumulado;
 
-  // Preferimos una función SECURITY DEFINER para que la vista de pronósticos
-  // siempre lea los registros reales, aunque existan reglas RLS o caché del cliente.
-  try{
-    const {data, error} = await SB.rpc("obtener_pronosticos_todos");
-    if(!error && Array.isArray(data)) return integrarFilasPronosticos(data);
-    if(error) console.warn("obtener_pronosticos_todos no disponible, usando lectura directa:", error.message || error);
-  }catch(e){
-    console.warn("RPC obtener_pronosticos_todos no disponible, usando lectura directa:", e.message || e);
+  // Respaldo general por si la lectura por jornadas no devuelve filas.
+  const lecturas = [
+    async () => {
+      const {data, error} = await SB.rpc("obtener_pronosticos_todos");
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    },
+    async () => {
+      const {data, error} = await SB.from("quiniela_predicciones")
+        .select("user_id,match_id,goles_local,goles_visita,updated_at,quiniela_participantes!inner(id,nombre,usuario,area,created_at)")
+        .order("updated_at", {ascending:true})
+        .limit(10000);
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    },
+    async () => {
+      const {data, error} = await SB.from("quiniela_predicciones")
+        .select("user_id,match_id,goles_local,goles_visita,updated_at")
+        .order("updated_at", {ascending:true})
+        .limit(10000);
+      if(error) throw error;
+      return integrarFilasPronosticos(data || []);
+    }
+  ];
+
+  for(const leer of lecturas){
+    try{
+      const datos = await leer();
+      acumulado = mezclarPredicciones(acumulado, datos);
+    }catch(e){
+      console.warn("Lectura general de pronósticos: probando alternativa", e.message || e);
+    }
   }
-
-  const {data, error} = await SB.from("quiniela_predicciones")
-    .select("user_id,match_id,goles_local,goles_visita,updated_at");
-  if(error) throw error;
-  return integrarFilasPronosticos(data || []);
-}
-async function dbGetPredsTodosJornada(fecha){
-  if(!modoNube()) return await dbGetPredsTodos();
-
-  try{
-    const {data, error} = await SB.rpc("obtener_pronosticos_jornada", {p_fecha: fecha});
-    if(!error && Array.isArray(data)) return integrarFilasPronosticos(data);
-    if(error) console.warn("obtener_pronosticos_jornada no disponible, usando lectura directa:", error.message || error);
-  }catch(e){
-    console.warn("RPC obtener_pronosticos_jornada no disponible, usando lectura directa:", e.message || e);
-  }
-
-  const ids = PARTIDOS.filter(p => p[1] === fecha).map(p => p[0]);
-  if(!ids.length) return {};
-  const {data, error} = await SB.from("quiniela_predicciones")
-    .select("user_id,match_id,goles_local,goles_visita,updated_at")
-    .in("match_id", ids);
-  if(error) throw error;
-  return integrarFilasPronosticos(data || []);
+  return acumulado;
 }
 async function dbGuardarApuesta(userId, matchId, h, a){
   if(!modoNube()){
