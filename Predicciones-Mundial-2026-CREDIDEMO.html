@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Predicciones Mundial 2026 · CREDIDEMO</title>
-<meta name="app-version" content="2026.06.17-final-unico-ranking-jornadas-1">
+<meta name="app-version" content="2026.06.18-final-minimo-pronosticos-por-partido">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -605,7 +605,7 @@
     <p class="bajada">Cortas, claras y sin VAR.</p>
     <div class="regla"><div class="punto">📅</div><div><h3>Se apuesta por día</h3><p>Solo están activos los partidos del día en curso (hora de Honduras). Los de días futuros aparecen bloqueados hasta que llegue su fecha.</p></div></div>
     <div class="regla"><div class="punto">⏱️</div><div><h3>Todo pronóstico lleva hora</h3><p>Cada pronóstico queda registrado con su fecha y hora exacta, visible para toda la oficina en la sección "Pronósticos" después de participar.</p></div></div>
-    <div class="regla"><div class="punto">👀</div><div><h3>Ver pronósticos de la oficina</h3><p>Para ver los pronósticos de la jornada, primero debes registrar tus propios marcadores en todos los partidos de la jornada seleccionada. Así se evita copiar resultados antes de participar.</p></div></div>
+    <div class="regla"><div class="punto">👀</div><div><h3>Ver pronósticos de la oficina</h3><p>Antes de que inicie un partido, solo puedes ver sus pronósticos si ya registraste tu marcador para ese partido. Cuando el partido ya inició o cerró, todos los usuarios registrados pueden verlo aunque no hayan pronosticado.</p></div></div>
     <div class="regla"><div class="punto">✏️</div><div><h3>Edición de pronósticos</h3><p>Cada participante puede editar su marcador hasta la hora de inicio del partido. Al editar, se actualiza la hora del registro y también cambia su prioridad frente a marcadores repetidos.</p></div></div>
     <div class="regla"><div class="punto">🥇</div><div><h3>Marcadores repetidos</h3><p>Si dos o más personas registran el mismo marcador en un partido, la prioridad de reconocimiento es de quien lo registró primero. Si cambias tu pronóstico, tu hora se actualiza y pierdes la antigüedad.</p></div></div>
     <div class="regla"><div class="punto">3</div><div><h3>Marcador exacto</h3><p>Si tu pronóstico coincide exactamente con el resultado final (ej. dijiste 2–1 y quedó 2–1), ganas 3 puntos.</p></div></div>
@@ -1819,6 +1819,24 @@ function verPronósticosDe(fecha, matchId){
 function predCompleto(pr){
   return !!(pr && pr[0] !== "" && pr[1] !== "" && pr[0] != null && pr[1] != null);
 }
+function puedeVerPronosticosPartido(p, preds){
+  if(!p) return {ok:false, motivo:"sin-partido"};
+
+  // Regla por partido, no por jornada completa:
+  // - Antes de iniciar, solo ve los pronósticos quien ya registró ese partido.
+  // - Cuando el partido ya inició o cerró, todos los usuarios registrados pueden verlo.
+  if(estadoDia(p[1]) === "futuro") return {ok:false, motivo:"futuro"};
+  if(cerrado(p)) return {ok:true, motivo:"cerrado"};
+  if(predCompleto((preds || {})[p[0]])) return {ok:true, motivo:"participado"};
+  return {ok:false, motivo:"abierto-sin-pronostico"};
+}
+function cuerpoBloqueoPronosticoPartido(p, motivo){
+  const eh = equipo(p[3]), ea = equipo(p[4]);
+  if(motivo === "futuro"){
+    return '<div class="sin"><b>Este partido todavía no está activo.</b><br>Los pronósticos se podrán revisar cuando llegue la fecha del partido.</div>';
+  }
+  return '<div class="sin"><b>Primero registra tu marcador para este partido.</b><br>'+esc(eh[0])+' vs '+esc(ea[0])+' sigue abierto. Para evitar copias antes del inicio, los pronósticos se muestran cuando registres tu marcador o cuando el partido ya inicie/cierre.<br><br><button class="btn peq" onclick="irA(&quot;quiniela&quot;)">Ir a Mis pronósticos</button></div>';
+}
 function pendientesParaVerPronosticos(fecha, preds){
   const listaDia = PARTIDOS.filter(p => p[1] === fecha);
   const ed = estadoDia(fecha);
@@ -1862,12 +1880,6 @@ async function cargarPronósticos(forzar, silencioso=false){
     resultados = await dbGetResultados();
     liveSync = await dbGetLiveSync();
     misPred = await dbGetMisPred(yo.id);
-
-    const pendientes = pendientesParaVerPronosticos(diaApu, misPred);
-    if(pendientes.length){
-      pintarBloqueoPronosticos(diaApu, pendientes);
-      return;
-    }
 
     predsTodos = await dbGetPredsTodosJornada(diaApu);
     pintarPronósticos();
@@ -1923,6 +1935,11 @@ function pintarPronósticos(){
       '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' +
       (partidoMostradoComoVivo(p) ? ' · 🔴 EN VIVO '+etiquetaPartidoEnVivo(p) : (lock ? ' · CERRADO' : ' · ABIERTO')) + '</span>' +
       (res ? '<div class="res">'+(partidoMostradoComoVivo(p) ? 'En vivo' : 'Final')+': ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
+    const permisoVer = puedeVerPronosticosPartido(p, misPred);
+    if(!permisoVer.ok){
+      html += '<div class="mcard' + (resaltarMatch === id ? ' resaltado' : '') + '" id="' + domId("apu", id) + '">' + head + cuerpoBloqueoPronosticoPartido(p, permisoVer.motivo) + '</div>';
+      return;
+    }
     let cuerpo;
     if(!filas.length){
       cuerpo = '<div class="sin">Todavía nadie ha pronosticado en este partido' + (lock ? '.' : ' — ¡sé la primera persona y asegura la prioridad! ⏱️') + '</div>';
