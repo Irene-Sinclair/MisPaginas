@@ -62,7 +62,10 @@
   .reloj{margin-top:30px; background:var(--humo); border:1px solid var(--linea); border-radius:10px; padding:18px 20px; width:min(100%,700px)}
   .reloj .et{font-size:11px; font-weight:700; letter-spacing:.2em; color:var(--amarillo); text-transform:uppercase}
   .reloj .partido{font-family:var(--display); font-size:20px; margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .reloj .partido .flag-img.mini{width:38px; min-width:38px; height:28px; margin:0 2px}
+  .reloj .partidos-simultaneos{display:grid; gap:9px; margin-top:8px}
+  .reloj .partido-multiple{font-family:var(--display); font-size:18px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .reloj .partido-multiple::before{content:"•"; color:var(--amarillo); font-size:18px; line-height:1}
+  .reloj .partido .flag-img.mini,.reloj .partido-multiple .flag-img.mini{width:38px; min-width:38px; height:28px; margin:0 2px}
   .reloj .digitos{display:flex; gap:14px; margin-top:12px}
   .reloj .d{text-align:center}
   .reloj .d b{font-family:var(--display); font-size:30px; font-variant-numeric:tabular-nums; display:block; color:#fff}
@@ -343,6 +346,21 @@
   .live-badge{display:inline-flex; align-items:center; gap:6px; background:rgba(204,31,43,.18); border:1px solid rgba(204,31,43,.45); color:#FFD8DB; padding:4px 8px; border-radius:20px; font-size:10.5px; font-weight:800; letter-spacing:.08em}
   .live-badge::before{content:""; width:8px; height:8px; border-radius:50%; background:#FF3547; animation:livePulse 1.3s infinite}
 
+
+  /* Penales en fases finales */
+  .penales-box{grid-column:1 / -1; background:#FFF8E0; border:1px solid #F1D873; border-radius:10px; padding:12px 14px; margin-top:8px}
+  .penales-box .pen-title{font-family:var(--display); font-size:12px; text-transform:uppercase; color:var(--asfalto); letter-spacing:.04em; margin-bottom:4px}
+  .penales-box .pen-note{font-size:12px; color:#7A5F00; line-height:1.35; margin-bottom:9px}
+  .pen-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin:7px 0; flex-wrap:wrap}
+  .pen-team{font-weight:800; font-size:12.5px; min-width:120px; color:var(--tinta)}
+  .pen-balls{display:flex; gap:4px; flex-wrap:wrap}
+  .pen-ball{width:31px; height:31px; border-radius:50%; border:2px solid #D6C6B7; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; filter:grayscale(.25); opacity:.7}
+  .pen-ball.on{background:var(--amarillo); border-color:var(--amarillo-d); opacity:1; filter:none; box-shadow:0 2px 7px rgba(245,194,0,.35)}
+  .pen-ball:hover{transform:translateY(-1px); border-color:var(--rojo)}
+  .pen-count{font-family:var(--display); color:var(--rojo); min-width:18px; text-align:center}
+  .pen-display{display:inline-flex; align-items:center; gap:5px; margin-left:6px; padding:2px 8px; border-radius:14px; background:#FFF3C4; color:#735500; font-size:10.5px; font-weight:800; vertical-align:middle}
+  .pen-display.dark{background:rgba(245,194,0,.14); color:var(--amarillo)}
+  .pen-winner{font-size:12px; color:#7A5F00; margin-top:7px; font-weight:800}
 
 
   footer{background:var(--asfalto); color:#A99C93; font-size:12.5px; text-align:center; padding:22px}
@@ -940,10 +958,16 @@ async function dbGetResultados(){
     const lr = await stGet("mundial:resultados", true);
     return lr ? JSON.parse(lr) : {};
   }
-  const {data, error} = await SB.from("quiniela_resultados").select("match_id,goles_local,goles_visita");
+  const {data, error} = await SB.from("quiniela_resultados").select("match_id,goles_local,goles_visita,penales_local,penales_visita");
   if(error) throw error;
   const out = {};
-  (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita)]);
+  (data || []).forEach(r => out[r.match_id] = [
+    String(r.goles_local),
+    String(r.goles_visita),
+    r.updated_at ? new Date(r.updated_at).getTime() : null,
+    r.penales_local == null ? "" : String(r.penales_local),
+    r.penales_visita == null ? "" : String(r.penales_visita)
+  ]);
   return out;
 }
 async function dbGetLiveSync(){
@@ -978,11 +1002,11 @@ async function dbGetMisPred(userId){
     return mp ? JSON.parse(mp) : {};
   }
   const {data, error} = await SB.from("quiniela_predicciones")
-    .select("match_id,goles_local,goles_visita,updated_at")
+    .select("match_id,goles_local,goles_visita,penales_local,penales_visita,updated_at")
     .eq("user_id", userId);
   if(error) throw error;
   const out = {};
-  (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita), new Date(r.updated_at).getTime()]);
+  (data || []).forEach(r => out[r.match_id] = [String(r.goles_local), String(r.goles_visita), new Date(r.updated_at).getTime(), r.penales_local == null ? "" : String(r.penales_local), r.penales_visita == null ? "" : String(r.penales_visita)]);
   return out;
 }
 function fusionarParticipantes(base, extras){
@@ -1020,7 +1044,13 @@ function normalizarFilaPronostico(r){
   return {
     uid,
     mid,
-    pred: [String(gl), String(gv), r.updated_at ? new Date(r.updated_at).getTime() : 0],
+    pred: [
+      String(gl),
+      String(gv),
+      r.updated_at ? new Date(r.updated_at).getTime() : 0,
+      r.penales_local == null ? "" : String(r.penales_local),
+      r.penales_visita == null ? "" : String(r.penales_visita)
+    ],
     participante: {
       id: uid,
       nombre: r.nombre || rel.nombre || rel.usuario || "Participante",
@@ -1064,7 +1094,7 @@ async function dbGetPredsTodosJornada(fecha){
     },
     async () => {
       const {data, error} = await SB.from("quiniela_predicciones")
-        .select("user_id,match_id,goles_local,goles_visita,updated_at,quiniela_participantes!inner(id,nombre,usuario,area,created_at)")
+        .select("user_id,match_id,goles_local,goles_visita,penales_local,penales_visita,updated_at,quiniela_participantes!inner(id,nombre,usuario,area,created_at)")
         .in("match_id", ids)
         .order("updated_at", {ascending:true})
         .limit(10000);
@@ -1073,7 +1103,7 @@ async function dbGetPredsTodosJornada(fecha){
     },
     async () => {
       const {data, error} = await SB.from("quiniela_predicciones")
-        .select("user_id,match_id,goles_local,goles_visita,updated_at")
+        .select("user_id,match_id,goles_local,goles_visita,penales_local,penales_visita,updated_at")
         .in("match_id", ids)
         .order("updated_at", {ascending:true})
         .limit(10000);
@@ -1134,14 +1164,17 @@ async function dbGetPredsTodos(){
   return acumulado;
 }
 
-async function dbGuardarApuesta(userId, matchId, h, a){
+async function dbGuardarApuesta(userId, matchId, h, a, penH="", penA=""){
   if(!modoNube()){
     const previo = await stGet("mundial:pred:" + userId, true);
     const base = previo ? JSON.parse(previo) : {};
-    base[matchId] = [String(h), String(a), Date.now()];
+    base[matchId] = [String(h), String(a), Date.now(), penH === "" ? "" : String(penH), penA === "" ? "" : String(penA)];
     return await stSet("mundial:pred:" + userId, JSON.stringify(base), true);
   }
-  const {error} = await SB.rpc("guardar_prediccion_usuario", {p_usuario:yo.usuario, p_pin:yo.pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
+  const payload = {p_usuario:yo.usuario, p_pin:yo.pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a),
+    p_pen_local: penH === "" || penH == null ? null : Number(penH),
+    p_pen_visita: penA === "" || penA == null ? null : Number(penA)};
+  const {error} = await SB.rpc("guardar_prediccion_usuario", payload);
   if(error) throw error;
   return true;
 }
@@ -1170,13 +1203,16 @@ async function dbValidarAdminPin(pin){
   if(error) throw error;
   return !!data;
 }
-async function dbGuardarResultado(pin, matchId, h, a){
+async function dbGuardarResultado(pin, matchId, h, a, penH="", penA=""){
   if(!modoNube()){
     const limpio = await dbGetResultados();
-    limpio[matchId] = [String(h), String(a)];
+    limpio[matchId] = [String(h), String(a), Date.now(), penH === "" ? "" : String(penH), penA === "" ? "" : String(penA)];
     return await stSet("mundial:resultados", JSON.stringify(limpio), true);
   }
-  const {data, error} = await SB.rpc("guardar_resultado_admin", {p_pin:pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a)});
+  const payload = {p_pin:pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a),
+    p_pen_local: penH === "" || penH == null ? null : Number(penH),
+    p_pen_visita: penA === "" || penA == null ? null : Number(penA)};
+  const {data, error} = await SB.rpc("guardar_resultado_admin", payload);
   if(error) throw error;
   return !!data;
 }
@@ -1243,6 +1279,74 @@ const cerrado = p => Date.now() >= fechaPartido(p).getTime();
 function hoyHN(){ const d = new Date(Date.now() - 6*3600*1000); return d.toISOString().slice(0,10); }
 function estadoDia(f){ const h = hoyHN(); return f < h ? "pasado" : (f === h ? "hoy" : "futuro"); }
 function nombreDia(f){ const d = new Date(f + "T12:00:00-06:00"); return DIAS_LARGO[d.getDay()] + " " + d.getDate() + " de " + MESES[d.getMonth()]; }
+
+function esFaseFinal(p){
+  const fase = String((p && p[5]) || "").trim().toUpperCase();
+  return !!fase && !/^[A-L]$/.test(fase);
+}
+function tieneEmpateMarcador(arr){
+  return !!(arr && arr[0] !== "" && arr[1] !== "" && arr[0] != null && arr[1] != null && Number(arr[0]) === Number(arr[1]));
+}
+function tienePenales(arr){
+  return !!(arr && arr[3] !== "" && arr[4] !== "" && arr[3] != null && arr[4] != null);
+}
+function penalesValidos(arr){
+  return tienePenales(arr) && Number(arr[3]) >= 0 && Number(arr[3]) <= 5 && Number(arr[4]) >= 0 && Number(arr[4]) <= 5 && Number(arr[3]) !== Number(arr[4]);
+}
+function requierePenales(p, arr){
+  return esFaseFinal(p) && tieneEmpateMarcador(arr);
+}
+function textoPenales(arr){
+  if(!tienePenales(arr)) return "";
+  return "Penales " + arr[3] + "–" + arr[4];
+}
+function ganadorPenalesTexto(p, arr){
+  if(!tienePenales(arr) || Number(arr[3]) === Number(arr[4])) return "";
+  const ganador = Number(arr[3]) > Number(arr[4]) ? equipo(p[3])[0] : equipo(p[4])[0];
+  return ganador + " gana en penales " + arr[3] + "–" + arr[4];
+}
+function resultadoTexto(p, arr){
+  if(!arr) return "";
+  const base = arr[0] + "–" + arr[1];
+  const pen = textoPenales(arr);
+  if(esFaseFinal(p) && pen) return base + " · " + pen;
+  return base;
+}
+function pronosticoTexto(p, arr){
+  if(!arr) return "";
+  const base = arr[0] + "–" + arr[1];
+  const pen = textoPenales(arr);
+  if(esFaseFinal(p) && pen) return base + ' <span class="pen-display">⚽ '+esc(pen)+'</span>';
+  return base;
+}
+function penalesSelectorHtml(id, p, arr, pref="pred"){
+  const eh = equipo(p[3]), ea = equipo(p[4]);
+  const pl = Number(arr?.[3] ?? 0);
+  const pv = Number(arr?.[4] ?? 0);
+  const ballRow = (lado, val) => {
+    let out = '<div class="pen-balls">';
+    for(let i=1;i<=5;i++){
+      const nextVal = (val === i ? 0 : i);
+      out += '<button type="button" class="pen-ball '+(i <= val && val > 0 ? 'on' : '')+'" onclick="setPenales(\''+id+'\','+lado+','+nextVal+',\''+pref+'\')" title="'+i+' penales">⚽</button>';
+    }
+    out += '</div>';
+    return out;
+  };
+  const win = ganadorPenalesTexto(p, arr);
+  return '<div class="penales-box" id="pen-'+pref+'-'+id+'">' +
+    '<div class="pen-title">Definir ganador por penales</div>' +
+    '<div class="pen-note">Como pusiste empate en una fase final, selecciona cuántos penales anota cada equipo. No pueden quedar iguales. Para dejar un equipo en 0, no selecciones pelotas o toca de nuevo la pelota marcada.</div>' +
+    '<div class="pen-row"><span class="pen-team">'+esc(eh[0])+'</span>'+ballRow(0, pl)+'<span class="pen-count">'+pl+'</span></div>' +
+    '<div class="pen-row"><span class="pen-team">'+esc(ea[0])+'</span>'+ballRow(1, pv)+'<span class="pen-count">'+pv+'</span></div>' +
+    (win ? '<div class="pen-winner">'+esc(win)+'</div>' : '<div class="pen-winner">Selecciona un ganador por penales.</div>') +
+  '</div>';
+}
+function penalesAvisoFinalHtml(){
+  return '<div class="penales-box" style="background:#F7F3EC">' +
+    '<div class="pen-title">Penales listos para fase final</div>' +
+    '<div class="pen-note" style="margin-bottom:0">Si el marcador principal queda empatado, aquí aparecerán las 5 pelotas por equipo para seleccionar el ganador por penales. Si no hay empate, no se guardan penales.</div>' +
+  '</div>';
+}
 function horaApuesta(t){
   const d = new Date(t);
   try{ return d.toLocaleString("es-HN",{timeZone:"America/Tegucigalpa", day:"numeric", month:"short", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false}); }
@@ -1496,20 +1600,39 @@ async function cargarInicio(){
   }catch(e){ toast("No se pudo cargar la nube: " + (e.message || e)); }
 }
 let relojInt = null;
+function proximosPartidosMismaHora(){
+  const prox = PARTIDOS.find(p => !cerrado(p));
+  if(!prox) return {prox:null, lista:[]};
+  const inicio = fechaPartido(prox).getTime();
+  const lista = PARTIDOS.filter(p => !cerrado(p) && fechaPartido(p).getTime() === inicio);
+  return {prox, lista};
+}
+function htmlPartidoReloj(p, clase='partido'){
+  const eh = equipo(p[3]), ea = equipo(p[4]);
+  return '<div class="'+clase+'">' +
+    banderaEquipo(p[3], "mini") + ' <span>' + esc(eh[0]) + '</span> <span style="color:#A99C93">vs</span> ' +
+    banderaEquipo(p[4], "mini") + ' <span>' + esc(ea[0]) + '</span>' +
+    '</div>';
+}
+function htmlPartidosReloj(lista){
+  if(!lista || !lista.length) return "—";
+  if(lista.length === 1) return htmlPartidoReloj(lista[0], 'partido');
+  return '<div class="partidos-simultaneos">' + lista.map(p => htmlPartidoReloj(p, 'partido-multiple')).join('') + '</div>';
+}
 function iniciarReloj(){
   const caja = $("reloj");
-  const prox = PARTIDOS.find(p => !cerrado(p));
+  const {prox, lista} = proximosPartidosMismaHora();
   if(!prox){
     if(caja) caja.style.display = "none";
     return;
   }
   if(caja) caja.style.display = "block";
-  const eh = equipo(prox[3]), ea = equipo(prox[4]);
-  const partidoHtml = banderaEquipo(prox[3], "mini") + " <span>" + esc(eh[0]) + "</span> <span style='color:#A99C93'>vs</span> " + banderaEquipo(prox[4], "mini") + " <span>" + esc(ea[0]) + "</span>";
-  if($("reloj-partido")) $("reloj-partido").innerHTML = partidoHtml;
-  if($("reloj-et")) $("reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
-  if($("live-reloj-partido")) $("live-reloj-partido").innerHTML = partidoHtml;
-  if($("live-reloj-et")) $("live-reloj-et").textContent = "Próximo partido · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
+  const partidosHtml = htmlPartidosReloj(lista);
+  const titulo = (lista.length > 1 ? "Próximos partidos" : "Próximo partido") + " · " + nombreDia(prox[1]) + " · " + prox[2] + " HN";
+  if($("reloj-partido")) $("reloj-partido").innerHTML = partidosHtml;
+  if($("reloj-et")) $("reloj-et").textContent = titulo;
+  if($("live-reloj-partido")) $("live-reloj-partido").innerHTML = partidosHtml;
+  if($("live-reloj-et")) $("live-reloj-et").textContent = titulo;
   if(relojInt) clearInterval(relojInt);
   const tick = () => {
     let ms = fechaPartido(prox).getTime() - Date.now();
@@ -1613,6 +1736,25 @@ function puntosDe(pred, res){
   if(Math.sign(ph-pa) === Math.sign(rh-ra)) return 1;
   return 0;
 }
+
+function resultadoTienePenales(res){
+  return !!(res && res[2] !== "" && res[3] !== "" && res[2] != null && res[3] != null && Number.isFinite(Number(res[2])) && Number.isFinite(Number(res[3])) && Number(res[2]) !== Number(res[3]));
+}
+function predTienePenales(pr){
+  return !!(pr && pr[3] !== "" && pr[4] !== "" && pr[3] != null && pr[4] != null && Number.isFinite(Number(pr[3])) && Number.isFinite(Number(pr[4])) && Number(pr[3]) !== Number(pr[4]));
+}
+function aciertoPenalesExactos(pr, res){
+  if(!resultadoTienePenales(res) || !predTienePenales(pr)) return false;
+  const marcadorPrincipalExacto = Number(pr[0]) === Number(res[0]) && Number(pr[1]) === Number(res[1]);
+  return marcadorPrincipalExacto && Number(pr[3]) === Number(res[2]) && Number(pr[4]) === Number(res[3]);
+}
+function aciertoGanadorPenales(pr, res){
+  if(!resultadoTienePenales(res) || !predTienePenales(pr)) return false;
+  const resultadoFueEmpate = Number(res[0]) === Number(res[1]);
+  const pronosticoFueEmpate = Number(pr[0]) === Number(pr[1]);
+  if(!resultadoFueEmpate || !pronosticoFueEmpate) return false;
+  return Math.sign(Number(pr[3]) - Number(pr[4])) === Math.sign(Number(res[2]) - Number(res[3]));
+}
 function liveDe(matchId){
   return liveSync[matchId] || null;
 }
@@ -1646,21 +1788,20 @@ function ultimaActualizacionLive(){
   return tiempos.length ? Math.max(...tiempos) : null;
 }
 function proximoPartidoLiveHtml(){
-  const prox = PARTIDOS.find(p => !cerrado(p));
+  const {prox, lista} = proximosPartidosMismaHora();
   if(!prox){
     return '<div class="live-empty">No hay más partidos programados en este momento.</div>';
   }
-  const eh = equipo(prox[3]), ea = equipo(prox[4]);
   return '<div class="reloj live-next">' +
-    '<div class="et" id="live-reloj-et">Próximo partido</div>' +
-    '<div class="partido" id="live-reloj-partido">'+banderaEquipo(prox[3], "mini")+' <span>'+esc(eh[0])+'</span> <span style="color:#A99C93">vs</span> ' + banderaEquipo(prox[4], "mini") + ' <span>'+esc(ea[0])+'</span></div>' +
+    '<div class="et" id="live-reloj-et">'+esc(lista.length > 1 ? 'Próximos partidos' : 'Próximo partido')+'</div>' +
+    '<div id="live-reloj-partido">'+htmlPartidosReloj(lista)+'</div>' +
     '<div class="digitos">' +
       '<div class="d"><b id="live-cd-d">0</b><span>días</span></div>' +
       '<div class="d"><b id="live-cd-h">0</b><span>horas</span></div>' +
       '<div class="d"><b id="live-cd-m">0</b><span>min</span></div>' +
       '<div class="d"><b id="live-cd-s">0</b><span>seg</span></div>' +
     '</div>' +
-    '<div class="live-next-note">Mientras arranca la jornada, aquí verás el siguiente partido del calendario.</div>' +
+    '<div class="live-next-note">Mientras arranca la jornada, aquí verás el siguiente bloque de partidos del calendario.</div>' +
   '</div>';
 }
 function partidosEnVivoHtml(){
@@ -1700,23 +1841,23 @@ function pintarPartidos(){
     const eh = equipo(h), ea = equipo(a);
     const lock = cerrado(p);
     const futuro = ed === "futuro";
-    const pred = misPred[id] || ["","",null];
-    let estado, caja;
+    const pred = misPred[id] || ["","",null,"",""];
+    let estado, caja, extraPenales = "";
     if(futuro){
       estado = '<span class="pill futuro">🔒 Se activa el ' + nombreDia(fecha) + '</span>';
       caja = '<div class="fijo gris">–</div><span class="vs">VS</span><div class="fijo gris">–</div>';
     } else if(lock){
-      const live = liveDe(id);
       const res = resultadoActual(id);
       const pts = res ? puntosDe(pred, res) : null;
       estado = (res
         ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') +
-          ' <span>'+(partidoMostradoComoVivo(p) ? '🔴 En vivo '+etiquetaPartidoEnVivo(p)+' · Marcador' : 'Resultado')+': '+res[0]+'–'+res[1]+'</span>'
+          ' <span>'+(partidoMostradoComoVivo(p) ? '🔴 En vivo '+etiquetaPartidoEnVivo(p)+' · Marcador' : 'Resultado')+': '+esc(resultadoTexto(p,res))+'</span>'
         : '<span class="pill cerrado">Cerrado · esperando marcador</span>');
       if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
+      if(esFaseFinal(p) && tienePenales(pred)) estado += ' <span>'+esc(ganadorPenalesTexto(p,pred))+'</span>';
       estado += ' <button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
-      estado += '';
       caja = '<div class="fijo">'+(pred[0]===""?"–":esc(pred[0]))+'</div><span class="vs">VS</span><div class="fijo">'+(pred[1]===""?"–":esc(pred[1]))+'</div>';
+      if(esFaseFinal(p) && tienePenales(pred)) extraPenales = penalesSelectorHtml(id, p, pred, "view").replace(/<button/g,'<button disabled');
     } else {
       const tienePred = predCompleto(pred);
       const editando = !tienePred || !!editandoPred[id];
@@ -1724,10 +1865,12 @@ function pintarPartidos(){
       if(tienePred && !editando){
         estado = '<span class="pill abierto">✓ Registrado · editable hasta las ' + hora + ' HN</span>';
         estado += ' <span>Última actualización: '+horaApuesta(pred[2])+'</span>';
+        if(esFaseFinal(p) && tienePenales(pred)) estado += ' <span>'+esc(ganadorPenalesTexto(p,pred))+'</span>';
         estado += ' <span class="edit-actions"><button class="btn mini" onclick="editarPronostico(\''+id+'\')">Editar pronóstico</button>';
         estado += '<button class="link-apuestas" onclick="verPronósticosDe(\''+fecha+'\',\''+id+'\')">Ver pronósticos de todos</button>';
         estado += '</span>';
         caja = '<div class="fijo">'+esc(pred[0])+'</div><span class="vs">VS</span><div class="fijo">'+esc(pred[1])+'</div>';
+        if(esFaseFinal(p) && tienePenales(pred)) extraPenales = penalesSelectorHtml(id, p, pred, "view").replace(/<button/g,'<button disabled');
       } else {
         estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
         if(tienePred) estado += ' <span>Editando: al guardar se actualiza la hora y la prioridad.</span>';
@@ -1737,12 +1880,14 @@ function pintarPartidos(){
         caja = '<input id="pred-'+id+'-0" type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setPred(\''+id+'\',0,this.value)">' +
           '<span class="vs">VS</span>' +
           '<input id="pred-'+id+'-1" type="number" min="0" max="20" inputmode="numeric" value="'+esc(pred[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setPred(\''+id+'\',1,this.value)">';
+        if(requierePenales(p, pred)) extraPenales = penalesSelectorHtml(id, p, pred, "pred");
       }
     }
     html += '<div class="pcard'+(lock?' cerrado':'')+(futuro?' bloqueado':'')+'" id="'+domId("qui",id)+'">' +
       '<div class="eq">'+banderaEquipo(h)+'<span class="nom">'+esc(eh[0])+'<span class="grupo">'+etiquetaFase(g)+'</span></span></div>' +
       '<div class="marcador">'+caja+'</div>' +
       '<div class="eq der">'+banderaEquipo(a)+'<span class="nom">'+esc(ea[0])+'<span class="grupo">'+hora+' HN</span></span></div>' +
+      extraPenales +
       '<div class="meta-p">'+estado+'</div></div>';
   });
   html += '</div>';
@@ -1769,9 +1914,19 @@ async function cancelarEditarPronostico(id){
 }
 
 function setPred(id, lado, val){
-  if(!misPred[id]) misPred[id] = ["","",null];
+  if(!misPred[id]) misPred[id] = ["","",null,"",""];
   const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
   misPred[id][lado] = v === "" ? "" : String(v);
+  // Si deja de ser empate, limpiamos penales para no guardar datos inconsistentes.
+  const p = PARTIDOS.find(x => x[0] === id);
+  if(!requierePenales(p, misPred[id])){ misPred[id][3] = ""; misPred[id][4] = ""; }
+  pintarPartidos();
+}
+function setPenales(id, lado, val, pref="pred"){
+  const obj = pref === "res" ? resultados : misPred;
+  if(!obj[id]) obj[id] = ["","",null,"",""];
+  obj[id][lado === 0 ? 3 : 4] = String(Math.max(0, Math.min(5, parseInt(val,10) || 0)));
+  if(pref === "res") pintarAdmin(); else pintarPartidos();
 }
 async function guardarApuesta(id){
   const p = PARTIDOS.find(x => x[0] === id);
@@ -1797,15 +1952,21 @@ async function guardarApuesta(id){
     return;
   }
 
+  if(requierePenales(p, misPred[id]) && !penalesValidos(misPred[id])){
+    toast("Selecciona el ganador por penales. No pueden quedar iguales.");
+    return;
+  }
+
   misPred[id][2] = Date.now();
 
   try{
-    await dbGuardarApuesta(yo.id, id, misPred[id][0], misPred[id][1]);
+    await dbGuardarApuesta(yo.id, id, misPred[id][0], misPred[id][1], misPred[id][3] || "", misPred[id][4] || "");
     misPred = await dbGetMisPred(yo.id);
     delete editandoPred[id];
 
     const eh = equipo(p[3]), ea = equipo(p[4]);
-    toast("✓ Pronóstico guardado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + " · " + horaApuesta(misPred[id][2]));
+    const penTxt = requierePenales(p, misPred[id]) && tienePenales(misPred[id]) ? " · " + ganadorPenalesTexto(p, misPred[id]) : "";
+    toast("✓ Pronóstico guardado: " + eh[0] + " " + misPred[id][0] + "–" + misPred[id][1] + " " + ea[0] + penTxt + " · " + horaApuesta(misPred[id][2]));
     pintarPartidos();
   }catch(e){
     toast("⚠ No se pudo guardar el pronóstico: " + (e.message || e));
@@ -1900,21 +2061,21 @@ function pintarPronósticos(){
     participantes.forEach(u => {
       const pr = (predsTodos[u.id] || {})[id];
       if(pr && pr[0] !== "" && pr[1] !== "" && pr[0] != null && pr[1] != null){
-        filas.push({u, h: pr[0], a: pr[1], t: pr[2] || 0});
+        filas.push({u, h: pr[0], a: pr[1], t: pr[2] || 0, penH: pr[3] || "", penA: pr[4] || ""});
       }
     });
     filas.sort((x,y) => (x.t||9e15) - (y.t||9e15));
     // prioridad: primer registro de cada marcador repetido
     const vistos = {};
     filas.forEach(f => {
-      const clave = f.h + "-" + f.a;
+      const clave = f.h + "-" + f.a + "-" + (f.penH || "") + "-" + (f.penA || "");
       if(vistos[clave] == null){ vistos[clave] = f.u.id; f.prim = true; f.rep = false; }
       else { f.prim = false; f.rep = true; }
     });
     let head = '<div class="mcard-head"><div class="vsx">' + banderaEquipo(h,'mini') + ' ' + esc(eh[0]) + ' <span style="color:#A99C93">vs</span> ' + esc(ea[0]) + ' ' + banderaEquipo(a,'mini') +
       '</div><span style="font-size:12px; color:#B7AAA2">' + etiquetaFase(g) + ' · ' + hora + ' HN' +
       (partidoMostradoComoVivo(p) ? ' · 🔴 EN VIVO '+etiquetaPartidoEnVivo(p) : (lock ? ' · CERRADO' : ' · ABIERTO')) + '</span>' +
-      (res ? '<div class="res">'+(partidoMostradoComoVivo(p) ? 'En vivo' : 'Final')+': ' + res[0] + '–' + res[1] + '</div>' : '') + '</div>';
+      (res ? '<div class="res">'+(partidoMostradoComoVivo(p) ? 'En vivo' : 'Final')+': ' + esc(resultadoTexto(p,res)) + '</div>' : '') + '</div>';
     let cuerpo;
     const puedeVerEstePartido = puedeVerPronosticosPartido(p);
     if(!puedeVerEstePartido){
@@ -1931,12 +2092,12 @@ function pintarPronósticos(){
         }
         let pts = "";
         if(res){
-          const pu = puntosDe([f.h, f.a], res);
+          const pu = puntosDe([f.h, f.a, f.t, f.penH, f.penA], res);
           pts = '<td><span class="pill pts'+pu+'">'+(pu===3?'+3':pu===1?'+1':'0')+'</span></td>';
         }
         cuerpo += '<tr class="'+(mio?'mio':'')+'"><td>'+(i+1)+'</td><td><b>'+esc(f.u.nombre)+'</b>' + (mio ? ' (tú)' : '') +
           '<br><span style="color:var(--gris); font-size:11.5px">'+esc(f.u.area||"")+'</span></td>' +
-          '<td class="ap">'+esc(f.h)+'–'+esc(f.a)+marca+'</td>' +
+          '<td class="ap">'+pronosticoTexto(p,[f.h,f.a,f.t,f.penH,f.penA])+marca+'</td>' +
           '<td class="hora-ap">'+(f.t ? horaApuesta(f.t) : "—")+'</td>' + pts + '</tr>';
       });
       cuerpo += '</tbody></table>';
@@ -1953,6 +2114,8 @@ function desempateUsuario(u, matchIds){
   let firstExact = Infinity;
   let firstScored = Infinity;
   let firstAny = Infinity;
+  let firstPenalesExactos = Infinity;
+  let firstGanadorPenales = Infinity;
 
   matchIds.forEach(mid => {
     const pr = preds[mid];
@@ -1964,9 +2127,11 @@ function desempateUsuario(u, matchIds){
     if(Number.isFinite(t) && t < firstAny) firstAny = t;
     if(pu === 3 && Number.isFinite(t) && t < firstExact) firstExact = t;
     if(pu > 0 && Number.isFinite(t) && t < firstScored) firstScored = t;
+    if(aciertoPenalesExactos(pr, res) && Number.isFinite(t) && t < firstPenalesExactos) firstPenalesExactos = t;
+    if(aciertoGanadorPenales(pr, res) && Number.isFinite(t) && t < firstGanadorPenales) firstGanadorPenales = t;
   });
 
-  return {firstExact, firstScored, firstAny};
+  return {firstExact, firstScored, firstAny, firstPenalesExactos, firstGanadorPenales};
 }
 
 function compararRanking(a,b){
@@ -1974,6 +2139,10 @@ function compararRanking(a,b){
     || b.exactos - a.exactos
     || b.aciertos - a.aciertos
     || b.jugados - a.jugados
+    || (b.penalesExactos || 0) - (a.penalesExactos || 0)
+    || (b.ganadoresPenales || 0) - (a.ganadoresPenales || 0)
+    || ((a.firstPenalesExactos || Infinity) - (b.firstPenalesExactos || Infinity))
+    || ((a.firstGanadorPenales || Infinity) - (b.firstGanadorPenales || Infinity))
     || ((a.firstExact || Infinity) - (b.firstExact || Infinity))
     || ((a.firstScored || Infinity) - (b.firstScored || Infinity))
     || ((a.firstAny || Infinity) - (b.firstAny || Infinity))
@@ -1981,6 +2150,8 @@ function compararRanking(a,b){
 }
 
 function textoDesempate(r){
+  if((r.penalesExactos || 0) > 0 && Number.isFinite(r.firstPenalesExactos)) return 'Desempate: acertó penales exactos · ' + horaApuesta(r.firstPenalesExactos);
+  if((r.ganadoresPenales || 0) > 0 && Number.isFinite(r.firstGanadorPenales)) return 'Desempate: acertó ganador por penales · ' + horaApuesta(r.firstGanadorPenales);
   if(Number.isFinite(r.firstExact)) return 'Desempate: primer marcador exacto registrado · ' + horaApuesta(r.firstExact);
   if(Number.isFinite(r.firstScored)) return 'Desempate: primer pronóstico con puntos registrado · ' + horaApuesta(r.firstScored);
   if(Number.isFinite(r.firstAny)) return 'Desempate: primer pronóstico registrado · ' + horaApuesta(r.firstAny);
@@ -1990,17 +2161,21 @@ function textoDesempate(r){
 function calcularRanking(matchIds){
   return participantes.map(u => {
     const preds = predsTodos[u.id] || {};
-    let pts = 0, exactos = 0, aciertos = 0, jugados = 0;
+    let pts = 0, exactos = 0, aciertos = 0, jugados = 0, penalesExactos = 0, ganadoresPenales = 0;
 
     matchIds.forEach(mid => {
-      const pu = puntosDe(preds[mid], resultadoActual(mid));
+      const pr = preds[mid];
+      const res = resultadoActual(mid);
+      const pu = puntosDe(pr, res);
       if(pu === null) return;
       jugados++;
       if(pu === 3){ pts += 3; exactos++; }
       else if(pu === 1){ pts += 1; aciertos++; }
+      if(aciertoPenalesExactos(pr, res)) penalesExactos++;
+      if(aciertoGanadorPenales(pr, res)) ganadoresPenales++;
     });
 
-    return {u, pts, exactos, aciertos, jugados, ...desempateUsuario(u, matchIds)};
+    return {u, pts, exactos, aciertos, jugados, penalesExactos, ganadoresPenales, ...desempateUsuario(u, matchIds)};
   }).sort(compararRanking);
 }
 
@@ -2212,28 +2387,35 @@ function pintarAdmin(){
       h += '<div class="dia-sep">' + nombreDia(fecha) + '<span>CAPTURA DE RESULTADOS</span></div><div class="partidos">';
     }
     const eh = equipo(ho), ea = equipo(aw);
-    const r = resultados[id] || ["",""];
+    const r = resultados[id] || ["","",null,"",""];
+    const necesitaPen = requierePenales(p, r);
     h += '<div class="pcard"><div class="eq">'+banderaEquipo(ho)+'<span class="nom">'+esc(eh[0])+'<span class="grupo">'+hora+' HN</span></span></div>' +
       '<div class="marcador"><input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[0])+'" aria-label="Goles '+esc(eh[0])+'" onchange="setRes(\''+id+'\',0,this.value)"><span class="vs">–</span>' +
       '<input type="number" min="0" max="20" inputmode="numeric" value="'+esc(r[1])+'" aria-label="Goles '+esc(ea[0])+'" onchange="setRes(\''+id+'\',1,this.value)"></div>' +
       '<div class="eq der">'+banderaEquipo(aw)+'<span class="nom">'+esc(ea[0])+'</span></div>' +
-      '<div class="meta-p"><button class="btn mini" onclick="guardarResultadoIndividual(\''+id+'\')">Actualizar marcador en vivo</button><span>Al guardar, se recalculan los puntos de todos los participantes.</span></div></div>';
+      (necesitaPen ? penalesSelectorHtml(id, p, r, "res") : (esFaseFinal(p) ? penalesAvisoFinalHtml() : '')) +
+      '<div class="meta-p"><button class="btn mini" onclick="guardarResultadoIndividual(\''+id+'\')">Actualizar marcador en vivo</button><span>Al guardar, se recalculan los puntos de todos los participantes.'+(necesitaPen?' También se mostrará el ganador por penales.':'')+'</span></div></div>';
   });
   h += '</div>';
   $("admin-lista").innerHTML = h;
 }
 function setRes(id, lado, val){
-  if(!resultados[id]) resultados[id] = ["",""];
+  if(!resultados[id]) resultados[id] = ["","",null,"",""];
   const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
   resultados[id][lado] = v === "" ? "" : String(v);
+  const p = PARTIDOS.find(x => x[0] === id);
+  if(!requierePenales(p, resultados[id])){ resultados[id][3] = ""; resultados[id][4] = ""; }
   if(resultados[id][0]==="" && resultados[id][1]==="") delete resultados[id];
+  pintarAdmin();
 }
 async function guardarResultadoIndividual(matchId){
   if(!adminOk || !adminPinActual){ toast("Primero entra con el PIN administrador."); return; }
   const r = resultados[matchId];
+  const p = PARTIDOS.find(x => x[0] === matchId);
   if(!r || r[0] === "" || r[1] === ""){ toast("Completa ambos marcadores antes de actualizar."); return; }
+  if(requierePenales(p, r) && !penalesValidos(r)){ toast("Selecciona el ganador por penales. No pueden quedar iguales."); return; }
   try{
-    await dbGuardarResultado(adminPinActual, matchId, r[0], r[1]);
+    await dbGuardarResultado(adminPinActual, matchId, r[0], r[1], r[3] || "", r[4] || "");
     resultados = await dbGetResultados();
     toast("✓ Marcador actualizado. La clasificación fue recalculada.");
     pintarAdmin();
@@ -2247,7 +2429,9 @@ async function guardarResultados(){
   Object.keys(resultados).forEach(k => { const r = resultados[k]; if(r[0]!=="" && r[1]!=="") limpio[k] = r; });
   try{
     for(const k of Object.keys(limpio)){
-      await dbGuardarResultado(adminPinActual, k, limpio[k][0], limpio[k][1]);
+      const p = PARTIDOS.find(x => x[0] === k);
+      if(requierePenales(p, limpio[k]) && !penalesValidos(limpio[k])) throw new Error("Faltan penales válidos en " + k);
+      await dbGuardarResultado(adminPinActual, k, limpio[k][0], limpio[k][1], limpio[k][3] || "", limpio[k][4] || "");
     }
     resultados = await dbGetResultados();
     av.className = "aviso ok";
