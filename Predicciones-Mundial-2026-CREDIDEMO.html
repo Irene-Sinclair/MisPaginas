@@ -224,7 +224,9 @@
   .pill.abierto{background:#E8F6EE; color:var(--verde)}
   .pill.cerrado{background:#F0EBE3; color:var(--gris)}
   .pill.futuro{background:#FFF3C4; color:#8A6D00}
+  .pill.pts4{background:var(--amarillo); color:var(--asfalto)}
   .pill.pts3{background:var(--amarillo); color:var(--asfalto)}
+  .pill.pts2{background:#E8F6EE; color:var(--verde)}
   .pill.pts1{background:#E8F6EE; color:var(--verde)}
   .pill.pts0{background:#FBE9EA; color:var(--rojo-d)}
   .link-apuestas{background:none; border:none; color:var(--rojo); font-weight:700; font-size:11.5px; cursor:pointer; text-decoration:underline; padding:0; font-family:var(--body)}
@@ -1729,12 +1731,28 @@ async function salir(){
 
 
 /* ================== MI QUINIELA (por día) ================== */
-function puntosDe(pred, res){
+function puntosBaseDe(pred, res){
   if(!pred || !res || pred[0]===""||pred[1]===""||pred[0]==null||pred[1]==null) return null;
   const ph=+pred[0], pa=+pred[1], rh=+res[0], ra=+res[1];
   if(ph===rh && pa===ra) return 3;
   if(Math.sign(ph-pa) === Math.sign(rh-ra)) return 1;
   return 0;
+}
+function puntosDe(pred, res){
+  const base = puntosBaseDe(pred, res);
+  if(base === null) return null;
+  const extraPenal = aciertoGanadorPenales(pred, res) ? 1 : 0;
+  return base + extraPenal;
+}
+function etiquetaPuntos(puntos, pred, res){
+  if(puntos === null) return "Sin pronóstico";
+  const base = puntosBaseDe(pred, res);
+  const extraPenal = aciertoGanadorPenales(pred, res);
+  if(base === 3 && extraPenal) return "Exacto + penales +4";
+  if(base === 3) return "¡Exacto! +3";
+  if(base === 1 && extraPenal) return "Resultado + penales +2";
+  if(base === 1) return "Acertaste +1";
+  return "0 pts";
 }
 
 function resultadoTienePenales(res){
@@ -1850,7 +1868,7 @@ function pintarPartidos(){
       const res = resultadoActual(id);
       const pts = res ? puntosDe(pred, res) : null;
       estado = (res
-        ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+(pts===3?'¡Exacto! +3':pts===1?'Acertaste +1':'0 pts')+'</span>') +
+        ? (pts===null ? '<span class="pill cerrado">Sin pronóstico</span>' : '<span class="pill pts'+pts+'">'+etiquetaPuntos(pts, pred, res)+'</span>') +
           ' <span>'+(partidoMostradoComoVivo(p) ? '🔴 En vivo '+etiquetaPartidoEnVivo(p)+' · Marcador' : 'Resultado')+': '+esc(resultadoTexto(p,res))+'</span>'
         : '<span class="pill cerrado">Cerrado · esperando marcador</span>');
       if(pred[2]) estado += ' <span>Registraste: '+horaApuesta(pred[2])+'</span>';
@@ -2093,7 +2111,7 @@ function pintarPronósticos(){
         let pts = "";
         if(res){
           const pu = puntosDe([f.h, f.a, f.t, f.penH, f.penA], res);
-          pts = '<td><span class="pill pts'+pu+'">'+(pu===3?'+3':pu===1?'+1':'0')+'</span></td>';
+          pts = '<td><span class="pill pts'+pu+'">+'+pu+'</span></td>';
         }
         cuerpo += '<tr class="'+(mio?'mio':'')+'"><td>'+(i+1)+'</td><td><b>'+esc(f.u.nombre)+'</b>' + (mio ? ' (tú)' : '') +
           '<br><span style="color:var(--gris); font-size:11.5px">'+esc(f.u.area||"")+'</span></td>' +
@@ -2167,10 +2185,12 @@ function calcularRanking(matchIds){
       const pr = preds[mid];
       const res = resultadoActual(mid);
       const pu = puntosDe(pr, res);
+      const base = puntosBaseDe(pr, res);
       if(pu === null) return;
       jugados++;
-      if(pu === 3){ pts += 3; exactos++; }
-      else if(pu === 1){ pts += 1; aciertos++; }
+      pts += pu;
+      if(base === 3) exactos++;
+      else if(base === 1) aciertos++;
       if(aciertoPenalesExactos(pr, res)) penalesExactos++;
       if(aciertoGanadorPenales(pr, res)) ganadoresPenales++;
     });
