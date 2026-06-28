@@ -1878,7 +1878,8 @@ function pintarPartidos(){
       if(esFaseFinal(p) && tienePenales(pred)) extraPenales = penalesSelectorHtml(id, p, pred, "view").replace(/<button/g,'<button disabled');
     } else {
       const tienePred = predCompleto(pred);
-      const editando = !tienePred || !!editandoPred[id];
+      const faltaPenalesFinal = tienePred && requierePenales(p, pred) && !penalesValidos(pred);
+      const editando = !tienePred || !!editandoPred[id] || faltaPenalesFinal;
 
       if(tienePred && !editando){
         estado = '<span class="pill abierto">✓ Registrado · editable hasta las ' + hora + ' HN</span>';
@@ -1891,7 +1892,8 @@ function pintarPartidos(){
         if(esFaseFinal(p) && tienePenales(pred)) extraPenales = penalesSelectorHtml(id, p, pred, "view").replace(/<button/g,'<button disabled');
       } else {
         estado = '<span class="pill abierto">Abierto · cierra ' + hora + ' HN</span>';
-        if(tienePred) estado += ' <span>Editando: al guardar se actualiza la hora y la prioridad.</span>';
+        if(faltaPenalesFinal) estado += ' <span>Te falta definir penales para este empate de fase final.</span>';
+        else if(tienePred) estado += ' <span>Editando: al guardar se actualiza la hora y la prioridad.</span>';
         else estado += ' <span>Completa ambos marcadores para guardar.</span>';
         estado += ' <button class="btn mini" onclick="guardarApuesta(\''+id+'\')">'+(tienePred ? 'Guardar cambios' : 'Guardar pronóstico')+'</button>';
         if(tienePred) estado += ' <button class="link-apuestas" onclick="cancelarEditarPronostico(\''+id+'\')">Cancelar edición</button>';
