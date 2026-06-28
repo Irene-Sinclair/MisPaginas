@@ -530,7 +530,7 @@
   <section class="pagina" id="pag-posiciones">
     <div class="cinta-mini"></div>
     <h2 class="titulo">Ganadores por día</h2>
-    <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha con resultado oficial. Si hay empate en puntos, gana una sola persona: quien registró primero el marcador exacto o el primer pronóstico con puntos. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
+    <p class="bajada">Se calcula por jornada: suma todos los partidos de esa fecha con resultado oficial. En fases finales con penales se suma +1 por ganador y +1 adicional por penales exactos. Si hay empate en puntos, gana una sola persona por criterios de desempate. <button class="btn sec peq" onclick="cargarTabla()">Actualizar</button></p>
     <div id="ganadores-zona"><div class="vacio">Cargando ganadores por día…</div></div>
 
     <div class="cinta-mini" style="margin-top:30px"></div>
@@ -540,7 +540,7 @@
 
     <div class="cinta-mini" style="margin-top:30px"></div>
     <h2 class="titulo">Tabla general</h2>
-    <p class="bajada">Acumulado general: 3 puntos por marcador exacto · 1 punto por acertar el resultado.</p>
+    <p class="bajada">Acumulado general: 3 puntos por marcador exacto · 1 por resultado · en penales: +1 por ganador y +1 adicional por penales exactos.</p>
     <div id="tabla-zona"><div class="vacio">Cargando posiciones…</div></div>
   </section>
 
@@ -628,10 +628,10 @@
     <div class="regla"><div class="punto">👀</div><div><h3>Ver pronósticos de la oficina</h3><p>Para ver los pronósticos de la jornada, primero debes registrar tus propios marcadores en todos los partidos de la jornada seleccionada. Así se evita copiar resultados antes de participar.</p></div></div>
     <div class="regla"><div class="punto">✏️</div><div><h3>Edición de pronósticos</h3><p>Cada participante puede editar su marcador hasta la hora de inicio del partido. Al editar, se actualiza la hora del registro y también cambia su prioridad frente a marcadores repetidos.</p></div></div>
     <div class="regla"><div class="punto">🥇</div><div><h3>Marcadores repetidos</h3><p>Si dos o más personas registran el mismo marcador en un partido, la prioridad de reconocimiento es de quien lo registró primero. Si cambias tu pronóstico, tu hora se actualiza y pierdes la antigüedad.</p></div></div>
-    <div class="regla"><div class="punto">3</div><div><h3>Marcador exacto</h3><p>Si tu pronóstico coincide exactamente con el resultado final (ej. dijiste 2–1 y quedó 2–1), ganas 3 puntos.</p></div></div>
+    <div class="regla"><div class="punto">3</div><div><h3>Marcador exacto</h3><p>Si tu pronóstico coincide exactamente con el marcador principal (ej. dijiste 2–1 y quedó 2–1), ganas 3 puntos. En fase final con penales, podés sumar +1 por acertar quién avanza y +1 adicional si acertás los penales exactos.</p></div></div>
     <div class="regla"><div class="punto">1</div><div><h3>Resultado acertado</h3><p>Si acertaste quién gana o el empate, pero no el marcador (ej. dijiste 2–0 y quedó 1–0), ganas 1 punto.</p></div></div>
     <div class="regla"><div class="punto">🔒</div><div><h3>Cierre por partido</h3><p>Cada partido se bloquea automáticamente a su hora de inicio. Después de eso ya no se puede pronosticar ni modificar.</p></div></div>
-    <div class="regla"><div class="punto">🏆</div><div><h3>Desempates en la tabla</h3><p>Si hay empate en puntos, gana quien tenga más marcadores exactos. Si persiste, quien tenga más aciertos y luego quien se haya inscrito primero. La dinámica de reconocimiento la define la oficina 😉.</p></div></div>
+    <div class="regla"><div class="punto">🏆</div><div><h3>Desempates en la tabla</h3><p>Si hay empate en puntos, gana quien tenga más marcadores exactos. Si persiste, se considera mejor acierto en penales, más aciertos y luego la hora de registro. La dinámica de reconocimiento la define la oficina 😉.</p></div></div>
     <div class="regla"><div class="punto">➕</div><div><h3>Fases finales</h3><p>El administrador puede agregar nuevos partidos desde la sección Resultados: dieciseisavos, octavos, cuartos, semifinales, tercer lugar y final. No se necesita modificar el HTML publicado.</p></div></div>
   </section>
 
@@ -1173,9 +1173,20 @@ async function dbGuardarApuesta(userId, matchId, h, a, penH="", penA=""){
     base[matchId] = [String(h), String(a), Date.now(), penH === "" ? "" : String(penH), penA === "" ? "" : String(penA)];
     return await stSet("mundial:pred:" + userId, JSON.stringify(base), true);
   }
-  const payload = {p_usuario:yo.usuario, p_pin:yo.pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a),
-    p_pen_local: penH === "" || penH == null ? null : Number(penH),
-    p_pen_visita: penA === "" || penA == null ? null : Number(penA)};
+  // La base usa una sola función de 7 parámetros.
+  // IMPORTANTE: para marcadores que NO son empate, mandamos penales en 0-0.
+  // La función SQL los limpiará a NULL cuando no apliquen. Esto evita que el RPC falle
+  // o quede esperando penales cuando el usuario puso 1-2, 2-1, etc.
+  const llevaPenales = !(penH === "" || penH == null || penA === "" || penA == null);
+  const payload = {
+    p_usuario: yo.usuario,
+    p_pin: yo.pin,
+    p_match_id: matchId,
+    p_h: Number(h),
+    p_a: Number(a),
+    p_pen_local: llevaPenales ? Number(penH) : 0,
+    p_pen_visita: llevaPenales ? Number(penA) : 0
+  };
   const {error} = await SB.rpc("guardar_prediccion_usuario", payload);
   if(error) throw error;
   return true;
@@ -1211,9 +1222,18 @@ async function dbGuardarResultado(pin, matchId, h, a, penH="", penA=""){
     limpio[matchId] = [String(h), String(a), Date.now(), penH === "" ? "" : String(penH), penA === "" ? "" : String(penA)];
     return await stSet("mundial:resultados", JSON.stringify(limpio), true);
   }
-  const payload = {p_pin:pin, p_match_id:matchId, p_h:Number(h), p_a:Number(a),
-    p_pen_local: penH === "" || penH == null ? null : Number(penH),
-    p_pen_visita: penA === "" || penA == null ? null : Number(penA)};
+  // Si el resultado no tiene penales, usamos el RPC original sin campos extra.
+  const llevaPenales = !(penH === "" || penH == null || penA === "" || penA == null);
+  const payload = {
+    p_pin: pin,
+    p_match_id: matchId,
+    p_h: Number(h),
+    p_a: Number(a)
+  };
+  if(llevaPenales){
+    payload.p_pen_local = Number(penH);
+    payload.p_pen_visita = Number(penA);
+  }
   const {data, error} = await SB.rpc("guardar_resultado_admin", payload);
   if(error) throw error;
   return !!data;
@@ -1270,6 +1290,7 @@ let liveSync = {};             // marcador automático por partido
 let misPred = {};              // {matchId:[h,a,t]}
 let predsTodos = {};           // {userId:{matchId:[h,a,t]}}
 let editandoPred = {};          // {matchId:true} para habilitar edición visual antes del cierre
+let repaintPredTimer = null; // evita que el onchange repinte la tarjeta antes del click en Guardar
 let diaQuin = null, diaApu = null;
 let partidoQuinActivo = null;
 let partidoApuActivo = null;
@@ -1741,16 +1762,24 @@ function puntosBaseDe(pred, res){
 function puntosDe(pred, res){
   const base = puntosBaseDe(pred, res);
   if(base === null) return null;
-  const extraPenal = aciertoGanadorPenales(pred, res) ? 1 : 0;
-  return base + extraPenal;
+
+  // Fase final con penales:
+  // +1 si acertó quién avanzó por penales.
+  // +1 adicional si también acertó el marcador exacto de penales.
+  const extraGanadorPenal = aciertoGanadorPenales(pred, res) ? 1 : 0;
+  const extraPenalExacto = aciertoPenalesExactos(pred, res) ? 1 : 0;
+  return base + extraGanadorPenal + extraPenalExacto;
 }
 function etiquetaPuntos(puntos, pred, res){
   if(puntos === null) return "Sin pronóstico";
   const base = puntosBaseDe(pred, res);
-  const extraPenal = aciertoGanadorPenales(pred, res);
-  if(base === 3 && extraPenal) return "Exacto + penales +4";
+  const extraGanadorPenal = aciertoGanadorPenales(pred, res);
+  const extraPenalExacto = aciertoPenalesExactos(pred, res);
+  if(base === 3 && extraGanadorPenal && extraPenalExacto) return "Exacto + penales exactos +5";
+  if(base === 3 && extraGanadorPenal) return "Exacto + ganador penales +4";
   if(base === 3) return "¡Exacto! +3";
-  if(base === 1 && extraPenal) return "Resultado + penales +2";
+  if(base === 1 && extraGanadorPenal && extraPenalExacto) return "Resultado + penales exactos +3";
+  if(base === 1 && extraGanadorPenal) return "Resultado + ganador penales +2";
   if(base === 1) return "Acertaste +1";
   return "0 pts";
 }
@@ -1935,12 +1964,29 @@ async function cancelarEditarPronostico(id){
 
 function setPred(id, lado, val){
   if(!misPred[id]) misPred[id] = ["","",null,"",""];
+
+  const p = PARTIDOS.find(x => x[0] === id);
+  const antesRequierePenales = requierePenales(p, misPred[id]);
+
   const v = val === "" ? "" : Math.max(0, Math.min(20, parseInt(val,10) || 0));
   misPred[id][lado] = v === "" ? "" : String(v);
+
+  const ahoraRequierePenales = requierePenales(p, misPred[id]);
+
   // Si deja de ser empate, limpiamos penales para no guardar datos inconsistentes.
-  const p = PARTIDOS.find(x => x[0] === id);
-  if(!requierePenales(p, misPred[id])){ misPred[id][3] = ""; misPred[id][4] = ""; }
-  pintarPartidos();
+  if(!ahoraRequierePenales){
+    misPred[id][3] = "";
+    misPred[id][4] = "";
+  }
+
+  // NO repintar inmediatamente.
+  // El onchange del input se dispara justo antes del click en Guardar; si repintamos aquí,
+  // el botón desaparece y el usuario tiene que dar Guardar una segunda vez.
+  // Solo repintamos con atraso cuando hace falta mostrar/ocultar penales.
+  if(antesRequierePenales !== ahoraRequierePenales || ahoraRequierePenales){
+    clearTimeout(repaintPredTimer);
+    repaintPredTimer = setTimeout(() => pintarPartidos(), 300);
+  }
 }
 function setPenales(id, lado, val, pref="pred"){
   const obj = pref === "res" ? resultados : misPred;
@@ -1951,6 +1997,8 @@ function setPenales(id, lado, val, pref="pred"){
 async function guardarApuesta(id){
   const p = PARTIDOS.find(x => x[0] === id);
   if(!yo || !p) return;
+
+  clearTimeout(repaintPredTimer);
 
   if(cerrado(p)){
     toast("El partido ya inició. El pronóstico está cerrado.");
@@ -1964,8 +2012,15 @@ async function guardarApuesta(id){
 
   const inpLocal = document.getElementById("pred-"+id+"-0");
   const inpVisita = document.getElementById("pred-"+id+"-1");
-  if(inpLocal) setPred(id, 0, inpLocal.value);
-  if(inpVisita) setPred(id, 1, inpVisita.value);
+
+  // Leer los inputs y actualizar el objeto en memoria SIN repintar la tarjeta antes de guardar.
+  // Antes se llamaba setPred(), que repintaba el HTML durante el primer clic y podía obligar a dar guardar dos veces.
+  if(!misPred[id]) misPred[id] = ["","",null,"",""];
+  const valLocal = inpLocal ? inpLocal.value : misPred[id][0];
+  const valVisita = inpVisita ? inpVisita.value : misPred[id][1];
+  misPred[id][0] = valLocal === "" ? "" : String(Math.max(0, Math.min(20, parseInt(valLocal,10) || 0)));
+  misPred[id][1] = valVisita === "" ? "" : String(Math.max(0, Math.min(20, parseInt(valVisita,10) || 0)));
+  if(!requierePenales(p, misPred[id])){ misPred[id][3] = ""; misPred[id][4] = ""; }
 
   if(!predCompleto(misPred[id])){
     toast("Completa ambos marcadores para guardar el pronóstico.");
@@ -1973,6 +2028,15 @@ async function guardarApuesta(id){
   }
 
   if(requierePenales(p, misPred[id]) && !penalesValidos(misPred[id])){
+    // Si el usuario acaba de escribir un empate y da Guardar de inmediato,
+    // mostramos las pelotas en ese mismo primer clic. Antes se cancelaba el repintado
+    // y parecía que el sistema no detectaba el empate.
+    editandoPred[id] = true;
+    pintarPartidos();
+    setTimeout(() => {
+      const box = document.getElementById("pen-pred-" + id);
+      if(box) box.scrollIntoView({behavior:"smooth", block:"center"});
+    }, 80);
     toast("Selecciona el ganador por penales. No pueden quedar iguales.");
     return;
   }
@@ -2159,7 +2223,7 @@ function desempateUsuario(u, matchIds){
 
     const t = pr && pr[2] ? Number(pr[2]) : Infinity;
     if(Number.isFinite(t) && t < firstAny) firstAny = t;
-    if(pu === 3 && Number.isFinite(t) && t < firstExact) firstExact = t;
+    if(puntosBaseDe(pr, res) === 3 && Number.isFinite(t) && t < firstExact) firstExact = t;
     if(pu > 0 && Number.isFinite(t) && t < firstScored) firstScored = t;
     if(aciertoPenalesExactos(pr, res) && Number.isFinite(t) && t < firstPenalesExactos) firstPenalesExactos = t;
     if(aciertoGanadorPenales(pr, res) && Number.isFinite(t) && t < firstGanadorPenales) firstGanadorPenales = t;
@@ -2211,7 +2275,8 @@ function calcularRanking(matchIds){
       if(aciertoGanadorPenales(pr, res)) ganadoresPenales++;
     });
 
-    return {u, pts, exactos, aciertos, jugados, penalesExactos, ganadoresPenales, ...desempateUsuario(u, matchIds)};
+    const puntosPenales = penalesExactos + ganadoresPenales;
+    return {u, pts, exactos, aciertos, jugados, penalesExactos, ganadoresPenales, puntosPenales, ...desempateUsuario(u, matchIds)};
   }).sort(compararRanking);
 }
 
@@ -2254,14 +2319,14 @@ function pintarGanadoresPorDia(){
       const titulo = completo ? 'Ganador del día' : 'Líder provisional del día';
 
       html += '<div class="ganador"><span class="med">🏆</span><b>'+titulo+': '+esc(top.u.nombre)+'</b>' +
-        '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+top.jugados+' pronósticos evaluados</span>' +
+        '<span>'+top.pts+' pts · '+top.exactos+' exactos · '+top.aciertos+' aciertos · '+(top.puntosPenales||0)+' pts penales · '+top.jugados+' pronósticos evaluados</span>' +
         '<span>'+textoDesempate(top)+'</span></div>';
 
-      html += '<table><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th><th class="num">Aciertos</th></tr></thead><tbody>';
+      html += '<table><thead><tr><th>#</th><th>Participante</th><th class="num">Pts</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pts pen.</th></tr></thead><tbody>';
       ranking.slice(0,5).forEach((r,i) => {
         const nota = i === 0 ? '<br><span style="color:var(--rojo);font-size:11px;font-weight:700">'+(completo ? 'Ganador único' : 'Líder provisional')+' por criterio de desempate</span>' : '';
         html += '<tr><td>'+(i+1)+'</td><td><b>'+esc(r.u.nombre)+'</b><br><span style="color:var(--gris);font-size:11px">'+esc(r.u.area||'—')+'</span>'+nota+'</td>'+
-          '<td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td><td class="num">'+r.aciertos+'</td></tr>';
+          '<td class="num"><b>'+r.pts+'</b></td><td class="num">'+r.exactos+'</td><td class="num">'+r.aciertos+'</td><td class="num">'+(r.puntosPenales||0)+'</td></tr>';
       });
       html += '</tbody></table>';
     }
@@ -2314,6 +2379,9 @@ function pintarGanadorFinal(filas, idsGenerales){
       '<span>'+top.exactos+' marcadores exactos</span>' +
       '<span>'+top.aciertos+' aciertos de resultado</span>' +
       '<span>'+top.jugados+' pronósticos evaluados</span>' +
+      '<span>'+(top.puntosPenales||0)+' puntos por penales</span>' +
+      '<span>'+top.ganadoresPenales+' ganadores por penales</span>' +
+      '<span>'+top.penalesExactos+' penales exactos</span>' +
       '<span>'+totalOficiales+'/'+totalConfigurados+' resultados finales</span>' +
       '<span>Partidos en vivo: '+vivos+'</span>' +
       '<span>Final configurada: '+(finalConfigurada ? 'sí' : 'no')+'</span>' +
@@ -2358,13 +2426,13 @@ async function cargarTabla(silencioso=false){
   const filas = calcularRanking(idsGenerales);
   pintarGanadorFinal(filas, idsGenerales);
 
-  let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pronósticos<br>evaluados</th><th class="num">Puntos</th></tr></thead><tbody>';
+  let h = '<div class="tabla-wrap"><table class="tpos"><thead><tr><th>#</th><th>Participante</th><th>Área</th><th class="num">Exactos</th><th class="num">Aciertos</th><th class="num">Pen. ganador</th><th class="num">Pen. exacto</th><th class="num">Pts<br>penales</th><th class="num">Pronósticos<br>evaluados</th><th class="num">Puntos</th></tr></thead><tbody>';
   filas.forEach((f,i) => {
     const cls = [];
     if(i===0) cls.push("podio-1"); if(i===1) cls.push("podio-2"); if(i===2) cls.push("podio-3");
     if(yo && f.u.id === yo.id) cls.push("yo");
     h += '<tr class="'+cls.join(" ")+'"><td class="pos">'+(i+1)+'</td><td><b>'+esc(f.u.nombre)+'</b></td><td>'+esc(f.u.area||"—")+'</td>' +
-      '<td class="num">'+f.exactos+'</td><td class="num">'+f.aciertos+'</td><td class="num">'+f.jugados+'</td><td class="num total">'+f.pts+'</td></tr>';
+      '<td class="num">'+f.exactos+'</td><td class="num">'+f.aciertos+'</td><td class="num">'+f.ganadoresPenales+'</td><td class="num">'+f.penalesExactos+'</td><td class="num"><b>'+(f.puntosPenales||0)+'</b></td><td class="num">'+f.jugados+'</td><td class="num total">'+f.pts+'</td></tr>';
   });
   h += '</tbody></table></div>';
 
