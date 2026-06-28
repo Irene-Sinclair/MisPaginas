@@ -2003,13 +2003,27 @@ function verPronósticosDe(fecha, matchId){
 function predCompleto(pr){
   return !!(pr && pr[0] !== "" && pr[1] !== "" && pr[0] != null && pr[1] != null);
 }
+function miPrediccionDelPartido(id){
+  const mid = String(id);
+  // Fuente 1: Mis pronósticos leídos directamente.
+  if(predCompleto(misPred[mid])) return misPred[mid];
+  // Fuente 2: Pronósticos de la oficina. Esto cubre casos donde el RPC/listado general
+  // sí trae el voto, pero la lectura individual de misPred aún no lo refleja por caché/RLS.
+  const mio = yo && yo.id != null ? String(yo.id) : null;
+  if(mio && predsTodos && predsTodos[mio] && predCompleto(predsTodos[mio][mid])) return predsTodos[mio][mid];
+  // Fuente 3: por seguridad, buscar el id sin convertir, por si Supabase devuelve UUID/keys mixtas.
+  if(yo && predsTodos && predsTodos[yo.id] && predCompleto(predsTodos[yo.id][id])) return predsTodos[yo.id][id];
+  return null;
+}
 function puedeVerPronosticosPartido(p){
   if(!p || !yo) return false;
-  const id = p[0];
+  const id = String(p[0]);
   // Si el partido ya inició, cerró o tiene resultado, cualquier usuario registrado puede ver los pronósticos.
   if(cerrado(p) || partidoMostradoComoVivo(p) || resultadoActual(id)) return true;
-  // Antes del inicio, solo puede verlos quien ya registró ese partido específico.
-  return predCompleto(misPred[id]);
+  // Antes del inicio, puede verlos quien ya registró ese partido específico.
+  // Se valida contra misPred y también contra predsTodos para no bloquear al usuario
+  // cuando su voto sí existe en la jornada, pero una lectura individual quedó desfasada.
+  return !!miPrediccionDelPartido(id);
 }
 function mensajeBloqueoPronosticoPartido(p){
   const eh = equipo(p[3]), ea = equipo(p[4]);
