@@ -422,6 +422,10 @@
   .pen-ball{width:31px; height:31px; border-radius:50%; border:2px solid #D6C6B7; background:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1; filter:grayscale(.25); opacity:.7}
   .pen-ball.on{background:var(--amarillo); border-color:var(--amarillo-d); opacity:1; filter:none; box-shadow:0 2px 7px rgba(245,194,0,.35)}
   .pen-ball:hover{transform:translateY(-1px); border-color:var(--rojo)}
+  .pen-ball.mas{background:var(--asfalto); color:var(--amarillo); border-color:var(--asfalto); font-family:var(--display); font-size:18px; opacity:1; filter:none}
+  .pen-ball.mas:hover{background:var(--rojo); color:#fff; border-color:var(--rojo)}
+  .pen-balls-wrap{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+  .pen-help{font-size:11px; color:#7A5F00; margin-top:5px; line-height:1.3}
   .pen-count{font-family:var(--display); color:var(--rojo); min-width:18px; text-align:center}
   .pen-display{display:inline-flex; align-items:center; gap:5px; margin-left:6px; padding:2px 8px; border-radius:14px; background:#FFF3C4; color:#735500; font-size:10.5px; font-weight:800; vertical-align:middle}
   .pen-display.dark{background:rgba(245,194,0,.14); color:var(--amarillo)}
@@ -460,7 +464,7 @@
     .hero-team strong{font-size:12px}
   }
 </style>
-<!-- VERSION_FIX_POSICIONES_PENALES_SIN_MONTARSE -->
+<!-- VERSION_PENALES_PLUS_MUERTE_SUBITA -->
 </head>
 <body>
 
@@ -1414,7 +1418,12 @@ function tienePenales(arr){
   return !!(arr && arr[3] !== "" && arr[4] !== "" && arr[3] != null && arr[4] != null);
 }
 function penalesValidos(arr){
-  return tienePenales(arr) && Number(arr[3]) >= 0 && Number(arr[3]) <= 5 && Number(arr[4]) >= 0 && Number(arr[4]) <= 5 && Number(arr[3]) !== Number(arr[4]);
+  return tienePenales(arr)
+    && Number.isFinite(Number(arr[3]))
+    && Number.isFinite(Number(arr[4]))
+    && Number(arr[3]) >= 0
+    && Number(arr[4]) >= 0
+    && Number(arr[3]) !== Number(arr[4]);
 }
 function requierePenales(p, arr){
   return esFaseFinal(p) && tieneEmpateMarcador(arr);
@@ -1447,18 +1456,20 @@ function penalesSelectorHtml(id, p, arr, pref="pred"){
   const pl = Number(arr?.[3] ?? 0);
   const pv = Number(arr?.[4] ?? 0);
   const ballRow = (lado, val) => {
-    let out = '<div class="pen-balls">';
-    for(let i=1;i<=5;i++){
-      const nextVal = (val === i ? 0 : i);
-      out += '<button type="button" class="pen-ball '+(i <= val && val > 0 ? 'on' : '')+'" onclick="setPenales(\''+id+'\','+lado+','+nextVal+',\''+pref+'\')" title="'+i+' penales">⚽</button>';
+    const n = Math.max(0, parseInt(val,10) || 0);
+    const limiteVisible = Math.max(5, n);
+    let out = '<div class="pen-balls-wrap"><div class="pen-balls">';
+    for(let i=1;i<=limiteVisible;i++){
+      const nextVal = (n === i ? 0 : i);
+      out += '<button type="button" class="pen-ball '+(i <= n && n > 0 ? 'on' : '')+'" onclick="setPenales(\''+id+'\','+lado+','+nextVal+',\''+pref+'\')" title="'+i+' penales">⚽</button>';
     }
-    out += '</div>';
+    out += '</div><button type="button" class="pen-ball mas" onclick="setPenales(\''+id+'\','+lado+','+(n+1)+',\''+pref+'\')" title="Agregar otro penal">+</button></div>';
     return out;
   };
   const win = ganadorPenalesTexto(p, arr);
   return '<div class="penales-box" id="pen-'+pref+'-'+id+'">' +
     '<div class="pen-title">Definir ganador por penales</div>' +
-    '<div class="pen-note">Como pusiste empate en una fase final, selecciona cuántos penales anota cada equipo. No pueden quedar iguales. Para dejar un equipo en 0, no selecciones pelotas o toca de nuevo la pelota marcada.</div>' +
+    '<div class="pen-note">Como pusiste empate en una fase final, selecciona cuántos penales anota cada equipo. Se muestran 5 pelotas iniciales y el botón + agrega más para muerte súbita. No pueden quedar iguales.</div>' +
     '<div class="pen-row"><span class="pen-team">'+esc(eh[0])+'</span>'+ballRow(0, pl)+'<span class="pen-count">'+pl+'</span></div>' +
     '<div class="pen-row"><span class="pen-team">'+esc(ea[0])+'</span>'+ballRow(1, pv)+'<span class="pen-count">'+pv+'</span></div>' +
     (win ? '<div class="pen-winner">'+esc(win)+'</div>' : '<div class="pen-winner">Selecciona un ganador por penales.</div>') +
@@ -1467,7 +1478,7 @@ function penalesSelectorHtml(id, p, arr, pref="pred"){
 function penalesAvisoFinalHtml(){
   return '<div class="penales-box" style="background:#F7F3EC">' +
     '<div class="pen-title">Penales listos para fase final</div>' +
-    '<div class="pen-note" style="margin-bottom:0">Si el marcador principal queda empatado, aquí aparecerán las 5 pelotas por equipo para seleccionar el ganador por penales. Si no hay empate, no se guardan penales.</div>' +
+    '<div class="pen-note" style="margin-bottom:0">Si el marcador principal queda empatado, aquí aparecerán 5 pelotas iniciales por equipo y un botón + para agregar más si la tanda se va a muerte súbita. Si no hay empate, no se guardan penales.</div>' +
   '</div>';
 }
 function horaApuesta(t){
@@ -2092,7 +2103,7 @@ function setPred(id, lado, val){
 function setPenales(id, lado, val, pref="pred"){
   const obj = pref === "res" ? resultados : misPred;
   if(!obj[id]) obj[id] = ["","",null,"",""];
-  obj[id][lado === 0 ? 3 : 4] = String(Math.max(0, Math.min(5, parseInt(val,10) || 0)));
+  obj[id][lado === 0 ? 3 : 4] = String(Math.max(0, parseInt(val,10) || 0));
   if(pref === "res") pintarAdmin(); else pintarPartidos();
 }
 async function guardarApuesta(id){
