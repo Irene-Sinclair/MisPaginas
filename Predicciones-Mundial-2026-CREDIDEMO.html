@@ -287,6 +287,54 @@
 
 
 
+  /* Análisis global de la app */
+  .analisis-hero{position:relative; overflow:hidden; color:#fff; background:linear-gradient(135deg,#15110F 0%,#2B1518 44%,#5F1018 100%); border-radius:18px; padding:28px; margin:4px 0 22px; box-shadow:0 18px 45px rgba(21,17,15,.20)}
+  .analisis-hero::before{content:""; position:absolute; width:360px; height:360px; right:-120px; top:-120px; background:radial-gradient(circle,rgba(245,194,0,.26),transparent 63%); border-radius:50%}
+  .analisis-hero::after{content:""; position:absolute; inset:auto 0 0 0; height:8px; background:repeating-linear-gradient(-55deg,var(--rojo) 0 22px,var(--amarillo) 22px 44px)}
+  .analisis-hero > *{position:relative; z-index:1}
+  .analisis-hero h2{font-family:var(--display); font-size:clamp(26px,4vw,44px); line-height:1; text-transform:uppercase; margin-bottom:10px}
+  .analisis-hero p{max-width:780px; color:#E8DDD6; font-size:15px; line-height:1.55}
+  .analisis-actions{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px}
+  .analisis-kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin:0 0 18px}
+  .akpi{background:var(--papel); border:1px solid var(--gris-c); border-radius:16px; padding:18px; position:relative; overflow:hidden; box-shadow:0 8px 18px rgba(21,17,15,.06)}
+  .akpi::before{content:""; position:absolute; right:-32px; top:-32px; width:92px; height:92px; border-radius:50%; background:rgba(245,194,0,.18)}
+  .akpi .ico{font-size:25px; margin-bottom:8px}
+  .akpi b{display:block; font-family:var(--display); font-size:30px; color:var(--rojo); font-variant-numeric:tabular-nums; line-height:1}
+  .akpi span{display:block; margin-top:5px; font-size:12.5px; color:var(--gris); font-weight:800; letter-spacing:.04em; text-transform:uppercase}
+  .analisis-tabs{display:flex; gap:9px; flex-wrap:wrap; margin:18px 0 16px}
+  .analisis-tab{border:1px solid var(--gris-c); background:var(--papel); color:var(--asfalto); border-radius:999px; padding:10px 14px; font-weight:900; cursor:pointer; box-shadow:0 5px 14px rgba(21,17,15,.06)}
+  .analisis-tab.activo{background:var(--asfalto); color:var(--amarillo); border-color:var(--asfalto)}
+  .analisis-grid{display:grid; grid-template-columns:1.2fr .8fr; gap:16px; align-items:start}
+  .analisis-panel{background:var(--papel); border:1px solid var(--gris-c); border-radius:16px; padding:20px; box-shadow:0 8px 18px rgba(21,17,15,.06)}
+  .analisis-panel h3{font-family:var(--display); font-size:17px; text-transform:uppercase; margin-bottom:4px}
+  .analisis-panel .subx{color:var(--gris); font-size:12.8px; line-height:1.45; margin-bottom:14px}
+  .barra-rank{display:grid; gap:10px}
+  .bar-item{display:grid; grid-template-columns:minmax(120px,1fr) minmax(160px,2.2fr) auto; gap:12px; align-items:center; padding:10px; border-radius:12px; background:var(--hueso); border:1px solid #EEE6DA}
+  .bar-name{font-weight:900; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .bar-name small{display:block; color:var(--gris); font-weight:700; font-size:10.5px; margin-top:2px}
+  .bar-track{height:18px; background:#E8DED2; border-radius:999px; overflow:hidden; box-shadow:inset 0 1px 3px rgba(21,17,15,.08)}
+  .bar-fill{height:100%; width:0; background:linear-gradient(90deg,var(--rojo),#E8604A,var(--amarillo)); border-radius:999px; transition:width .45s ease}
+  .bar-val{font-family:var(--display); color:var(--rojo); font-variant-numeric:tabular-nums; min-width:48px; text-align:right}
+  .area-cards{display:grid; gap:10px}
+  .area-card{background:linear-gradient(135deg,#FFF8E0,#fff); border:1px solid #F1D873; border-radius:14px; padding:14px; display:grid; gap:8px}
+  .area-card h4{font-family:var(--display); font-size:15px; text-transform:uppercase}
+  .area-metrics{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+  .area-metrics span{background:#fff; border:1px solid var(--gris-c); border-radius:10px; padding:8px; font-size:11px; color:var(--gris); font-weight:800; text-transform:uppercase}
+  .area-metrics b{display:block; color:var(--asfalto); font-size:17px; font-family:var(--display); margin-bottom:2px}
+  .share-chip{display:inline-flex; align-items:center; gap:6px; margin:3px 5px 0 0; padding:5px 8px; border-radius:999px; background:#fff; border:1px solid var(--gris-c); color:var(--gris); font-size:10.5px; font-weight:900; text-transform:uppercase}
+  .share-chip b{color:var(--rojo); font-family:var(--display); font-size:12px}
+  .mini-note{color:var(--gris); font-size:11.5px; line-height:1.4; margin-top:8px}
+  .insight-box{background:var(--asfalto); color:#fff; border-radius:16px; padding:18px; border-left:6px solid var(--amarillo); margin-top:16px}
+  .insight-box h3{font-family:var(--display); color:var(--amarillo); font-size:16px; text-transform:uppercase; margin-bottom:8px}
+  .insight-box p{color:#D8CEC7; font-size:13.5px; line-height:1.55; margin:0}
+  .mini-table{width:100%; border-collapse:collapse; font-size:12.5px; margin-top:8px}
+  .mini-table th{font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--gris); text-align:left; padding:8px; background:var(--hueso)}
+  .mini-table td{padding:9px 8px; border-bottom:1px solid var(--gris-c)}
+  .mini-table .num{text-align:center; font-variant-numeric:tabular-nums}
+  .analisis-empty{padding:30px; text-align:center; color:var(--gris); background:var(--papel); border:1px dashed var(--gris-c); border-radius:16px}
+  @media(max-width:850px){.analisis-grid{grid-template-columns:1fr}.bar-item{grid-template-columns:1fr}.bar-val{text-align:left}.area-metrics{grid-template-columns:1fr 1fr}}
+
+
   /* Administración de calendario */
 
   .final-card{background:var(--asfalto); color:#fff; border-radius:14px; padding:24px; border-left:7px solid var(--amarillo); margin:6px 0 28px; box-shadow:0 10px 24px rgba(21,17,15,.18)}
@@ -425,6 +473,7 @@
       <button data-pag="quiniela">Mis pronósticos</button>
       <button data-pag="apuestas">Pronósticos</button>
       <button data-pag="posiciones">Posiciones</button>
+      <button data-pag="analisis">Análisis</button>
       <button data-pag="resultados">Resultados</button>
       <button data-pag="reglas">Reglas</button>
       <button id="nav-auth" type="button" onclick="toggleAuth()">Entrar</button>
@@ -576,6 +625,24 @@
       <div id="tabla-zona"><div class="vacio">Cargando posiciones…</div></div>
     </div>
   </section>
+
+
+  <!-- ============ ANÁLISIS GLOBAL ============ -->
+  <section class="pagina" id="pag-analisis">
+    <div class="analisis-hero">
+      <h2>Dashboard global de la quiniela</h2>
+      <p>Una lectura ejecutiva de toda la app: participación por áreas, áreas que más puntos acumulan, promedios de rendimiento, usuarios destacados y comportamiento general de los pronósticos.</p>
+      <div class="analisis-actions">
+        <button class="btn" onclick="cargarAnalisisApp()">Actualizar análisis</button>
+        <button class="btn sec" onclick="irA('posiciones')">Ver tabla general</button>
+      </div>
+    </div>
+
+    <div id="analisis-zona">
+      <div class="analisis-empty">Cargando análisis global de la quiniela…</div>
+    </div>
+  </section>
+
 
   <!-- ============ RESULTADOS (ADMIN) ============ -->
   <section class="pagina" id="pag-resultados">
@@ -1421,6 +1488,7 @@ function irA(p){
   if(p === "quiniela") cargarQuiniela();
   if(p === "apuestas") cargarPronósticos();
   if(p === "posiciones") cargarTabla();
+  if(p === "analisis") cargarAnalisisApp();
   if(p === "resultados") prepararAdmin();
   if(p === "inicio") cargarInicio();
 }
@@ -2238,6 +2306,232 @@ function pintarPronósticos(){
   zona.innerHTML = html;
   resaltarMatch = null;
 }
+
+
+/* ================== ANÁLISIS GLOBAL DE LA APP ================== */
+let analisisVista = "participacion";
+let analisisCache = null;
+function numFmt(n){ return Number(n || 0).toLocaleString("es-HN"); }
+function pctFmt(n){ return (Number(n || 0)).toLocaleString("es-HN",{maximumFractionDigits:1}) + "%"; }
+function areaNombre(a){ const x = String(a || "").trim(); return x || "Sin área"; }
+async function dbGetPredsTodosAnalisisRapido(idsEvaluados){
+  if(!modoNube()) return await dbGetPredsTodosLocal();
+  if(!idsEvaluados || !idsEvaluados.length) return {};
+
+  // Lectura exacta y paginada: no se limita a 1,000/20,000 registros.
+  // Solo trae pronósticos de partidos con marcador disponible, porque esos son los únicos evaluables.
+  const pageSize = 1000;
+  let from = 0;
+  let rows = [];
+  while(true){
+    const {data, error} = await SB.from("quiniela_predicciones")
+      .select("user_id,match_id,goles_local,goles_visita,penales_local,penales_visita,updated_at")
+      .in("match_id", idsEvaluados)
+      .order("updated_at", {ascending:true})
+      .range(from, from + pageSize - 1);
+    if(error) throw error;
+    const chunk = data || [];
+    rows = rows.concat(chunk);
+    if(chunk.length < pageSize) break;
+    from += pageSize;
+    await new Promise(resolve => setTimeout(resolve, 0));
+  }
+  return integrarFilasPronosticos(rows);
+}
+function crearStatsUsuario(u){
+  return {
+    u, pts:0, exactos:0, aciertos:0, jugados:0,
+    penalesExactos:0, ganadoresPenales:0, puntosPenales:0,
+    firstExact:Infinity, firstScored:Infinity, firstAny:Infinity,
+    firstPenalesExactos:Infinity, firstGanadorPenales:Infinity
+  };
+}
+function analizarDatosGlobales(){
+  const idsEvaluados = idsConMarcadorActual();
+  const idsSet = new Set(idsEvaluados.map(String));
+  const totalParticipantes = participantes.length || 0;
+  const usuariosMap = new Map();
+
+  participantes.forEach(u => usuariosMap.set(String(u.id), crearStatsUsuario(u)));
+
+  // Una sola pasada exacta por los pronósticos evaluables.
+  Object.entries(predsTodos || {}).forEach(([uid, preds]) => {
+    let stat = usuariosMap.get(String(uid));
+    if(!stat){
+      const u = participantes.find(x => String(x.id) === String(uid)) || {id:uid, nombre:"Participante", area:"", usuario:"", t:0};
+      stat = crearStatsUsuario(u);
+      usuariosMap.set(String(uid), stat);
+    }
+    Object.entries(preds || {}).forEach(([mid, pr]) => {
+      if(!idsSet.has(String(mid))) return;
+      const res = resultadoActual(mid);
+      const pu = puntosDe(pr, res);
+      if(pu === null) return;
+      const base = puntosBaseDe(pr, res);
+      const t = pr && pr[2] ? Number(pr[2]) : Infinity;
+
+      stat.jugados++;
+      stat.pts += pu;
+      if(base === 3) stat.exactos++;
+      else if(base === 1) stat.aciertos++;
+
+      if(aciertoGanadorPenales(pr, res)){
+        stat.ganadoresPenales++;
+        stat.puntosPenales++;
+        if(Number.isFinite(t) && t < stat.firstGanadorPenales) stat.firstGanadorPenales = t;
+      }
+      if(aciertoPenalesExactos(pr, res)){
+        stat.penalesExactos++;
+        stat.puntosPenales++;
+        if(Number.isFinite(t) && t < stat.firstPenalesExactos) stat.firstPenalesExactos = t;
+      }
+      if(Number.isFinite(t) && t < stat.firstAny) stat.firstAny = t;
+      if(base === 3 && Number.isFinite(t) && t < stat.firstExact) stat.firstExact = t;
+      if(pu > 0 && Number.isFinite(t) && t < stat.firstScored) stat.firstScored = t;
+    });
+  });
+
+  const ranking = [...usuariosMap.values()].sort(compararRanking);
+  const totalPronosticosEvaluados = ranking.reduce((s,r) => s + r.jugados, 0);
+  const totalPuntos = ranking.reduce((s,r) => s + r.pts, 0);
+  const totalExactos = ranking.reduce((s,r) => s + r.exactos, 0);
+  const totalAciertos = ranking.reduce((s,r) => s + r.aciertos, 0);
+  const totalGanadoresPenales = ranking.reduce((s,r) => s + (r.ganadoresPenales || 0), 0);
+  const totalPenalesExactos = ranking.reduce((s,r) => s + (r.penalesExactos || 0), 0);
+
+  const areas = new Map();
+  const ensure = (nombre) => {
+    const key = areaNombre(nombre);
+    if(!areas.has(key)) areas.set(key,{area:key, participantes:0, puntos:0, exactos:0, aciertos:0, jugados:0, penalesGanador:0, penalesExactos:0, puntosPenales:0, usuarios:[]});
+    return areas.get(key);
+  };
+
+  participantes.forEach(u => ensure(u.area).participantes++);
+  ranking.forEach(r => {
+    const a = ensure(r.u.area);
+    a.puntos += r.pts;
+    a.exactos += r.exactos;
+    a.aciertos += r.aciertos;
+    a.jugados += r.jugados;
+    a.penalesGanador += r.ganadoresPenales || 0;
+    a.penalesExactos += r.penalesExactos || 0;
+    a.puntosPenales += r.puntosPenales || 0;
+    a.usuarios.push(r);
+  });
+
+  const arrAreas = [...areas.values()].map(a => ({
+    ...a,
+    promedio: a.participantes ? a.puntos / a.participantes : 0,
+    promedioPronosticos: a.participantes ? a.jugados / a.participantes : 0,
+    efectividad: a.jugados ? ((a.exactos + a.aciertos) / a.jugados) * 100 : 0,
+    exactitud: a.jugados ? (a.exactos / a.jugados) * 100 : 0,
+    pctParticipantesGlobal: totalParticipantes ? (a.participantes / totalParticipantes) * 100 : 0,
+    pctPronosticosGlobal: totalPronosticosEvaluados ? (a.jugados / totalPronosticosEvaluados) * 100 : 0,
+    pctPuntosGlobal: totalPuntos ? (a.puntos / totalPuntos) * 100 : 0,
+    pctExactosGlobal: totalExactos ? (a.exactos / totalExactos) * 100 : 0
+  }));
+
+  const lider = ranking.find(r => r.jugados > 0) || ranking[0];
+  const areaMasParticipacion = [...arrAreas].sort((a,b)=>b.participantes-a.participantes || b.jugados-a.jugados || b.puntos-a.puntos)[0];
+  const areaMasPuntos = [...arrAreas].sort((a,b)=>b.puntos-a.puntos || b.exactos-a.exactos)[0];
+  const areaMejorPromedio = [...arrAreas].filter(a=>a.participantes>0).sort((a,b)=>b.promedio-a.promedio || b.puntos-a.puntos)[0];
+  const areaMasExacta = [...arrAreas].filter(a=>a.jugados>0).sort((a,b)=>b.exactitud-a.exactitud || b.exactos-a.exactos)[0];
+
+  return {idsEvaluados, ranking, arrAreas, totalParticipantes, totalPronosticosEvaluados, totalPuntos, totalExactos, totalAciertos, totalGanadoresPenales, totalPenalesExactos, lider, areaMasParticipacion, areaMasPuntos, areaMejorPromedio, areaMasExacta};
+}
+async function cargarAnalisisApp(){
+  const zona = $("analisis-zona");
+  if(zona) zona.innerHTML = '<div class="analisis-empty">Calculando análisis exacto global…</div>';
+  try{
+    // Cargar primero datos livianos para evitar que la pestaña se quede pegada.
+    await Promise.all([cargarPartidos(), cargarSesionLocal()]);
+    const base = await Promise.all([dbGetParticipantes(), dbGetResultados(), dbGetLiveSync()]);
+    participantes = base[0] || [];
+    resultados = base[1] || {};
+    liveSync = base[2] || {};
+
+    const idsEvaluados = idsConMarcadorActual();
+    predsTodos = await dbGetPredsTodosAnalisisRapido(idsEvaluados);
+    analisisCache = analizarDatosGlobales();
+    pintarAnalisisApp();
+  }catch(e){
+    if(zona) zona.innerHTML = '<div class="analisis-empty">No se pudo cargar el análisis: '+esc(e.message || e)+'</div>';
+  }
+}
+function cambiarAnalisisVista(v){ analisisVista = v; pintarAnalisisApp(); }
+function barrasAnalisis(items, valorKey, nombreKey, subFn, suf="", limite=null){
+  const max = Math.max(1, ...items.map(x => Number(x[valorKey] || 0)));
+  if(!items.length) return '<div class="analisis-empty">No hay datos suficientes para este ranking.</div>';
+  const lista = (limite == null || !Number.isFinite(Number(limite))) ? items : items.slice(0, Number(limite));
+  return '<div class="barra-rank">' + lista.map((x,i) => {
+    const val = Number(x[valorKey] || 0);
+    const nombre = (nombreKey === 'u' && x.u) ? x.u.nombre : (x[nombreKey] || x.area || x.u?.nombre || '—');
+    return '<div class="bar-item"><div class="bar-name">'+(i+1)+'. '+esc(nombre)+'<small>'+esc(subFn ? subFn(x) : '')+'</small></div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+Math.max(3,(val/max)*100)+'%"></div></div>'+
+      '<div class="bar-val">'+(suf === "%" ? pctFmt(val) : numFmt(val)+suf)+'</div></div>';
+  }).join('') + '</div>';
+}
+function tablaAreasHtml(areas){
+  const rows = [...areas].sort((a,b)=>b.puntos-a.puntos || b.jugados-a.jugados || b.participantes-a.participantes);
+  return '<table class="mini-table"><thead><tr><th>Área</th><th class="num">% part.<br>global</th><th class="num">Participantes</th><th class="num">% puntos<br>global</th><th class="num">Puntos</th><th class="num">Pronósticos<br>evaluados</th><th class="num">% pron.<br>global</th><th class="num">Prom.<br>pts/part.</th><th class="num">Exactos</th><th class="num">Efectividad</th></tr></thead><tbody>'+ 
+    rows.map(a => '<tr><td><b>'+esc(a.area)+'</b></td><td class="num"><b>'+pctFmt(a.pctParticipantesGlobal)+'</b></td><td class="num">'+a.participantes+'</td><td class="num"><b>'+pctFmt(a.pctPuntosGlobal)+'</b></td><td class="num"><b>'+a.puntos+'</b></td><td class="num">'+a.jugados+'</td><td class="num">'+pctFmt(a.pctPronosticosGlobal)+'</td><td class="num">'+a.promedio.toFixed(1)+'</td><td class="num">'+a.exactos+'</td><td class="num">'+pctFmt(a.efectividad)+'</td></tr>').join('')+
+    '</tbody></table><div class="mini-note">Los porcentajes globales siempre se calculan contra el total de toda la app, no contra la misma área.</div>';
+}
+function pintarAnalisisApp(){
+  const zona = $("analisis-zona");
+  if(!zona) return;
+  const d = analisisCache || analizarDatosGlobales();
+  analisisCache = d;
+  const vivos = partidosMostradosEnVivo().length;
+  const areaPart = d.areaMasParticipacion?.area || '—';
+  const areaPts = d.areaMasPuntos?.area || '—';
+  const areaProm = d.areaMejorPromedio?.area || '—';
+  const liderNombre = d.lider?.u?.nombre || '—';
+
+  if(!participantes.length){
+    zona.innerHTML = '<div class="analisis-empty">Aún no hay participantes inscritos. Cuando existan usuarios y pronósticos, este dashboard mostrará la actividad completa de la quiniela.</div>';
+    return;
+  }
+
+  const tabs = '<div class="analisis-tabs">'+
+    '<button class="analisis-tab '+(analisisVista==='participacion'?'activo':'')+'" onclick="cambiarAnalisisVista(\'participacion\')">Participación por áreas</button>'+
+    '<button class="analisis-tab '+(analisisVista==='rendimiento'?'activo':'')+'" onclick="cambiarAnalisisVista(\'rendimiento\')">Áreas que más ganan</button>'+
+    '<button class="analisis-tab '+(analisisVista==='usuarios'?'activo':'')+'" onclick="cambiarAnalisisVista(\'usuarios\')">Usuarios destacados</button>'+
+    '<button class="analisis-tab '+(analisisVista==='detalle'?'activo':'')+'" onclick="cambiarAnalisisVista(\'detalle\')">Detalle ejecutivo</button>'+
+  '</div>';
+
+  const kpis = '<div class="analisis-kpis">'+
+    '<div class="akpi"><div class="ico">👥</div><b>'+numFmt(participantes.length)+'</b><span>Participantes</span></div>'+
+    '<div class="akpi"><div class="ico">🏢</div><b>'+numFmt(d.arrAreas.length)+'</b><span>Áreas activas</span></div>'+
+    '<div class="akpi"><div class="ico">⚽</div><b>'+numFmt(d.totalPronosticosEvaluados)+'</b><span>Pronósticos evaluados acumulados</span></div>'+
+    '<div class="akpi"><div class="ico">📌</div><b>'+numFmt(d.idsEvaluados.length)+'</b><span>Partidos con marcador evaluable</span></div>'+
+    '<div class="akpi"><div class="ico">🏆</div><b>'+numFmt(d.totalPuntos)+'</b><span>Puntos entregados</span></div>'+
+    '<div class="akpi"><div class="ico">🎯</div><b>'+numFmt(d.totalExactos)+'</b><span>Marcadores exactos</span></div>'+
+    '<div class="akpi"><div class="ico">🔴</div><b>'+numFmt(vivos)+'</b><span>Partidos en vivo</span></div>'+
+  '</div>';
+
+  let main = '';
+  if(analisisVista === 'participacion'){
+    const areasPart = [...d.arrAreas].sort((a,b)=>b.participantes-a.participantes || b.jugados-a.jugados || b.puntos-a.puntos);
+    const cards = areasPart.map(a => '<div class="area-card"><h4>'+esc(a.area)+'</h4><div class="area-metrics"><span><b>'+a.participantes+'</b>Participantes</span><span><b>'+a.jugados+'</b>Pron. evaluados</span><span><b>'+a.puntos+'</b>Puntos</span></div><div><span class="share-chip"><b>'+pctFmt(a.pctParticipantesGlobal)+'</b> del total de participantes</span><span class="share-chip"><b>'+pctFmt(a.pctPronosticosGlobal)+'</b> de pronósticos evaluados</span></div></div>').join('');
+    main = '<div class="analisis-grid"><div class="analisis-panel"><h3>Todas las áreas por participación</h3><div class="subx">Participación contra el total general de la app. No se calcula sobre la misma área.</div>'+barrasAnalisis(areasPart,'pctParticipantesGlobal','area',x=>x.participantes+' participantes · '+x.jugados+' pronósticos evaluados acumulados','%')+'</div><div class="analisis-panel"><h3>Distribución global de todas las áreas</h3><div class="subx">Cuánto representa cada área dentro del 100% total de CREDIDEMO.</div><div class="area-cards">'+cards+'</div></div></div>';
+  }else if(analisisVista === 'rendimiento'){
+    const areasPts = [...d.arrAreas].sort((a,b)=>b.puntos-a.puntos || b.exactos-a.exactos);
+    const areasProm = [...d.arrAreas].filter(a=>a.participantes>0).sort((a,b)=>b.promedio-a.promedio || b.puntos-a.puntos);
+    main = '<div class="analisis-grid"><div class="analisis-panel"><h3>Todas las áreas por puntos ganados</h3><div class="subx">Porcentaje de puntos contra el total global de la app.</div>'+barrasAnalisis(areasPts,'pctPuntosGlobal','area',x=>x.puntos+' pts · '+pctFmt(x.pctPuntosGlobal)+' del total · '+x.jugados+' pron. evaluados','%')+'</div><div class="analisis-panel"><h3>Promedio por participante en todas las áreas</h3><div class="subx">Ideal para comparar áreas grandes y pequeñas de forma más justa.</div>'+barrasAnalisis(areasProm,'promedio','area',x=>x.puntos+' pts totales · '+x.participantes+' participantes · '+x.jugados+' pron. evaluados')+'</div></div>';
+  }else if(analisisVista === 'usuarios'){
+    const usersPts = d.ranking.filter(r=>r.jugados>0).sort(compararRanking);
+    const usersExact = [...usersPts].sort((a,b)=>b.exactos-a.exactos || b.pts-a.pts);
+    main = '<div class="analisis-grid"><div class="analisis-panel"><h3>Participantes con más puntos</h3><div class="subx">Ranking global según los resultados disponibles.</div>'+barrasAnalisis(usersPts,'pts','u',x=>(x.u.area||'—')+' · '+x.exactos+' exactos · '+x.aciertos+' aciertos')+'</div><div class="analisis-panel"><h3>Más marcadores exactos</h3><div class="subx">Los perfiles con mayor precisión en marcador.</div>'+barrasAnalisis(usersExact,'exactos','u',x=>(x.u.area||'—')+' · '+x.pts+' pts','',6)+'</div></div>';
+  }else{
+    main = '<div class="analisis-panel"><h3>Tabla ejecutiva por área</h3><div class="subx">Comparativo completo por área con porcentajes calculados contra el total general de la app.</div>'+tablaAreasHtml(d.arrAreas)+'</div>';
+  }
+
+  const insight = '<div class="insight-box"><h3>Lectura rápida</h3><p>El área con mayor participación es <b>'+esc(areaPart)+'</b>. El área con más puntos acumulados es <b>'+esc(areaPts)+'</b>, mientras que el mejor promedio por participante lo tiene <b>'+esc(areaProm)+'</b>. A nivel individual, el liderazgo actual lo marca <b>'+esc(liderNombre)+'</b>. Los porcentajes se calculan contra el total global de la app: participantes, pronósticos evaluados acumulados y puntos entregados. Los pronósticos evaluados solo incluyen partidos que ya tienen marcador disponible, sumados una sola vez por usuario y partido.</p></div>';
+
+  zona.innerHTML = kpis + tabs + main + insight;
+}
+
 
 /* ================== TABLA Y GANADORES POR DÍA ================== */
 function desempateUsuario(u, matchIds){
