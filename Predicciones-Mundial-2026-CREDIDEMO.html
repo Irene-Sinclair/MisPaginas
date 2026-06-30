@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Predicciones Mundial 2026 · CREDIDEMO</title>
-<meta name="app-version" content="2026.06.18-final-estable-solo-cambio-pronosticos">
+<meta name="app-version" content="2026.06.28-penales-desglose-puntos-corregido">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -464,7 +464,7 @@
     .hero-team strong{font-size:12px}
   }
 </style>
-<!-- VERSION_PENALES_PLUS_MUERTE_SUBITA -->
+<!-- VERSION_PENALES_PLUS_MUERTE_SUBITA_DESGLOSE_PUNTOS_CORREGIDO -->
 </head>
 <body>
 
@@ -624,7 +624,7 @@
       <p class="bajada">Acumulado general: 3 puntos por marcador exacto · 1 por resultado · en penales: +1 por ganador y +1 adicional por penales exactos. El desglose se muestra separado en columnas.</p>
       <div class="tabla-toolbar">
         <input id="buscar-posiciones" type="search" placeholder="Buscar participante o área…" oninput="filtrarTablaPosiciones()">
-        <div class="nota">El total ya incluye los puntos por penales cuando aplican. En días sin penales no se muestran columnas extra para evitar saturar la tabla.</div>
+        <div class="nota">El total ya incluye los puntos por penales cuando aplican. Las columnas de penales permiten auditar cuántos puntos vienen por ganador y por marcador exacto de la tanda.</div>
       </div>
       <div id="tabla-zona"><div class="vacio">Cargando posiciones…</div></div>
     </div>
@@ -1897,7 +1897,10 @@ function etiquetaPuntos(puntos, pred, res){
 }
 
 function resultadoTienePenales(res){
-  return !!(res && res[2] !== "" && res[3] !== "" && res[2] != null && res[3] != null && Number.isFinite(Number(res[2])) && Number.isFinite(Number(res[3])) && Number(res[2]) !== Number(res[3]));
+  // Estructura de resultados oficiales:
+  // [goles_local, goles_visita, updated_at, penales_local, penales_visita]
+  // Los penales están en posiciones 3 y 4. Antes se leían 2 y 3, por eso no sumaban bien.
+  return !!(res && res[3] !== "" && res[4] !== "" && res[3] != null && res[4] != null && Number.isFinite(Number(res[3])) && Number.isFinite(Number(res[4])) && Number(res[3]) !== Number(res[4]));
 }
 function predTienePenales(pr){
   return !!(pr && pr[3] !== "" && pr[4] !== "" && pr[3] != null && pr[4] != null && Number.isFinite(Number(pr[3])) && Number.isFinite(Number(pr[4])) && Number(pr[3]) !== Number(pr[4]));
@@ -1905,14 +1908,14 @@ function predTienePenales(pr){
 function aciertoPenalesExactos(pr, res){
   if(!resultadoTienePenales(res) || !predTienePenales(pr)) return false;
   const marcadorPrincipalExacto = Number(pr[0]) === Number(res[0]) && Number(pr[1]) === Number(res[1]);
-  return marcadorPrincipalExacto && Number(pr[3]) === Number(res[2]) && Number(pr[4]) === Number(res[3]);
+  return marcadorPrincipalExacto && Number(pr[3]) === Number(res[3]) && Number(pr[4]) === Number(res[4]);
 }
 function aciertoGanadorPenales(pr, res){
   if(!resultadoTienePenales(res) || !predTienePenales(pr)) return false;
   const resultadoFueEmpate = Number(res[0]) === Number(res[1]);
   const pronosticoFueEmpate = Number(pr[0]) === Number(pr[1]);
   if(!resultadoFueEmpate || !pronosticoFueEmpate) return false;
-  return Math.sign(Number(pr[3]) - Number(pr[4])) === Math.sign(Number(res[2]) - Number(res[3]));
+  return Math.sign(Number(pr[3]) - Number(pr[4])) === Math.sign(Number(res[3]) - Number(res[4]));
 }
 function liveDe(matchId){
   return liveSync[matchId] || null;
