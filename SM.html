@@ -595,5 +595,26 @@ document.getElementById("btnWhatsApp").addEventListener("click", async () => {
   window.open("https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensaje), "_blank");
 });
 </script>
+
+<audio id="bgMusic" preload="auto" loop>
+  <source src="The%20Rolling%20Stones%20-%20Start%20Me%20Up%20-%20Promo%20oficial.mp3" type="audio/mpeg">
+</audio>
+<script>
+const bgMusic=document.getElementById('bgMusic');
+let started=false;
+function startMusic(){
+ if(started) return;
+ started=true;
+ bgMusic.volume=0.35;
+ bgMusic.play().catch(()=>{started=false;});
+ document.removeEventListener('click',startMusic);
+ document.removeEventListener('touchstart',startMusic);
+ document.removeEventListener('keydown',startMusic);
+}
+document.addEventListener('click',startMusic,{once:true});
+document.addEventListener('touchstart',startMusic,{once:true});
+document.addEventListener('keydown',startMusic,{once:true});
+</script>
+
 </body>
 </html>
