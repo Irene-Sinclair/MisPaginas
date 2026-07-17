@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asignación de Lenguajes de Programación</title>
+  <style>
+    :root{
+      --verde-uth:#006b4f;
+      --verde-oscuro:#004735;
+      --verde-medio:#0b8f6a;
+      --verde-claro:#eaf7f2;
+      --dorado:#d7ad39;
+      --dorado-claro:#f5e7b8;
+      --gris:#64736d;
+      --blanco:#ffffff;
+      --sombra:0 18px 45px rgba(0,71,53,.16);
+    }
+
+    *{box-sizing:border-box}
+
+    html{scroll-behavior:smooth}
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI", Arial, sans-serif;
+      color:#1f2e29;
+      overflow-x:hidden;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(215,173,57,.18), transparent 24%),
+        radial-gradient(circle at 88% 18%, rgba(11,143,106,.15), transparent 26%),
+        linear-gradient(135deg,#fbfdfc 0%,#eef7f3 52%,#f9fbfa 100%);
+    }
+
+    body::before,
+    body::after{
+      content:"";
+      position:fixed;
+      border-radius:50%;
+      filter:blur(2px);
+      opacity:.35;
+      z-index:-1;
+      animation:flotarFondo 9s ease-in-out infinite alternate;
+    }
+
+    body::before{
+      width:260px;height:260px;
+      background:rgba(0,107,79,.12);
+      top:12%;left:-80px;
+    }
+
+    body::after{
+      width:320px;height:320px;
+      background:rgba(215,173,57,.14);
+      bottom:-120px;right:-100px;
+      animation-delay:1.5s;
+    }
+
+    .contenedor{
+      width:min(1180px, calc(100% - 36px));
+      margin:auto;
+      padding:34px 0 28px;
+    }
+
+    .encabezado{
+      position:relative;
+      overflow:hidden;
+      border-radius:28px;
+      background:rgba(255,255,255,.9);
+      border:1px solid rgba(0,107,79,.10);
+      box-shadow:var(--sombra);
+      padding:28px 34px 34px;
+      text-align:center;
+      backdrop-filter:blur(12px);
+      animation:entradaSuperior .9s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .encabezado::before{
+      content:"";
+      position:absolute;
+      inset:0 0 auto 0;
+      height:7px;
+      background:linear-gradient(90deg,var(--dorado),var(--verde-uth),var(--dorado));
+      background-size:200% 100%;
+      animation:brilloLinea 5s linear infinite;
+    }
+
+    .marca{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:22px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .logo-uth{
+      width:min(310px, 72vw);
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 8px 13px rgba(0,0,0,.08));
+      animation:flotarLogo 4.5s ease-in-out infinite;
+    }
+
+    .etiqueta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:var(--verde-claro);
+      color:var(--verde-oscuro);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      border:1px solid rgba(0,107,79,.12);
+    }
+
+    h1{
+      margin:16px 0 10px;
+      font-size:clamp(31px,5vw,58px);
+      line-height:1.02;
+      color:var(--verde-oscuro);
+      letter-spacing:-1.8px;
+      text-wrap:balance;
+    }
+
+    .destacado{
+      color:var(--verde-medio);
+      position:relative;
+      display:inline-block;
+    }
+
+    .destacado::after{
+      content:"";
+      position:absolute;
+      left:0;right:0;bottom:-4px;
+      height:5px;
+      border-radius:99px;
+      background:linear-gradient(90deg,var(--dorado),var(--verde-uth));
+      transform-origin:left;
+      animation:dibujarLinea 1.3s .5s both;
+    }
+
+    .subtitulo{
+      max-width:790px;
+      margin:20px auto 0;
+      font-size:17px;
+      line-height:1.7;
+      color:var(--gris);
+    }
+
+    .decoracion-codigo{
+      position:absolute;
+      right:32px;
+      top:35px;
+      font-family:Consolas, monospace;
+      font-size:72px;
+      font-weight:900;
+      color:rgba(0,107,79,.055);
+      transform:rotate(-5deg);
+      user-select:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(0,1fr));
+      gap:18px;
+      margin-top:28px;
+    }
+
+    .tarjeta{
+      --delay:0s;
+      position:relative;
+      min-height:310px;
+      padding:24px 18px 20px;
+      border-radius:23px;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(0,107,79,.11);
+      box-shadow:0 14px 30px rgba(0,71,53,.10);
+      overflow:hidden;
+      text-align:center;
+      transform-style:preserve-3d;
+      animation:entradaTarjeta .75s var(--delay) cubic-bezier(.2,.8,.2,1) both;
+      transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    }
+
+    .tarjeta::before{
+      content:"";
+      position:absolute;
+      inset:-55% -45%;
+      background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.76) 48%,transparent 60%);
+      transform:translateX(-80%) rotate(10deg);
+      transition:transform .7s ease;
+      pointer-events:none;
+    }
+
+    .tarjeta::after{
+      content:"";
+      position:absolute;
+      left:0;right:0;bottom:0;
+      height:6px;
+      background:linear-gradient(90deg,var(--verde-uth),var(--dorado));
+      transform:scaleX(.42);
+      transition:transform .35s ease;
+    }
+
+    .tarjeta:hover{
+      transform:translateY(-10px) scale(1.025);
+      border-color:rgba(0,107,79,.26);
+      box-shadow:0 23px 50px rgba(0,71,53,.20);
+    }
+
+    .tarjeta:hover::before{transform:translateX(75%) rotate(10deg)}
+    .tarjeta:hover::after{transform:scaleX(1)}
+
+    .numero{
+      position:absolute;
+      top:14px;
+      left:14px;
+      width:38px;height:38px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      color:white;
+      font-weight:900;
+      background:linear-gradient(135deg,var(--verde-medio),var(--verde-oscuro));
+      box-shadow:0 8px 16px rgba(0,107,79,.24);
+    }
+
+    .logo-lenguaje{
+      width:94px;
+      height:94px;
+      object-fit:contain;
+      margin:18px auto 13px;
+      filter:drop-shadow(0 10px 13px rgba(0,0,0,.11));
+      animation:flotarIcono 3.8s ease-in-out infinite;
+    }
+
+    .tarjeta:nth-child(2) .logo-lenguaje{animation-delay:.25s}
+    .tarjeta:nth-child(3) .logo-lenguaje{animation-delay:.5s}
+    .tarjeta:nth-child(4) .logo-lenguaje{animation-delay:.75s}
+    .tarjeta:nth-child(5) .logo-lenguaje{animation-delay:1s}
+
+    .lenguaje{
+      font-size:25px;
+      font-weight:900;
+      color:var(--verde-oscuro);
+      margin-top:4px;
+    }
+
+    .grupo{
+      margin-top:6px;
+      color:var(--verde-medio);
+      font-size:14px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:1.2px;
+    }
+
+    .codigo{
+      display:inline-block;
+      margin-top:16px;
+      padding:8px 10px;
+      border-radius:10px;
+      background:#f2f6f4;
+      color:#375148;
+      font-family:Consolas, monospace;
+      font-size:12px;
+      border:1px solid rgba(0,107,79,.09);
+    }
+
+    .nota{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      margin-top:28px;
+      padding:18px 20px;
+      border-radius:18px;
+      background:linear-gradient(135deg,rgba(0,107,79,.085),rgba(215,173,57,.10));
+      border:1px solid rgba(0,107,79,.11);
+      color:#3d534b;
+      line-height:1.65;
+      box-shadow:0 10px 24px rgba(0,71,53,.07);
+      animation:entradaInferior .8s 1.05s both;
+    }
+
+    .nota-icono{
+      min-width:42px;
+      height:42px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:white;
+      box-shadow:0 7px 16px rgba(0,71,53,.10);
+      font-size:22px;
+    }
+
+    .pie{
+      text-align:center;
+      margin-top:22px;
+      font-size:13px;
+      color:#77837e;
+      letter-spacing:.4px;
+    }
+
+    @keyframes entradaSuperior{
+      from{opacity:0;transform:translateY(-28px) scale(.98)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+
+    @keyframes entradaInferior{
+      from{opacity:0;transform:translateY(22px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    @keyframes entradaTarjeta{
+      from{opacity:0;transform:translateY(32px) rotateX(8deg)}
+      to{opacity:1;transform:translateY(0) rotateX(0)}
+    }
+
+    @keyframes flotarLogo{
+      0%,100%{transform:translateY(0)}
+      50%{transform:translateY(-6px)}
+    }
+
+    @keyframes flotarIcono{
+      0%,100%{transform:translateY(0) rotate(0)}
+      50%{transform:translateY(-7px) rotate(1.5deg)}
+    }
+
+    @keyframes dibujarLinea{
+      from{transform:scaleX(0)}
+      to{transform:scaleX(1)}
+    }
+
+    @keyframes brilloLinea{
+      from{background-position:0 0}
+      to{background-position:200% 0}
+    }
+
+    @keyframes flotarFondo{
+      from{transform:translate3d(0,0,0)}
+      to{transform:translate3d(18px,-15px,0)}
+    }
+
+    @media (max-width:1050px){
+      .grid{grid-template-columns:repeat(3,1fr)}
+    }
+
+    @media (max-width:760px){
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .decoracion-codigo{display:none}
+      .encabezado{padding:26px 20px 30px}
+    }
+
+    @media (max-width:500px){
+      .contenedor{width:min(100% - 22px,1180px)}
+      .grid{grid-template-columns:1fr}
+      .tarjeta{min-height:285px}
+      .logo-lenguaje{width:88px;height:88px}
+      .nota{flex-direction:column}
+    }
+
+    @media (prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation:none!important;transition:none!important}
+    }
+  
+    /* Modal informativo */
+    .modal-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(2,24,18,.72);
+      backdrop-filter:blur(7px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      opacity:0;
+      visibility:hidden;
+      transition:opacity .28s ease, visibility .28s ease;
+      z-index:9999;
+    }
+
+    .modal-overlay.activo{
+      opacity:1;
+      visibility:visible;
+    }
+
+    .modal-contenido{
+      width:min(560px, 94vw);
+      background:rgba(255,255,255,.98);
+      border-radius:24px;
+      box-shadow:0 28px 70px rgba(0,0,0,.28);
+      padding:30px;
+      position:relative;
+      transform:translateY(22px) scale(.96);
+      transition:transform .3s ease;
+      border-top:7px solid var(--verde-uth);
+    }
+
+    .modal-overlay.activo .modal-contenido{
+      transform:translateY(0) scale(1);
+    }
+
+    .modal-cerrar{
+      position:absolute;
+      top:14px;
+      right:14px;
+      width:40px;
+      height:40px;
+      border:none;
+      border-radius:50%;
+      background:#eef6f2;
+      color:var(--verde-oscuro);
+      font-size:24px;
+      cursor:pointer;
+      transition:transform .2s ease, background .2s ease;
+    }
+
+    .modal-cerrar:hover{
+      transform:rotate(90deg);
+      background:#dceee6;
+    }
+
+    .modal-icono{
+      width:82px;
+      height:82px;
+      object-fit:contain;
+      display:block;
+      margin:0 auto 14px;
+      filter:drop-shadow(0 8px 16px rgba(0,77,58,.14));
+    }
+
+    .modal-titulo{
+      margin:0;
+      text-align:center;
+      font-size:30px;
+      color:var(--verde-oscuro);
+    }
+
+    .modal-grupo{
+      text-align:center;
+      color:var(--gris);
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      margin-top:4px;
+    }
+
+    .modal-descripcion{
+      margin:20px 0 14px;
+      color:#334740;
+      line-height:1.65;
+    }
+
+    .modal-lista{
+      margin:0;
+      padding-left:22px;
+      color:#334740;
+      line-height:1.6;
+    }
+
+    .modal-tip{
+      margin-top:18px;
+      background:linear-gradient(135deg,#eef8f4,#fff8df);
+      border-left:5px solid var(--dorado);
+      padding:14px 16px;
+      border-radius:12px;
+      color:#32473f;
+    }
+
+    .tarjeta{
+      cursor:pointer;
+    }
+
+    .tarjeta::after{
+      content:"Haz clic para ver información";
+      display:block;
+      margin-top:14px;
+      font-size:12px;
+      font-weight:700;
+      color:var(--verde-uth);
+      opacity:.75;
+    }
+
+    @media (hover:hover){
+      .tarjeta:hover::after{
+        opacity:1;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <main class="contenedor">
+    <header class="encabezado">
+      <div class="decoracion-codigo">&lt;/&gt;</div>
+      <div class="marca">
+        <img class="logo-uth" src="https://www.uth.hn/wp-content/uploads/2019/12/logo-1.png" alt="Logo de la Universidad Tecnológica de Honduras" />
+      </div>
+      <div class="etiqueta">LPG-8402 · Lenguajes de Programación</div>
+      <h1>Asignación de <span class="destacado">lenguajes</span> por grupo</h1>
+      <p class="subtitulo">
+        Cada grupo trabajará con un lenguaje específico durante las actividades, casos prácticos
+        y ejercicios comparativos de la asignatura.
+      </p>
+    </header>
+
+    <section class="grid" aria-label="Asignación de lenguajes por grupo">
+      <article class="tarjeta" style="--delay:.15s" data-modal="0" tabindex="0" role="button" aria-label="Ver información del lenguaje asignado al grupo 1">
+        <div class="numero">1</div>
+        <img class="logo-lenguaje" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Logo de Python" />
+        <div class="lenguaje">Python</div>
+        <div class="grupo">Grupo 1</div>
+        <div class="codigo">print("Hola, UTH")</div>
+      </article>
+
+      <article class="tarjeta" style="--delay:.28s" data-modal="1" tabindex="0" role="button" aria-label="Ver información del lenguaje asignado al grupo 2">
+        <div class="numero">2</div>
+        <img class="logo-lenguaje" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Logo de Java" />
+        <div class="lenguaje">Java</div>
+        <div class="grupo">Grupo 2</div>
+        <div class="codigo">public static void main</div>
+      </article>
+
+      <article class="tarjeta" style="--delay:.41s" data-modal="2" tabindex="0" role="button" aria-label="Ver información del lenguaje asignado al grupo 3">
+        <div class="numero">3</div>
+        <img class="logo-lenguaje" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="Logo de C Sharp" />
+        <div class="lenguaje">C#</div>
+        <div class="grupo">Grupo 3</div>
+        <div class="codigo">Console.WriteLine()</div>
+      </article>
+
+      <article class="tarjeta" style="--delay:.54s" data-modal="3" tabindex="0" role="button" aria-label="Ver información del lenguaje asignado al grupo 4">
+        <div class="numero">4</div>
+        <img class="logo-lenguaje" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="Logo de JavaScript" />
+        <div class="lenguaje">JavaScript</div>
+        <div class="grupo">Grupo 4</div>
+        <div class="codigo">console.log("Hola")</div>
+      </article>
+
+      <article class="tarjeta" style="--delay:.67s" data-modal="4" tabindex="0" role="button" aria-label="Ver información del lenguaje asignado al grupo 5">
+        <div class="numero">5</div>
+        <img class="logo-lenguaje" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="Logo de C más más" />
+        <div class="lenguaje">C++</div>
+        <div class="grupo">Grupo 5</div>
+        <div class="codigo">std::cout &lt;&lt; "Hola";</div>
+      </article>
+    </section>
+
+    <aside class="nota">
+      <div class="nota-icono">💡</div>
+      <div>
+        <strong>Importante:</strong> esta asignación se mantendrá durante el desarrollo del curso para facilitar
+        la comparación de sintaxis, paradigmas, estructuras de control, orientación a objetos y buenas prácticas.
+      </div>
+    </aside>
+
+    <footer class="pie">Universidad Tecnológica de Honduras · Maestría en Ingeniería de la Computación</footer>
+  
+    <div class="modal-overlay" id="modalLenguaje" aria-hidden="true">
+      <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+        <button class="modal-cerrar" id="cerrarModal" aria-label="Cerrar">&times;</button>
+        <img class="modal-icono" id="modalIcono" alt="">
+        <h2 class="modal-titulo" id="modalTitulo"></h2>
+        <div class="modal-grupo" id="modalGrupo"></div>
+        <p class="modal-descripcion" id="modalDescripcion"></p>
+        <ul class="modal-lista" id="modalLista"></ul>
+        <div class="modal-tip" id="modalTip"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const datosLenguajes = [
+      {
+        grupo: "Grupo 1",
+        lenguaje: "Python",
+        img: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+        desc: "Lenguaje multiparadigma reconocido por su sintaxis clara y su facilidad para desarrollar soluciones rápidamente.",
+        items: [
+          "Ideal para automatización, análisis de datos e inteligencia artificial.",
+          "Amplio ecosistema de librerías y documentación.",
+          "Excelente para aprender lógica y programación orientada a objetos."
+        ],
+        tip: "Prioricen la claridad del código y el uso correcto de funciones, clases y módulos."
+      },
+      {
+        grupo: "Grupo 2",
+        lenguaje: "Java",
+        img: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
+        desc: "Lenguaje robusto, orientado a objetos y ampliamente utilizado en sistemas empresariales y aplicaciones multiplataforma.",
+        items: [
+          "Fuerte enfoque en clases, objetos y tipado estático.",
+          "Muy utilizado en backend y aplicaciones empresariales.",
+          "Facilita el desarrollo de soluciones estructuradas y escalables."
+        ],
+        tip: "Cuiden la organización de paquetes, clases y métodos desde el inicio."
+      },
+      {
+        grupo: "Grupo 3",
+        lenguaje: "C#",
+        img: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
+        desc: "Lenguaje moderno del ecosistema .NET, apropiado para aplicaciones de escritorio, web, servicios y videojuegos.",
+        items: [
+          "Sintaxis moderna y fuerte orientación a objetos.",
+          "Integración con .NET y Visual Studio.",
+          "Adecuado para interfaces, APIs y aplicaciones empresariales."
+        ],
+        tip: "Aprovechen propiedades, clases y manejo de excepciones para mantener un diseño limpio."
+      },
+      {
+        grupo: "Grupo 4",
+        lenguaje: "JavaScript",
+        img: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+        desc: "Lenguaje esencial para el desarrollo web interactivo, tanto en el navegador como en el servidor.",
+        items: [
+          "Permite crear interfaces dinámicas y experiencias interactivas.",
+          "Puede utilizarse en frontend y backend.",
+          "Trabaja bien con eventos, funciones y objetos."
+        ],
+        tip: "Eviten código desordenado; separen la lógica, la interfaz y los datos."
+      },
+      {
+        grupo: "Grupo 5",
+        lenguaje: "C++",
+        img: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
+        desc: "Lenguaje de alto rendimiento que permite trabajar cerca del hardware y controlar de forma precisa los recursos.",
+        items: [
+          "Muy útil para algoritmos, sistemas y aplicaciones de alto desempeño.",
+          "Fortalece la comprensión de memoria, tipos y estructuras.",
+          "Admite programación estructurada y orientada a objetos."
+        ],
+        tip: "Sean cuidadosos con tipos de datos, memoria, punteros y validación de entradas."
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const modal = document.getElementById("modalLenguaje");
+      const cerrar = document.getElementById("cerrarModal");
+      const modalTitulo = document.getElementById("modalTitulo");
+      const modalGrupo = document.getElementById("modalGrupo");
+      const modalDescripcion = document.getElementById("modalDescripcion");
+      const modalLista = document.getElementById("modalLista");
+      const modalTip = document.getElementById("modalTip");
+      const modalIcono = document.getElementById("modalIcono");
+      const tarjetas = [...document.querySelectorAll(".tarjeta")];
+
+      function abrirModal(indice) {
+        const item = datosLenguajes[indice];
+        if (!item) return;
+
+        modalTitulo.textContent = item.lenguaje;
+        modalGrupo.textContent = item.grupo;
+        modalDescripcion.textContent = item.desc;
+        modalIcono.src = item.img;
+        modalIcono.alt = `Logo de ${item.lenguaje}`;
+        modalLista.innerHTML = item.items.map(texto => `<li>${texto}</li>`).join("");
+        modalTip.innerHTML = `<strong>Tip para el grupo:</strong> ${item.tip}`;
+        modal.classList.add("activo");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        cerrar.focus();
+      }
+
+      function cerrarModal() {
+        modal.classList.remove("activo");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+      }
+
+      tarjetas.forEach((tarjeta, indice) => {
+        tarjeta.dataset.modal = String(indice);
+
+        tarjeta.addEventListener("click", () => abrirModal(indice));
+
+        tarjeta.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            abrirModal(indice);
+          }
+        });
+      });
+
+      cerrar.addEventListener("click", cerrarModal);
+
+      modal.addEventListener("click", event => {
+        if (event.target === modal) cerrarModal();
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && modal.classList.contains("activo")) {
+          cerrarModal();
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
