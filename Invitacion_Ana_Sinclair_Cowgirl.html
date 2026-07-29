@@ -81,10 +81,11 @@ body {
 }
 
 .wrap {
-  min-height:100vh;
-  display:grid;
-  place-items:start center;
-  padding:18px 10px 50px;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding:18px 10px 0;
+  margin:0;
 }
 .poster {
   width:min(100%,760px);
@@ -260,10 +261,46 @@ body {
 .tip.show { opacity:1; bottom:24px; }
 
 @media(max-width:600px) {
-  .wrap { padding:0; }
-  .poster { width:100%; border-radius:0; }
-  .music-btn { right:12px; bottom:12px; }
-  .rsvp-hotspot { left:26%; width:48%; top:88.20%; height:4.95%; }
+  html, body {
+    margin:0;
+    padding:0;
+    min-height:0;
+    background:#21120d;
+  }
+
+  .wrap {
+    min-height:0;
+    height:auto;
+    padding:0;
+    margin:0;
+    display:block;
+  }
+
+  .poster {
+    width:100%;
+    height:auto;
+    margin:0;
+    border-radius:0;
+    line-height:0;
+  }
+
+  .poster img {
+    width:100%;
+    height:auto;
+    display:block;
+  }
+
+  .music-btn {
+    right:12px;
+    bottom:12px;
+  }
+
+  .rsvp-hotspot {
+    left:26%;
+    width:48%;
+    top:88.20%;
+    height:4.95%;
+  }
 }
 </style>
 </head>
@@ -371,11 +408,11 @@ rsvpBtn.addEventListener('click', () => {
   tip.classList.add('show');
 
   const text = encodeURIComponent(
-    'Hola, confirmo mi asistencia al cumpleaños de Ana Sinclair 🤠✨💕'
+    '🤠✨ ¡Hola! Ya estoy más que apuntado/a para celebrar los Venti Siempre de Ana Sinclair. 🌵💖\n\n¡Nos vemos el 01 de agosto a las 5:30 P.M.! Voy con toda la actitud cowgirl/cowboy para pasarla increíble. 🎉'
   );
 
   setTimeout(() => {
-    window.open('https://wa.me/50488234891?text=' + text, '_blank', 'noopener');
+    window.open('https://wa.me/50498860978?text=' + text, '_blank', 'noopener');
     tip.classList.remove('show');
   }, 420);
 });
