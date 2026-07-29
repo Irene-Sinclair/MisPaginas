@@ -219,27 +219,6 @@ body {
   to { opacity:0; transform:translate(var(--dx),var(--dy)) scale(.2); }
 }
 
-.music-btn {
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:200;
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.7);
-  background:rgba(85,45,31,.92);
-  color:#fff;
-  font-size:20px;
-  cursor:pointer;
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
-  backdrop-filter:blur(8px);
-}
-.music-btn.playing {
-  animation:musicPulse 1.5s ease-in-out infinite;
-}
-@keyframes musicPulse {
-  50% { box-shadow:0 0 0 7px rgba(222,160,167,.15),0 12px 30px rgba(0,0,0,.34); }
 }
 
 .tip {
@@ -290,11 +269,6 @@ body {
     display:block;
   }
 
-  .music-btn {
-    right:12px;
-    bottom:12px;
-  }
-
   .rsvp-hotspot {
     left:26%;
     width:48%;
@@ -343,42 +317,21 @@ body {
   <source src="pacas.mp3" type="audio/mpeg">
 </audio>
 
-<button class="music-btn" id="musicBtn" aria-label="Pausar o reproducir música">♪</button>
 <div class="tip" id="tip">Abriendo WhatsApp… 🤠</div>
 
 <script>
 const intro = document.getElementById('intro');
 const openBtn = document.getElementById('openBtn');
 const music = document.getElementById('music');
-const musicBtn = document.getElementById('musicBtn');
 const rsvpBtn = document.getElementById('rsvpBtn');
 const poster = document.getElementById('poster');
 const tip = document.getElementById('tip');
 
 openBtn.addEventListener('click', async () => {
   intro.classList.add('hide');
-  try {
-    await music.play();
-    musicBtn.textContent = '❚❚';
-    musicBtn.classList.add('playing');
-  } catch(e) {
-    musicBtn.textContent = '♪';
-  }
+  try { await music.play(); } catch(e) {}
 });
 
-musicBtn.addEventListener('click', async () => {
-  if (music.paused) {
-    try {
-      await music.play();
-      musicBtn.textContent = '❚❚';
-      musicBtn.classList.add('playing');
-    } catch(e) {}
-  } else {
-    music.pause();
-    musicBtn.textContent = '♪';
-    musicBtn.classList.remove('playing');
-  }
-});
 
 function sparkBurst() {
   const rect = rsvpBtn.getBoundingClientRect();
