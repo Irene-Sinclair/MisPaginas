@@ -340,19 +340,74 @@ html, body {
 </style>
 
 
+
 <style>
-.rsvp-hotspot{
-  left:25.5% !important;
-  top:82.4% !important;
-  width:49% !important;
-  height:8.2% !important;
+/* AJUSTE DEFINITIVO PARA CELULAR Y BOTÓN */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  background: #21120d !important;
 }
-@media (max-width:600px){
-  .rsvp-hotspot{
-    left:25.5% !important;
-    top:82.4% !important;
-    width:49% !important;
-    height:8.2% !important;
+
+.wrap {
+  width: 100% !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  overflow: visible !important;
+}
+
+.poster {
+  position: relative !important;
+  width: min(100%, 760px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  line-height: 0 !important;
+  background: #f1dfbf !important;
+}
+
+.poster > img {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  display: block !important;
+  object-fit: contain !important;
+  object-position: center top !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Área clicable alineada exactamente sobre el cuadro rosado */
+.rsvp-hotspot {
+  left: 25.2% !important;
+  top: 79.4% !important;
+  width: 45.8% !important;
+  height: 10.2% !important;
+  border-radius: 12px !important;
+}
+
+@media (max-width: 600px) {
+  .poster {
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+
+  .rsvp-hotspot {
+    left: 25.2% !important;
+    top: 79.4% !important;
+    width: 45.8% !important;
+    height: 10.2% !important;
   }
 }
 </style>
