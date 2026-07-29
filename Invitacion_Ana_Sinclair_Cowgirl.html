@@ -221,24 +221,6 @@ body {
 
 }
 
-.tip {
-  position:fixed;
-  left:50%;
-  bottom:18px;
-  transform:translateX(-50%);
-  z-index:150;
-  color:#fff8e7;
-  background:rgba(62,34,24,.80);
-  border:1px solid rgba(255,255,255,.16);
-  padding:8px 14px;
-  border-radius:999px;
-  font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  transition:.35s;
-}
-.tip.show { opacity:1; bottom:24px; }
-
 @media(max-width:600px) {
   html, body {
     margin:0;
@@ -277,6 +259,25 @@ body {
   }
 }
 </style>
+
+<style>
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.wrap {
+  min-height: 0 !important;
+  height: auto !important;
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+.poster {
+  margin-bottom: 0 !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -317,15 +318,12 @@ body {
   <source src="pacas.mp3" type="audio/mpeg">
 </audio>
 
-<div class="tip" id="tip">Abriendo WhatsApp… 🤠</div>
-
 <script>
 const intro = document.getElementById('intro');
 const openBtn = document.getElementById('openBtn');
 const music = document.getElementById('music');
 const rsvpBtn = document.getElementById('rsvpBtn');
 const poster = document.getElementById('poster');
-const tip = document.getElementById('tip');
 
 openBtn.addEventListener('click', async () => {
   intro.classList.add('hide');
@@ -358,16 +356,14 @@ rsvpBtn.addEventListener('click', () => {
   void rsvpBtn.offsetWidth;
   rsvpBtn.classList.add('clicked');
   sparkBurst();
-  tip.classList.add('show');
 
   const text = encodeURIComponent(
     '🤠✨ ¡Hola! Ya estoy más que apuntado/a para celebrar los Venti Siempre de Ana Sinclair. 🌵💖\n\n¡Nos vemos el 01 de agosto a las 5:30 P.M.! Voy con toda la actitud cowgirl/cowboy para pasarla increíble. 🎉'
   );
 
   setTimeout(() => {
-    window.open('https://wa.me/50498860978?text=' + text, '_blank', 'noopener');
-    tip.classList.remove('show');
-  }, 420);
+    window.location.href = 'https://wa.me/50498860978?text=' + text;
+  }, 320);
 });
 </script>
 </body>
