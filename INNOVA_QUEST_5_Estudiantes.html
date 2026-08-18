@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>INNOVA QUEST — Sistemas de Gestión de Innovación y Tecnología</title>
+<style>
+:root{
+  --bg:#07111f; --panel:#0d1b2a; --panel2:#11263a; --text:#eef6ff; --muted:#9eb3c7;
+  --green:#33d17a; --gold:#f2c94c; --red:#ff6b6b; --blue:#5da9ff; --purple:#a78bfa;
+  --line:rgba(255,255,255,.10); --shadow:0 18px 60px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:
+radial-gradient(circle at 15% 0%,rgba(51,209,122,.16),transparent 30%),
+radial-gradient(circle at 100% 20%,rgba(93,169,255,.12),transparent 35%),
+var(--bg);color:var(--text);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer}
+.wrap{max-width:1180px;margin:auto;padding:22px}
+.topbar{display:flex;gap:14px;align-items:center;justify-content:space-between;margin-bottom:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--green),#0aa86a);display:grid;place-items:center;font-weight:900;color:#052217;box-shadow:0 10px 30px rgba(51,209,122,.25)}
+.brand h1{font-size:20px;margin:0}.brand small{color:var(--muted)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-weight:700;font-size:13px}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:18px}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.topbar{align-items:flex-start}.stats{justify-content:flex-start}.topbar{flex-direction:column}}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px}
+.hero{padding:28px}.kicker{color:var(--green);font-weight:900;letter-spacing:.08em;text-transform:uppercase;font-size:12px}
+.hero h2{font-size:38px;line-height:1.05;margin:8px 0 12px;max-width:760px}.hero p{color:var(--muted);line-height:1.6;max-width:760px}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+@media(max-width:560px){.modes{grid-template-columns:1fr}.hero h2{font-size:30px}}
+.mode{border:1px solid var(--line);background:var(--panel2);border-radius:17px;padding:16px;text-align:left;color:white;transition:.2s}
+.mode:hover{transform:translateY(-2px);border-color:rgba(51,209,122,.5)}
+.mode b{display:block;font-size:16px;margin-bottom:4px}.mode span{font-size:12px;color:var(--muted)}
+.progress{height:10px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--green),var(--gold));width:0%}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.section-title h3{margin:0}.section-title small{color:var(--muted)}
+.topic-list{display:grid;gap:9px}
+.topic{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:rgba(255,255,255,.035);border:1px solid var(--line);padding:12px;border-radius:14px}
+.topic .name{font-weight:700}.topic small{display:block;color:var(--muted);margin-top:4px}.meter{width:84px}
+.hidden{display:none!important}
+.game{max-width:920px;margin:auto}
+.game-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.qcard{padding:28px}
+.qmeta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;font-weight:700}
+.qtext{font-size:26px;line-height:1.35;margin:18px 0}
+.answers{display:grid;gap:10px}
+.ans{border:1px solid var(--line);background:#102236;color:white;border-radius:14px;padding:14px 15px;text-align:left;transition:.15s}
+.ans:hover{border-color:rgba(93,169,255,.55);transform:translateX(2px)}
+.ans.correct{border-color:var(--green);background:rgba(51,209,122,.12)}
+.ans.wrong{border-color:var(--red);background:rgba(255,107,107,.12)}
+.feedback{margin-top:16px;border-radius:14px;padding:14px 16px;border:1px solid var(--line);background:rgba(255,255,255,.035)}
+.feedback.good{border-color:rgba(51,209,122,.5)} .feedback.bad{border-color:rgba(255,107,107,.5)}
+.feedback b{display:block;margin-bottom:5px}.feedback small{color:var(--muted)}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.primary,.secondary,.danger{border:0;border-radius:12px;padding:11px 15px;font-weight:800}
+.primary{background:var(--green);color:#042114}.secondary{background:#17314b;color:white;border:1px solid var(--line)}.danger{background:rgba(255,107,107,.15);color:#ffd5d5;border:1px solid rgba(255,107,107,.35)}
+.flash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:650px){.flash-grid{grid-template-columns:1fr}}
+.flash{min-height:145px;padding:16px;border-radius:16px;border:1px solid var(--line);background:#0f2234}
+.flash b{display:block;margin-bottom:8px}.flash p{color:var(--muted);line-height:1.45;margin:0}.tag{display:inline-block;font-size:11px;padding:5px 8px;border-radius:999px;background:rgba(242,201,76,.12);color:#ffe596;margin-top:10px}
+.coverage{display:grid;gap:10px}.cov{border-left:4px solid var(--green);padding:12px 14px;background:rgba(255,255,255,.035);border-radius:10px}.cov h4{margin:0 0 6px}.cov p{margin:0;color:var(--muted);line-height:1.45}
+input.fill{width:100%;background:#0b1b2b;color:white;border:1px solid var(--line);border-radius:12px;padding:13px 14px;outline:none}
+input.fill:focus{border-color:var(--blue)}
+.footer{color:var(--muted);font-size:12px;text-align:center;padding:24px 0 10px}
+.badge{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;background:rgba(167,139,250,.14);color:#d9ccff}
+
+.login-overlay{position:fixed;inset:0;z-index:9999;background:
+radial-gradient(circle at 15% 10%,rgba(51,209,122,.18),transparent 32%),
+radial-gradient(circle at 90% 20%,rgba(93,169,255,.15),transparent 34%),#07111f;
+display:grid;place-items:center;padding:22px}
+.login-box{width:min(520px,100%);background:linear-gradient(180deg,#102438,#0b1928);
+border:1px solid rgba(255,255,255,.12);border-radius:26px;padding:30px;box-shadow:0 25px 80px rgba(0,0,0,.45)}
+.login-box h2{font-size:32px;margin:8px 0}.login-box p{color:#9eb3c7;line-height:1.55}
+.student-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+@media(max-width:520px){.student-grid{grid-template-columns:1fr}}
+.student-btn{padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.11);background:#132b42;color:white;font-weight:800;text-align:left}
+.student-btn:hover{border-color:#33d17a;transform:translateY(-1px)}
+.user-pill{background:rgba(51,209,122,.10)!important;border-color:rgba(51,209,122,.3)!important}
+.start-panel{text-align:center;padding:34px 24px}
+.start-panel h2{font-size:34px;margin:10px 0}.start-panel p{color:var(--muted);line-height:1.6;max-width:650px;margin:0 auto 18px}
+.big-start{font-size:18px;padding:14px 24px}
+.gameover{max-width:620px;margin:30px auto;text-align:center}
+.gameover .emoji{font-size:70px}
+
+</style>
+</head>
+<body>
+
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-box">
+    <div class="kicker">Acceso de estudiantes</div>
+    <h2>¿Quién va a estudiar?</h2>
+    <p>Selecciona tu nombre. Cada estudiante tendrá su propio XP, racha y dominio guardado en este navegador.</p>
+    <div class="student-grid">
+      <button class="student-btn" onclick="loginStudent('Jesus')">👤 Jesus</button>
+      <button class="student-btn" onclick="loginStudent('Cesar')">👤 Cesar</button>
+      <button class="student-btn" onclick="loginStudent('Andres')">👤 Andres</button>
+      <button class="student-btn" onclick="loginStudent('Irene')">👤 Irene</button>
+      <button class="student-btn" onclick="loginStudent('Shirley')">👤 Shirley</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand"><div class="logo">IQ</div><div><h1>INNOVA QUEST</h1><small>Sistemas de Gestión de Innovación y Tecnología</small></div></div>
+    <div class="stats">
+      <div class="pill user-pill">👤 <span id="studentName">Estudiante</span></div>
+      <div class="pill">⭐ XP: <span id="xp">0</span></div>
+      <div class="pill">🔥 Racha: <span id="streak">0</span></div>
+      <div class="pill">🎯 Dominio: <span id="mastery">0%</span></div>
+    </div>
+  </div>
+
+  <section id="home">
+    <div class="grid">
+      <div class="card hero">
+        <div class="kicker">Estudia como juego · repite hasta dominar</div>
+        <h2>Aprende el contenido completo y entrena las preguntas trampa.</h2>
+        <p>El juego usa los apuntes reales de clase y las preguntas de las seis pruebas. Cuando fallas, la idea vuelve a aparecer más adelante con otra redacción para obligarte a distinguir conceptos parecidos.</p>
+        <div class="modes">
+          <button class="mode" onclick="prepareGame('complete')"><b>🧠 Ruta completa</b><span>Recorre todos los temas y todas las ideas clave.</span></button>
+          <button class="mode" onclick="prepareGame('trap')"><b>⚠️ Modo trampas</b><span>Negaciones, conceptos parecidos y distractores.</span></button>
+          <button class="mode" onclick="prepareGame('tests')"><b>📝 Pruebas reales</b><span>Preguntas tomadas de las 6 pruebas observadas.</span></button>
+          <button class="mode" onclick="showFlashcards()"><b>🃏 Tarjetas de memoria</b><span>Repaso rápido, exacto y directo.</span></button>
+          <button class="mode" onclick="showCoverage()"><b>✅ Cobertura 100%</b><span>Verifica cada concepto incluido en el sitio.</span></button>
+          <button class="mode" onclick="prepareGame('marathon')"><b>🏁 Maratón</b><span>60 preguntas mezcladas con repetición adaptativa.</span></button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title"><div><h3>Progreso por tema</h3><small>Guardado automáticamente en este navegador</small></div></div>
+        <div class="topic-list" id="topicList"></div>
+        <div style="margin-top:16px">
+          <div class="section-title"><h3>Progreso general</h3><b id="progressLabel">0%</b></div>
+          <div class="progress"><i id="progressBar"></i></div>
+        </div>
+        <button class="danger" style="margin-top:16px;width:100%" onclick="resetProgress()">Reiniciar progreso</button>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="preGame" class="game hidden">
+    <div class="game-head"><button class="secondary" onclick="goHome()">← Inicio</button><div class="pill">Preparación</div></div>
+    <div class="card start-panel">
+      <div style="font-size:64px" id="preIcon">📝</div>
+      <div class="kicker" id="preKicker">Modo de estudio</div>
+      <h2 id="preTitle">Prueba</h2>
+      <p id="preText"></p>
+      <button class="primary big-start" id="startExamBtn">▶ Iniciar prueba</button>
+    </div>
+  </section>
+
+  <section id="game" class="game hidden">
+    <div class="game-head">
+      <button class="secondary" onclick="goHome()">← Inicio</button>
+      <div class="pill"><span id="modeLabel"></span> · Pregunta <span id="qnum">1</span>/<span id="qtotal">20</span></div>
+      <div class="pill">❤️ <span id="lives">3</span></div>
+    </div>
+    <div class="card qcard">
+      <div class="qmeta"><span id="qtopic"></span><span id="qsource"></span></div>
+      <div class="qtext" id="qtext"></div>
+      <div id="answers" class="answers"></div>
+      <div id="fillWrap" class="hidden">
+        <input id="fillInput" class="fill" placeholder="Escribe tu respuesta..." />
+        <div class="actions"><button class="primary" onclick="submitFill()">Comprobar</button></div>
+      </div>
+      <div id="feedback" class="feedback hidden"></div>
+      <div class="actions"><button id="nextBtn" class="primary hidden" onclick="nextQuestion()">Siguiente →</button></div>
+    </div>
+  </section>
+
+  <section id="flashcards" class="hidden">
+    <div class="game-head"><button class="secondary" onclick="goHome()">← Inicio</button><div class="pill">Tarjetas de memoria</div></div>
+    <div class="card">
+      <div class="section-title"><div><h3>Repaso exacto</h3><small>Haz clic en una tarjeta para mostrar/ocultar la respuesta.</small></div></div>
+      <div class="flash-grid" id="flashGrid"></div>
+    </div>
+  </section>
+
+  <section id="coverage" class="hidden">
+    <div class="game-head"><button class="secondary" onclick="goHome()">← Inicio</button><div class="pill">Cobertura del material</div></div>
+    <div class="card">
+      <div class="section-title"><div><h3>Mapa completo de estudio</h3><small>Incluye los apuntes y los temas usados en las pruebas.</small></div></div>
+      <div class="coverage" id="coverageList"></div>
+    </div>
+  </section>
+
+  <div class="footer">INNOVA QUEST · Estudio basado en apuntes de clase y pruebas reales · Funciona sin internet</div>
+</div>
+
+<script>
+const topics = [
+  {id:'bsc',name:'Cuadro de Mando Integral',src:'Apuntes págs. 1 y 3'},
+  {id:'innovation',name:'¿Qué es innovación?',src:'Apuntes pág. 2 + Prueba 1'},
+  {id:'capacity',name:'Capacidad de innovación',src:'Apuntes pág. 4 + Prueba 3'},
+  {id:'strategy',name:'Estrategia de innovación',src:'Apuntes págs. 5-6 + Prueba 4'},
+  {id:'process',name:'Proceso de innovación',src:'Apuntes pág. 7 + Prueba 5'},
+  {id:'metrics',name:'Métricas',src:'Apuntes pág. 8 + Prueba 6'},
+  {id:'roles',name:'Roles, coordinación y sostenibilidad',src:'Apuntes pág. 9'},
+  {id:'perf',name:'Eficiencia, eficacia y efectividad',src:'Apuntes pág. 3'}
+];
+
+const flashcards = [
+['bsc','¿Qué es el CMI / BSC?','En los apuntes se señala que es una tabla.'],
+['bsc','Perspectivas del CMI','Financiera, Clientes, Procesos y Crecimiento (aprendizaje en tecnología e innovación).'],
+['bsc','Partes del cuadro de mando','1) Objetivos estratégicos (OE), 2) Explicación de los OE, 3) Indicadores autoexplicativos o KPI, 4) Planteamiento del problema, 5) Solución de problemas o inductores, 6) Plan de acción, 7) Rango de los KPI o parametrización, 8) Semáforo o gerenciamiento visual, 9) Resultados.'],
+['innovation','Definición de innovación','Es cualquier nuevo producto, servicio, proceso o cualquier bien que se comercialice por la empresa y sea bueno para el país.'],
+['capacity','7 elementos para innovar','Estrategia, Procesos, Métricas, Estructura, Talento, Cultura e Implementación.'],
+['capacity','Estrategia','La innovación se alinea con los objetivos estratégicos.'],
+['capacity','Procesos','Reduce el tiempo de la innovación.'],
+['capacity','Métricas','Se evalúa el proceso de innovación.'],
+['capacity','Estructura','Hace sostenible la innovación.'],
+['capacity','Talento','Desarrolla las competencias de la innovación.'],
+['capacity','Cultura','Fomenta el emprendimiento de la innovación.'],
+['capacity','Implementación','Ejecuta la innovación.'],
+['strategy','¿Por qué?','Se contesta para sistematizar la innovación.'],
+['strategy','¿Qué?','Evaluar la innovación.'],
+['strategy','¿Hacia dónde?','Visión con fecha + objetivos para alcanzar la visión.'],
+['strategy','¿Cómo?','Alinear la innovación con la empresa.'],
+['strategy','¿Dónde?','Equipos disciplinarios para hacer la innovación.'],
+['strategy','¿Cuánto?','Presupuesto, recursos e inversión de la innovación.'],
+['process','Antes del proceso','Establecer preferencias y necesidades.'],
+['process','5 etapas','1) Identificar oportunidades, 2) Generar ideas, 3) Evaluar las ideas, 4) Desarrollar el proyecto, 5) Lanzar y comunicar la innovación.'],
+['metrics','Entrada','Indicadores de esfuerzo o de insumos.'],
+['metrics','Proceso','Miden la capacidad de la empresa.'],
+['metrics','Salida','Miden los resultados.'],
+['roles','Roles y procesos claros','Evitar duplicidad de esfuerzos.'],
+['roles','Coordinación de innovación y equipos multidisciplinarios','Centralizar la gestión.'],
+['roles','Seguimiento e implementación de ideas','Asignación de recursos y control.'],
+['roles','Garantía y sostenibilidad de los proyectos','Impacto social, económico y ambiental.'],
+['perf','Eficiencia','Lograr los objetivos con los recursos de la empresa.'],
+['perf','Eficacia','Lograr los objetivos con los recursos del empleado.'],
+['perf','Efectividad','Lograr los objetivos con los recursos de la empresa y los empleados.'],
+];
+
+const base = [
+q('bsc','Según los apuntes, ¿qué se señala sobre el Cuadro de Mando Integral (CMI/BSC)?',['Es una tabla','Es únicamente un presupuesto','Es un organigrama','Es una patente'],0,'En la primera página se anota “Es una tabla”.','Apuntes pág. 1'),
+q('bsc','¿Cuál NO es una perspectiva del Cuadro de Mando Integral mostrada en los apuntes?',['Mejora continua','Financiera','Clientes','Procesos'],0,'Las perspectivas anotadas son Financiera, Clientes, Procesos y Crecimiento.','Prueba 2 / Apuntes pág. 1'),
+q('bsc','¿Cuáles son las 4 perspectivas del CMI del proyecto?',['Financiera, Clientes, Procesos y Crecimiento','Financiera, Talento, Cultura e Implementación','Clientes, Métricas, Estructura y Talento','Procesos, Oportunidad, Cultura y Salida'],0,'El crecimiento se asocia con aprendizaje en tecnología e innovación.','Apuntes pág. 1'),
+q('bsc','¿Qué parte del cuadro de mando aparece primero en la lista?',['Objetivos Estratégicos (OE)','Plan de acción','Resultados','Semáforo'],0,'La lista inicia con Objetivos Estratégicos (OE).','Apuntes pág. 3'),
+q('bsc','Después de los Objetivos Estratégicos (OE), ¿qué aparece?',['Explicación de los OE','Resultados','Semáforo','Rango de KPI'],0,'La segunda parte es la explicación de los OE.','Apuntes pág. 3'),
+q('bsc','Los indicadores autoexplicativos también se nombran como…',['KPI','OE','BSC','CMI'],0,'En los apuntes: “Indicadores autoexplicativos o KPI’s”.','Apuntes pág. 3'),
+q('bsc','¿Qué aparece después de los indicadores/KPI en la secuencia del cuadro de mando?',['Planteamiento del problema','Resultados','Plan de acción','Crecimiento'],0,'Es el punto 4 de la lista.','Apuntes pág. 3'),
+q('bsc','En las partes del CMI, la “solución de problemas” también se asocia con…',['Inductores','Insumos','Talento','Perspectivas'],0,'Punto 5: “Solución de problemas o inductores”.','Apuntes pág. 3'),
+q('bsc','¿Qué sigue después de la solución de problemas o inductores?',['Plan de acción','Resultados','Semáforo','Explicación de los OE'],0,'Punto 6: Plan de acción.','Apuntes pág. 3'),
+q('bsc','¿Qué significa “rango de los KPI” en los apuntes?',['Parametrización','Eficacia','Implementación','Innovación'],0,'Punto 7: rango de los KPI o parametrización.','Apuntes pág. 3'),
+q('bsc','El semáforo del cuadro de mando se relaciona con…',['Gerenciamiento visual','Presupuesto','Talento','Sostenibilidad'],0,'Punto 8: semáforo o gerenciamiento visual.','Apuntes pág. 3'),
+q('bsc','¿Cuál es la última parte listada del cuadro de mando?',['Resultados','Plan de acción','Indicadores','Objetivos estratégicos'],0,'Punto 9: Resultados.','Apuntes pág. 3'),
+
+q('innovation','Según los apuntes, ¿qué es innovación?',['Cualquier nuevo producto, servicio, proceso o bien que se comercialice por la empresa y sea bueno para el país','Solo una idea creativa sin comercialización','Únicamente crear tecnología','Cualquier oportunidad de negocio'],0,'Esta es la definición escrita en la clase.','Apuntes pág. 2'),
+q('innovation','¿Cuál NO forma parte de los elementos que se innovan en la Prueba 1?',['Oportunidad','Producto','Servicio','Proceso'],0,'En la prueba, la opción correcta es Oportunidad.','Prueba 1'),
+q('innovation','La definición de innovación de los apuntes incluye que el nuevo bien…',['Se comercialice por la empresa','Sea gratuito','Sea exclusivamente digital','No llegue al mercado'],0,'La comercialización aparece expresamente en la definición.','Apuntes pág. 2'),
+q('innovation','La definición vista en clase también agrega que la innovación sea…',['Buena para el país','Solo buena para el gerente','Exclusiva para individuos','Ajena a la empresa'],0,'La frase final de los apuntes es “sea bueno para el país”.','Apuntes pág. 2'),
+q('innovation','En la Prueba 1, la afirmación “la innovación es la creación de cualquier bien, servicio o proceso nuevo para la unidad de negocios...” se marca como…',['Falso','Verdadero'],0,'La prueba corregida marca F.','Prueba 1'),
+q('innovation','En la Prueba 1, la innovación como motor del crecimiento económico se asocia al menos con…',['Empleo y productividad','Estructura y talento','Entrada y salida','Semáforo y KPI'],0,'Es lo escrito como respuesta en la prueba; el PDF no desarrolla más este punto.','Prueba 1'),
+
+q('capacity','¿Cuántos elementos para innovar aparecen en la clase?',['7','3','5','9'],0,'Son siete elementos.','Apuntes pág. 4'),
+q('capacity','¿Cuál conjunto contiene solo elementos de la capacidad de innovación?',['Estructura, Talento, Cultura','Finanzas, Clientes, Efectividad','Oportunidad, Producto, Salida','Visión, Fecha, Presupuesto'],0,'Es el mismo conjunto señalado en la Prueba 3.','Prueba 3 / Apuntes pág. 4'),
+q('capacity','¿Cuál es la lista completa de elementos para innovar?',['Estrategia, Procesos, Métricas, Estructura, Talento, Cultura, Implementación','Estrategia, Clientes, Finanzas, Talento, Cultura, Salida, Entrada','Procesos, KPI, Presupuesto, Eficacia, Cultura, Visión, Resultados','Producto, Servicio, Proceso, Oportunidad, Talento, Cultura, Implementación'],0,'La lista exacta aparece en la página 4.','Apuntes pág. 4'),
+q('capacity','Estrategia significa que…',['La innovación se alinea con los objetivos estratégicos','Reduce el tiempo de la innovación','Ejecuta la innovación','Evalúa el proceso de innovación'],0,'Definición exacta del elemento Estrategia.','Apuntes pág. 4'),
+q('capacity','Procesos significa que…',['Reduce el tiempo de la innovación','Fomenta el emprendimiento','Hace sostenible la innovación','Desarrolla competencias'],0,'Definición exacta del elemento Procesos.','Apuntes pág. 4'),
+q('capacity','Métricas significa que…',['Se evalúa el proceso de innovación','Se comercializa la innovación','Se alinean los empleados','Se asignan recursos'],0,'Definición exacta del elemento Métricas.','Apuntes pág. 4'),
+q('capacity','Estructura significa que…',['Hace sostenible la innovación','Reduce el tiempo','Mide resultados','Ejecuta la innovación'],0,'Definición exacta del elemento Estructura.','Apuntes pág. 4'),
+q('capacity','Talento significa que…',['Desarrolla las competencias de la innovación','Centraliza la gestión','Mide la capacidad de la empresa','Sistematiza la innovación'],0,'Definición exacta del elemento Talento.','Apuntes pág. 4'),
+q('capacity','Cultura significa que…',['Fomenta el emprendimiento de la innovación','Ejecuta la innovación','Evalúa el proceso','Reduce el tiempo'],0,'Definición exacta del elemento Cultura.','Apuntes pág. 4'),
+q('capacity','Implementación significa que…',['Ejecuta la innovación','Alinea la innovación','Mide resultados','Evita duplicidad'],0,'Definición exacta del elemento Implementación.','Apuntes pág. 4'),
+q('capacity','TRAMPA: “Métricas” es el elemento que reduce el tiempo de la innovación.',['Falso','Verdadero'],0,'Quien reduce el tiempo es Procesos; Métricas evalúa el proceso.','Apuntes pág. 4'),
+q('capacity','TRAMPA: “Procesos” es el elemento que evalúa el proceso de innovación.',['Falso','Verdadero'],0,'Quien evalúa el proceso es Métricas.','Apuntes pág. 4'),
+q('capacity','TRAMPA: “Estructura” y “Cultura” significan lo mismo.',['Falso','Verdadero'],0,'Estructura hace sostenible; Cultura fomenta el emprendimiento.','Apuntes pág. 4'),
+q('capacity','En la Prueba 3, decir que las “Métricas” sirven para reducir el tiempo de la innovación es…',['Falso','Verdadero'],0,'Reducir el tiempo corresponde a Procesos.','Prueba 3 / Apuntes pág. 4'),
+
+q('strategy','¿Cuáles son los 6 componentes-pregunta de la estrategia vistos en clase?',['¿Por qué?, ¿Qué?, ¿Hacia dónde?, ¿Cómo?, ¿Dónde?, ¿Cuánto?','¿Quién?, ¿Cuándo?, ¿Producto?, ¿Cliente?, ¿Salida?, ¿Talento?','¿Para qué?, ¿Con quién?, ¿Cómo?, ¿Proceso?, ¿KPI?, ¿Resultado?','¿Por qué?, ¿Para qué?, ¿Qué?, ¿Quién?, ¿Cuándo?, ¿Dónde?'],0,'Son los seis componentes de las páginas 5 y 6.','Apuntes págs. 5-6'),
+q('strategy','¿Qué responde el componente “¿Por qué?”?',['Se contesta para sistematizar la innovación','Evaluar la innovación','Presupuesto y recursos','Alinear con la empresa'],0,'Es la frase escrita debajo de ¿Por qué?','Apuntes pág. 5'),
+q('strategy','¿Qué responde el componente “¿Qué?”?',['Evaluar la innovación','Sistematizar la innovación','Equipos disciplinarios','Visión con fecha'],0,'Respuesta exacta de los apuntes.','Apuntes pág. 5'),
+q('strategy','¿Qué incluye “¿Hacia dónde?”?',['Visión con fecha y objetivos para alcanzar la visión','Solo presupuesto','Solo equipos disciplinarios','Solo semáforos'],0,'Tiene dos elementos: visión con fecha + objetivos para alcanzar la visión.','Apuntes pág. 5'),
+q('strategy','¿Qué responde “¿Cómo?”?',['Alinear la innovación con la empresa','Evaluar la innovación','Centralizar la gestión','Medir resultados'],0,'Respuesta exacta de los apuntes.','Apuntes pág. 6'),
+q('strategy','¿Qué responde “¿Dónde?”?',['Equipos disciplinarios para hacer la innovación','Presupuesto, recursos e inversión','Visión con fecha','Resultados'],0,'Respuesta exacta de los apuntes.','Apuntes pág. 6'),
+q('strategy','¿Qué responde “¿Cuánto?”?',['Presupuesto, recursos e inversión de la innovación','Equipos disciplinarios','Objetivos estratégicos','Semáforo'],0,'Respuesta exacta de los apuntes.','Apuntes pág. 6'),
+q('strategy','TRAMPA: “¿Qué?” y “¿Cómo?” tienen la misma respuesta.',['Falso','Verdadero'],0,'¿Qué? = evaluar la innovación; ¿Cómo? = alinear la innovación con la empresa.','Apuntes págs. 5-6'),
+q('strategy','TRAMPA: “¿Cuánto?” se refiere al lugar donde se hace la innovación.',['Falso','Verdadero'],0,'¿Cuánto? se refiere a presupuesto, recursos e inversión.','Apuntes pág. 6'),
+q('strategy','En la Prueba 4, la afirmación que asigna a “Para qué” la importancia de sistematizar la innovación debe marcarse…',['Falso','Verdadero'],0,'En los apuntes, sistematizar se asocia con “¿Por qué?”.','Prueba 4 / Apuntes pág. 5'),
+q('strategy','Según los apuntes, “Hacia dónde” se define mejor como…',['Visión con fecha y objetivos para alcanzar la visión','Plan de acción y semáforo','Entrada y salida','Presupuesto y recursos'],0,'Es el contenido exacto de “Hacia dónde”.','Apuntes pág. 5'),
+
+q('process','¿Qué se debe establecer antes del proceso de innovación?',['Preferencias y necesidades','Resultados y semáforos','Clientes y finanzas','Entrada y salida'],0,'La nota previa al proceso dice “Establecer preferencias y necesidades”.','Apuntes pág. 7'),
+q('process','¿Cuál es la primera etapa del proceso de innovación?',['Identificar oportunidades','Generar ideas','Evaluar ideas','Desarrollar el proyecto'],0,'Es la etapa 1.','Apuntes pág. 7'),
+q('process','¿Cuál es la segunda etapa?',['Generar ideas','Evaluar ideas','Lanzar la innovación','Identificar oportunidades'],0,'Es la etapa 2.','Apuntes pág. 7'),
+q('process','¿Cuál es la tercera etapa?',['Evaluar las ideas','Desarrollar el proyecto','Generar ideas','Lanzar y comunicar'],0,'Es la etapa 3.','Apuntes pág. 7'),
+q('process','¿Cuál es la cuarta etapa?',['Desarrollar el proyecto','Lanzar y comunicar','Evaluar ideas','Identificar oportunidades'],0,'Es la etapa 4.','Apuntes pág. 7'),
+q('process','¿Cuál es la quinta y última etapa?',['Lanzar y comunicar la innovación','Establecer necesidades','Identificar oportunidades','Medir resultados'],0,'Es la etapa 5.','Apuntes pág. 7'),
+q('process','¿Cuántas etapas tiene el proceso de innovación mostrado en los apuntes?',['5','6','7','3'],0,'Son cinco etapas; “establecer preferencias y necesidades” ocurre antes.','Apuntes pág. 7'),
+q('process','TRAMPA: “Establecer preferencias y necesidades” es la primera etapa numerada del proceso.',['Falso','Verdadero'],0,'Está antes del proceso; la primera etapa numerada es Identificar oportunidades.','Apuntes pág. 7'),
+q('process','En la Prueba 5, ¿qué NO forma parte del proceso de innovación?',['Establecer necesidades','Generar ideas creativas','Evaluar ideas','Lanzar y comunicar la innovación'],0,'La prueba lo trata como algo previo, no como etapa.','Prueba 5 / Apuntes pág. 7'),
+q('process','TRAMPA: después de “Evaluar las ideas” viene “Lanzar y comunicar la innovación”.',['Falso','Verdadero'],0,'Antes se debe Desarrollar el proyecto.','Apuntes pág. 7'),
+q('process','TRAMPA: el proceso inicia generando ideas.',['Falso','Verdadero'],0,'Primero se identifican oportunidades.','Apuntes pág. 7'),
+q('process','En la Prueba 5, “Se identifican los proyectos en el proceso de innovación” se marca como…',['Falso','Verdadero'],0,'El proceso identifica oportunidades; luego desarrolla el proyecto.','Prueba 5 / Apuntes pág. 7'),
+
+q('metrics','¿Cuántas métricas/tipos de indicadores se muestran?',['3','4','2','7'],0,'Entrada, Proceso y Salida.','Apuntes pág. 8'),
+q('metrics','Los indicadores de Entrada son indicadores de…',['Esfuerzo o insumos','Resultados','Capacidad de la empresa','Sostenibilidad'],0,'Definición exacta.','Apuntes pág. 8'),
+q('metrics','Los indicadores de Proceso…',['Miden la capacidad de la empresa','Miden resultados','Miden insumos','Miden únicamente presupuesto'],0,'Definición exacta.','Apuntes pág. 8'),
+q('metrics','Los indicadores de Salida…',['Miden los resultados','Miden la capacidad','Miden el esfuerzo','Miden solo innovación cultural'],0,'Definición exacta.','Apuntes pág. 8'),
+q('metrics','¿Qué indicador se relaciona con el insumo de la empresa?',['Entrada','Proceso','Salida','Efectividad'],0,'Entrada = esfuerzo o insumos.','Prueba 6 / Apuntes pág. 8'),
+q('metrics','¿Qué indicador establece el esfuerzo?',['Entrada','Proceso','Salida','Efectividad'],0,'Entrada = indicadores de esfuerzo o insumos.','Prueba 6 / Apuntes pág. 8'),
+q('metrics','¿Qué indicador mide la capacidad?',['Proceso','Entrada','Salida','Efectividad'],0,'Proceso = capacidad de la empresa.','Prueba 6 / Apuntes pág. 8'),
+q('metrics','¿Qué indicador mide los resultados?',['Salida','Proceso','Entrada','Efectividad'],0,'Salida = resultados.','Prueba 6 / Apuntes pág. 8'),
+q('metrics','¿Cuál NO forma parte de los tres indicadores de innovación vistos?',['Efectividad','Entrada','Proceso','Salida'],0,'Los tres son Entrada, Proceso y Salida.','Prueba 6'),
+q('metrics','TRAMPA: Entrada mide resultados.',['Falso','Verdadero'],0,'Entrada mide esfuerzo o insumos; Salida mide resultados.','Apuntes pág. 8'),
+q('metrics','TRAMPA: Salida mide la capacidad de la empresa.',['Falso','Verdadero'],0,'Proceso mide capacidad; Salida mide resultados.','Apuntes pág. 8'),
+q('metrics','TRAMPA: Proceso mide la capacidad de la empresa.',['Verdadero','Falso'],0,'Así está escrito en los apuntes.','Apuntes pág. 8'),
+q('metrics','En la Prueba 6, “El indicador de proceso se relaciona con la capacidad que tiene la empresa para comercializar la innovación” se responde…',['Verdadero','Falso'],0,'La prueba lo marca como verdadero; el apunte base resume: Proceso mide la capacidad de la empresa.','Prueba 6 / Apuntes pág. 8'),
+
+q('roles','Tener roles y procesos claros sirve para…',['Evitar duplicidad de esfuerzos','Aumentar duplicidad de esfuerzos','Medir resultados','Crear presupuesto'],0,'Es la finalidad escrita en la página 9.','Apuntes pág. 9'),
+q('roles','La coordinación de innovación y equipos multidisciplinarios busca…',['Centralizar la gestión','Descentralizar toda la gestión','Medir los insumos','Eliminar los proyectos'],0,'Así está anotado en la página 9.','Apuntes pág. 9'),
+q('roles','El seguimiento e implementación de ideas se asocia con…',['Asignación de recursos y control','Visión con fecha','Solo resultados','Empleo y productividad'],0,'Así está anotado en la página 9.','Apuntes pág. 9'),
+q('roles','La garantía y sostenibilidad de los proyectos se vincula con…',['Impacto social, económico y ambiental','Solo impacto financiero','Solo impacto tecnológico','Solo impacto del empleado'],0,'Los tres impactos aparecen expresamente.','Apuntes pág. 9'),
+q('roles','TRAMPA: coordinación de innovación y equipos multidisciplinarios = asignación de recursos y control.',['Falso','Verdadero'],0,'Eso corresponde a seguimiento e implementación; coordinación = centralizar la gestión.','Apuntes pág. 9'),
+q('roles','TRAMPA: sostenibilidad de proyectos se limita al impacto económico.',['Falso','Verdadero'],0,'Incluye impacto social, económico y ambiental.','Apuntes pág. 9'),
+
+q('perf','Eficiencia se define como…',['Lograr los objetivos con los recursos de la empresa','Lograr los objetivos con los recursos del empleado','Lograr los objetivos con los recursos de la empresa y los empleados','Medir resultados'],0,'Definición escrita en los apuntes.','Apuntes pág. 3'),
+q('perf','Eficacia se define como…',['Lograr los objetivos con los recursos del empleado','Lograr los objetivos con los recursos de la empresa','Lograr los objetivos con empresa y empleados','Alinear innovación'],0,'Se conserva la formulación exacta de los apuntes.','Apuntes pág. 3'),
+q('perf','Efectividad se define como…',['Lograr los objetivos con los recursos de la empresa y los empleados','Solo con recursos de la empresa','Solo con recursos del empleado','Solo con indicadores de salida'],0,'Se conserva la formulación exacta de los apuntes.','Apuntes pág. 3'),
+q('perf','TRAMPA: Eficiencia y Eficacia tienen la misma definición.',['Falso','Verdadero'],0,'En los apuntes se distinguen por los recursos utilizados.','Apuntes pág. 3'),
+q('perf','TRAMPA: Efectividad integra recursos de la empresa y de los empleados.',['Verdadero','Falso'],0,'Así está formulado en los apuntes.','Apuntes pág. 3'),
+];
+
+const testQuestions = base.filter(x => /Prueba/.test(x.source));
+
+const coverageText = [
+['Cuadro de Mando Integral','BSC/CMI como tabla; perspectivas Financiera, Clientes, Procesos y Crecimiento; crecimiento = aprendizaje en tecnología e innovación; 9 partes del cuadro de mando: OE, explicación de OE, KPI, problema, inductores, plan de acción, parametrización, semáforo/gerenciamiento visual y resultados.'],
+['Innovación','Definición exacta de clase; producto, servicio, proceso y bien comercializado; “Oportunidad” como distractor de Prueba 1; afirmación V/F de Prueba 1; empleo y productividad consignados en la prueba.'],
+['Capacidad de innovación','Los 7 elementos completos y la función exacta de cada uno: Estrategia, Procesos, Métricas, Estructura, Talento, Cultura e Implementación.'],
+['Componentes de la estrategia','Los 6 componentes: ¿Por qué?, ¿Qué?, ¿Hacia dónde?, ¿Cómo?, ¿Dónde?, ¿Cuánto? y la respuesta exacta asociada a cada uno.'],
+['Proceso de innovación','Paso previo: preferencias y necesidades. Cinco etapas completas en orden: identificar oportunidades, generar ideas, evaluar ideas, desarrollar proyecto, lanzar y comunicar.'],
+['Métricas','Tres tipos completos: Entrada = esfuerzo/insumos; Proceso = capacidad de la empresa; Salida = resultados. Incluye las trampas de la Prueba 6.'],
+['Roles y sostenibilidad','Roles/procesos claros → evitar duplicidad; coordinación/equipos → centralizar gestión; seguimiento/implementación → asignar recursos y controlar; sostenibilidad → impacto social, económico y ambiental.'],
+['Eficiencia / Eficacia / Efectividad','Se conservan literalmente las definiciones escritas en los apuntes para evitar sustituirlas por definiciones externas.'],
+['Datos administrativos del apunte','También se conserva en cobertura: 20 horas de vinculación; 12 pruebas (6 y 6 = 12 pts); Examen 1: 18 de agosto (10%); Examen 2: 22 de septiembre (20%); 1 taller luego, 10 participantes, 3 horas un viernes. No entra por defecto al banco evaluable.']
+];
+
+function q(topic,text,opts,correct,explain,source,type='mcq'){return {topic,text,opts,correct,explain,source,type}}
+
+const allowedStudents=['Jesus','Cesar','Andres','Irene','Shirley'];
+let currentStudent = sessionStorage.getItem('innovaQuestStudent') || '';
+let state = {xp:0,streak:0,seen:{},correct:{},wrong:{}};
+
+function stateKey(){ return 'innovaQuestState_'+currentStudent; }
+function loadState(){
+  state = JSON.parse(localStorage.getItem(stateKey())||'{}');
+  if(state.xp===undefined) state={xp:0,streak:0,seen:{},correct:{},wrong:{}};
+}
+function loginStudent(name){
+  if(!allowedStudents.includes(name)) return;
+  currentStudent=name;
+  sessionStorage.setItem('innovaQuestStudent',name);
+  loadState();
+  document.getElementById('studentName').textContent=name;
+  document.getElementById('loginOverlay').classList.add('hidden');
+  renderStats();
+}
+function logoutStudent(){
+  sessionStorage.removeItem('innovaQuestStudent');
+  location.reload();
+}
+
+let session=[], idx=0, lives=3, answered=false, mode='complete';
+
+function save(){localStorage.setItem(stateKey(),JSON.stringify(state));renderStats()}
+function renderStats(){
+  document.getElementById('xp').textContent=state.xp||0;
+  document.getElementById('streak').textContent=state.streak||0;
+  let seen=Object.values(state.seen||{}).reduce((a,b)=>a+b,0);
+  let cor=Object.values(state.correct||{}).reduce((a,b)=>a+b,0);
+  let mastery=seen?Math.round(cor/seen*100):0;
+  document.getElementById('mastery').textContent=mastery+'%';
+  document.getElementById('progressLabel').textContent=mastery+'%';
+  document.getElementById('progressBar').style.width=mastery+'%';
+  const tl=document.getElementById('topicList'); tl.innerHTML='';
+  topics.forEach(t=>{
+    let s=state.seen[t.id]||0,c=state.correct[t.id]||0,p=s?Math.round(c/s*100):0;
+    tl.innerHTML+=`<div class="topic"><div><div class="name">${t.name}</div><small>${t.src}</small></div><div class="meter"><div style="text-align:right;font-size:12px;font-weight:800;margin-bottom:4px">${p}%</div><div class="progress"><i style="width:${p}%"></i></div></div></div>`;
+  });
+}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function prepareGame(m){
+  mode=m;
+  hideAll();
+  document.getElementById('preGame').classList.remove('hidden');
+  const data={
+    complete:['🧠','Ruta completa','Vas a recorrer preguntas de todos los temas. Las preguntas se regeneran y cambian de orden en cada intento. Si fallas, el concepto reaparecerá durante la sesión.','▶ Iniciar ruta'],
+    trap:['⚠️','Modo trampas','Entrenamiento intensivo con negaciones, conceptos parecidos y distractores. Tienes 3 vidas. Al perderlas, termina el intento y puedes iniciar otro inmediatamente.','▶ Iniciar trampas'],
+    tests:['📝','Pruebas reales','Simulación basada en las preguntas de las seis pruebas. Tienes 3 vidas. Las preguntas y respuestas cambian de orden en cada intento para que puedas practicar una y otra vez.','▶ Iniciar prueba'],
+    marathon:['🏁','Maratón','Sesión larga de 60 preguntas mezcladas y repetición adaptativa. Tienes 3 vidas.','▶ Iniciar maratón']
+  }[m];
+  document.getElementById('preIcon').textContent=data[0];
+  document.getElementById('preTitle').textContent=data[1];
+  document.getElementById('preText').textContent=data[2];
+  document.getElementById('startExamBtn').textContent=data[3];
+  document.getElementById('startExamBtn').onclick=()=>startGame(m);
+}
+
+function startGame(m){
+  mode=m; lives=3; idx=0; answered=false;
+  if(m==='tests') session=shuffle(testQuestions).slice(0,Math.min(24,testQuestions.length));
+  else if(m==='trap') session=shuffle(base.filter(x=>x.text.includes('TRAMPA')||x.opts.length===2||/NO |no forma|no pertenece/i.test(x.text))).slice(0,30);
+  else if(m==='marathon') session=shuffle([...base,...base.filter(x=>x.text.includes('TRAMPA'))]).slice(0,60);
+  else session=shuffle(base).slice(0,Math.min(50,base.length));
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('preGame').classList.add('hidden');
+  document.getElementById('flashcards').classList.add('hidden');
+  document.getElementById('coverage').classList.add('hidden');
+  document.getElementById('game').classList.remove('hidden');
+  const labels={complete:'Ruta completa',trap:'Modo trampas',tests:'Pruebas reales',marathon:'Maratón'};
+  document.getElementById('modeLabel').textContent=labels[m];
+  document.getElementById('qtotal').textContent=session.length;
+  renderQuestion();
+}
+function renderQuestion(){
+  if(idx>=session.length){finish();return}
+  answered=false; document.getElementById('nextBtn').classList.add('hidden');
+  document.getElementById('feedback').classList.add('hidden');
+  const qq=session[idx], topic=topics.find(t=>t.id===qq.topic);
+  document.getElementById('qnum').textContent=idx+1;
+  document.getElementById('lives').textContent=lives;
+  document.getElementById('qtopic').textContent=topic?topic.name:qq.topic;
+  document.getElementById('qsource').textContent=qq.source;
+  document.getElementById('qtext').textContent=qq.text;
+  const aw=document.getElementById('answers'); aw.innerHTML='';
+  document.getElementById('fillWrap').classList.add('hidden');
+  let mapped=qq.opts.map((v,i)=>({v,i})); mapped=shuffle(mapped);
+  mapped.forEach(o=>{
+    let b=document.createElement('button'); b.className='ans'; b.textContent=o.v; b.onclick=()=>chooseAnswer(o.i,b);
+    aw.appendChild(b);
+  });
+}
+function chooseAnswer(origIndex,btn){
+  if(answered)return; answered=true;
+  const qq=session[idx], good=origIndex===qq.correct;
+  document.querySelectorAll('.ans').forEach(b=>b.disabled=true);
+  btn.classList.add(good?'correct':'wrong');
+  if(!good){
+    [...document.querySelectorAll('.ans')].find(b=>b.textContent===qq.opts[qq.correct])?.classList.add('correct');
+  }
+  grade(good,qq);
+}
+function grade(good,qq){
+  state.seen[qq.topic]=(state.seen[qq.topic]||0)+1;
+  const fb=document.getElementById('feedback'); fb.className='feedback '+(good?'good':'bad'); fb.classList.remove('hidden');
+  if(good){
+    state.correct[qq.topic]=(state.correct[qq.topic]||0)+1; state.streak=(state.streak||0)+1;
+    let bonus=10+Math.min(20,(state.streak||0)*2); state.xp=(state.xp||0)+bonus;
+    fb.innerHTML=`<b>✅ Correcto · +${bonus} XP</b>${qq.explain}<br><small>${qq.source}</small>`;
+  }else{
+    state.wrong[qq.topic]=(state.wrong[qq.topic]||0)+1; state.streak=0; lives=Math.max(0,lives-1);
+    fb.innerHTML=`<b>❌ Trampa detectada</b>Respuesta correcta: <strong>${qq.opts[qq.correct]}</strong><br>${qq.explain}<br><small>${qq.source}</small>`;
+    // repetición adaptativa: reaparece 3-5 preguntas después
+    if(session.length<70){
+      let clone={...qq,text:'REPETICIÓN: '+qq.text};
+      let pos=Math.min(session.length,idx+3+Math.floor(Math.random()*3));
+      session.splice(pos,0,clone);
+      document.getElementById('qtotal').textContent=session.length;
+    }
+  }
+  document.getElementById('lives').textContent=lives;
+  save();
+  if(!good && lives<=0){
+    document.getElementById('nextBtn').classList.add('hidden');
+    setTimeout(()=>showGameOver(),650);
+  } else {
+    document.getElementById('nextBtn').classList.remove('hidden');
+  }
+}
+
+function showGameOver(){
+  const labels={complete:'Ruta completa',trap:'Modo trampas',tests:'Pruebas reales',marathon:'Maratón'};
+  document.querySelector('.qcard').innerHTML=`<div class="gameover">
+    <div class="emoji">💔</div>
+    <div class="kicker">Intento terminado</div>
+    <h2>Te quedaste sin vidas</h2>
+    <p style="color:var(--muted);line-height:1.6">No pasa nada: el objetivo es repetir hasta dominar las trampas. Al volver a intentar, <strong>las preguntas se regeneran y cambian de orden</strong>.</p>
+    <div class="actions" style="justify-content:center">
+      <button class="primary big-start" onclick="location.reload()">↻ Volver a intentar</button>
+      <button class="secondary" onclick="location.reload()">Inicio</button>
+    </div>
+  </div>`;
+}
+
+function nextQuestion(){idx++;renderQuestion()}
+function finish(){
+  document.querySelector('.qcard').innerHTML=`<div style="text-align:center;padding:24px"><div style="font-size:58px">🏆</div><h2>Sesión completada</h2><p style="color:var(--muted)">Las preguntas falladas fueron reinsertadas automáticamente para reforzar memoria y detectar trampas.</p><div class="actions" style="justify-content:center"><button class="primary" onclick="location.reload()">↻ Hacer otra prueba</button><button class="secondary" onclick="location.reload()">Inicio</button></div></div>`;
+}
+function showFlashcards(){
+  hideAll(); document.getElementById('flashcards').classList.remove('hidden');
+  const g=document.getElementById('flashGrid'); g.innerHTML='';
+  flashcards.forEach(([t,q,a])=>{
+    let d=document.createElement('button'); d.className='flash'; d.style.color='white'; d.style.textAlign='left';
+    d.innerHTML=`<b>${q}</b><p style="display:none">${a}</p><span class="tag">${topics.find(x=>x.id===t)?.name||t}</span>`;
+    d.onclick=()=>{let p=d.querySelector('p');p.style.display=p.style.display==='none'?'block':'none'};
+    g.appendChild(d);
+  });
+}
+function showCoverage(){
+  hideAll(); document.getElementById('coverage').classList.remove('hidden');
+  const c=document.getElementById('coverageList'); c.innerHTML=coverageText.map(x=>`<div class="cov"><h4>${x[0]}</h4><p>${x[1]}</p></div>`).join('');
+}
+function hideAll(){['home','preGame','game','flashcards','coverage'].forEach(id=>document.getElementById(id).classList.add('hidden'))}
+function goHome(){location.reload()}
+function resetProgress(){if(confirm('¿Seguro que deseas borrar XP, racha y dominio?')){localStorage.removeItem(stateKey());location.reload()}}
+function submitFill(){}
+if(currentStudent && allowedStudents.includes(currentStudent)){
+  loadState();
+  document.getElementById('studentName').textContent=currentStudent;
+  document.getElementById('loginOverlay').classList.add('hidden');
+}
+renderStats();
+</script>
+</body>
+</html>
