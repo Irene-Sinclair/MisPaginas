@@ -526,15 +526,25 @@ $('#resetPasswordForm').addEventListener('submit', async e => {
 });
 
 async function logout() {
+  const rememberedEmail = currentUser?.email || $('#signInEmail')?.value || '';
+
   await sb.auth.signOut();
   currentUser = null;
   profile = null;
   cart = [];
   updateCartCount();
+
+  // Nunca conservar contraseñas al cerrar sesión.
+  ['#signInPassword','#signUpPassword','#signUpPassword2','#resetPassword','#resetPassword2']
+    .forEach(id => { const el = $(id); if (el) { el.value = ''; el.type = 'password'; el.dispatchEvent(new Event('input')); } });
+
   $('#shopApp').classList.add('hidden');
   $('#adminApp').classList.add('hidden');
   $('#authScreen').classList.remove('hidden');
   authTab('in');
+
+  // Conservar únicamente el correo para facilitar el próximo acceso.
+  if (rememberedEmail) $('#signInEmail').value = rememberedEmail;
 }
 
 $('#logoutCustomer').onclick = logout;
