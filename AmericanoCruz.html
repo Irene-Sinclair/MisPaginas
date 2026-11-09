@@ -621,6 +621,9 @@ function renderCategories() {
 
 function imageOf(p) {
   const u = p?.imagen_url || 'assets/logo.png';
+  // Los productos usan ahora archivos reales publicados en GitHub Pages,
+  // no las miniaturas base64 antiguas incrustadas en el HTML.
+  if (u.startsWith('assets/products/')) return u + '?v=6a009789';
   return window.AC_ASSETS?.[u] || u;
 }
 
