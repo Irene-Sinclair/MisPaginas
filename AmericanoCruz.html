@@ -20,7 +20,7 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
 @media(max-width:1000px){.catalog-grid{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:1fr 1fr}.admin-product-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.shop-header{align-items:flex-start}.header-actions{justify-content:flex-end}.hero{padding:28px}.hero img{width:120px;height:120px}.catalog-grid{grid-template-columns:1fr 1fr}.checkout-layout{grid-template-columns:1fr}.admin-sidebar{position:static;width:100%;height:auto}.admin-main{margin:0}.product-form-layout{grid-template-columns:1fr}.admin-product-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.span2{grid-column:auto}}
 @media(max-width:520px){.brand-inline span{display:none}.header-actions{gap:0}.icon-btn{font-size:12px;padding:8px}.hero img{display:none}.catalog-grid{grid-template-columns:1fr 1fr;gap:10px}.product-info{padding:10px}.shop-main{padding:20px 12px 60px}.catalog-toolbar{flex-direction:column}.catalog-toolbar select{max-width:none}.cart-item,.history-item{grid-template-columns:72px 1fr}.cart-item img,.history-item img{width:72px;height:72px}.cart-item>div:last-child{grid-column:2}.stat-grid{grid-template-columns:1fr 1fr}}
-.text-link{border:0;background:transparent;color:var(--purple);font-weight:700;cursor:pointer;margin-top:12px;padding:6px 0}.text-link:hover{text-decoration:underline}.auth-note{font-size:13px;color:var(--muted);line-height:1.45;margin:4px 0 14px}.password-wrap{position:relative}.password-wrap input{padding-right:76px}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--purple);font-weight:800;font-size:12px;cursor:pointer;padding:7px 8px;border-radius:8px}.password-toggle:hover{background:#f5eef3}.auth-success{background:#eefaf1;border:1px solid #b9e5c3;color:#187333;border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.4}.auth-card h3{margin:4px 0 8px}.security-action{margin-top:12px;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.security-action:hover{background:#f7f7f8}
+.text-link{border:0;background:transparent;color:var(--purple);font-weight:700;cursor:pointer;margin-top:12px;padding:6px 0}.text-link:hover{text-decoration:underline}.auth-note{font-size:13px;color:var(--muted);line-height:1.45;margin:4px 0 14px}.password-wrap{position:relative}.password-wrap input{padding-right:76px}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--purple);cursor:pointer;padding:7px;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;font-size:18px;line-height:1}.password-toggle:hover:not(:disabled){background:#f5eef3}.password-toggle:disabled{opacity:.28;cursor:default}.auth-success{background:#eefaf1;border:1px solid #b9e5c3;color:#187333;border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.4}.auth-card h3{margin:4px 0 8px}.security-action{margin-top:12px;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.security-action:hover{background:#f7f7f8}
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -44,7 +44,7 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
         <label>Contraseña
           <div class="password-wrap">
             <input id="signInPassword" type="password" placeholder="••••••••" minlength="6" required>
-            <button class="password-toggle" type="button" data-toggle-password="signInPassword">Mostrar</button>
+            <button class="password-toggle" type="button" data-toggle-password="signInPassword">👁</button>
           </div>
         </label>
         <button class="black-btn wide" type="submit">Continuar</button>
@@ -67,13 +67,13 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
         <label>Nueva contraseña
           <div class="password-wrap">
             <input id="resetPassword" type="password" minlength="8" required placeholder="Mínimo 8 caracteres">
-            <button class="password-toggle" type="button" data-toggle-password="resetPassword">Mostrar</button>
+            <button class="password-toggle" type="button" data-toggle-password="resetPassword">👁</button>
           </div>
         </label>
         <label>Confirmar contraseña
           <div class="password-wrap">
             <input id="resetPassword2" type="password" minlength="8" required>
-            <button class="password-toggle" type="button" data-toggle-password="resetPassword2">Mostrar</button>
+            <button class="password-toggle" type="button" data-toggle-password="resetPassword2">👁</button>
           </div>
         </label>
         <button class="black-btn wide" type="submit">Actualizar contraseña</button>
@@ -89,13 +89,13 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
         <label>Contraseña
           <div class="password-wrap">
             <input id="signUpPassword" type="password" minlength="8" required placeholder="Mínimo 8 caracteres">
-            <button class="password-toggle" type="button" data-toggle-password="signUpPassword">Mostrar</button>
+            <button class="password-toggle" type="button" data-toggle-password="signUpPassword">👁</button>
           </div>
         </label>
         <label>Confirmar contraseña
           <div class="password-wrap">
             <input id="signUpPassword2" type="password" minlength="8" required>
-            <button class="password-toggle" type="button" data-toggle-password="signUpPassword2">Mostrar</button>
+            <button class="password-toggle" type="button" data-toggle-password="signUpPassword2">👁</button>
           </div>
         </label>
         <button class="black-btn wide" type="submit">Registrarme</button>
@@ -372,15 +372,28 @@ $('#btnSignUp').onclick = () => authTab('up');
 $('#forgotPasswordBtn').onclick = showForgotPassword;
 $('#backToLoginBtn').onclick = () => authTab('in');
 
-$$('[data-toggle-password]').forEach(btn => {
-  btn.onclick = () => {
-    const input = document.getElementById(btn.dataset.togglePassword);
-    if (!input) return;
-    const show = input.type === 'password';
-    input.type = show ? 'text' : 'password';
-    btn.textContent = show ? 'Ocultar' : 'Mostrar';
-    btn.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+$('[data-toggle-password]').forEach(btn => {
+  const input = document.getElementById(btn.dataset.togglePassword);
+  if (!input) return;
+
+  const syncPasswordEye = () => {
+    const hasText = input.value.length > 0;
+    btn.disabled = !hasText;
+    if (!hasText && input.type !== 'password') input.type = 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+    btn.setAttribute('aria-label', input.type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
+    btn.setAttribute('title', input.type === 'password' ? 'Mostrar contraseña' : 'Ocultar contraseña');
   };
+
+  btn.onclick = () => {
+    if (!input.value) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
+    syncPasswordEye();
+    input.focus();
+  };
+
+  input.addEventListener('input', syncPasswordEye);
+  syncPasswordEye();
 });
 
 $('#signUpForm').addEventListener('submit', async e => {
