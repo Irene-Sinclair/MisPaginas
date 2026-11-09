@@ -372,7 +372,7 @@ $('#btnSignUp').onclick = () => authTab('up');
 $('#forgotPasswordBtn').onclick = showForgotPassword;
 $('#backToLoginBtn').onclick = () => authTab('in');
 
-$('[data-toggle-password]').forEach(btn => {
+$$('[data-toggle-password]').forEach(btn => {
   const input = document.getElementById(btn.dataset.togglePassword);
   if (!input) return;
 
