@@ -372,7 +372,7 @@ $('#btnSignUp').onclick = () => authTab('up');
 $('#forgotPasswordBtn').onclick = showForgotPassword;
 $('#backToLoginBtn').onclick = () => authTab('in');
 
-$('[data-toggle-password]').forEach(btn => {
+$$('[data-toggle-password]').forEach(btn => {
   btn.onclick = () => {
     const input = document.getElementById(btn.dataset.togglePassword);
     if (!input) return;
@@ -392,6 +392,7 @@ $('#signUpForm').addEventListener('submit', async e => {
   const password = $('#signUpPassword').value;
   const password2 = $('#signUpPassword2').value;
   const btn = e.submitter;
+  localStorage.setItem('ac_pending_email', email);
 
   if (password.length < 8) return showAuthMessage('La contraseña debe tener al menos 8 caracteres.');
   if (password !== password2) return showAuthMessage('Las contraseñas no coinciden.');
@@ -623,7 +624,7 @@ function imageOf(p) {
   const u = p?.imagen_url || 'assets/logo.png';
   // Los productos usan ahora archivos reales publicados en GitHub Pages,
   // no las miniaturas base64 antiguas incrustadas en el HTML.
-  if (u.startsWith('assets/products/')) return u + '?v=6a009789';
+  if (u.startsWith('assets/products/')) return u + '?v=20261109b';
   return window.AC_ASSETS?.[u] || u;
 }
 
@@ -1000,17 +1001,20 @@ window.addEventListener('unhandledrejection', e => console.error('Error no contr
 
   const { data: { session } } = await sb.auth.getSession();
 
-  if (isEmailConfirmation && session?.user) {
-    const confirmedEmail = session.user.email || '';
-    await sb.auth.signOut();
+  if (isEmailConfirmation) {
+    const confirmedEmail = session?.user?.email || localStorage.getItem('ac_pending_email') || '';
+
+    // La confirmación de correo nunca debe convertirse en inicio de sesión automático.
+    if (session?.user) await sb.auth.signOut();
+    localStorage.removeItem('ac_pending_email');
 
     history.replaceState({}, document.title, PORTAL_URL);
     $('#authScreen').classList.remove('hidden');
     $('#shopApp').classList.add('hidden');
     $('#adminApp').classList.add('hidden');
     authTab('in');
-    $('#signInEmail').value = confirmedEmail;
-    showAuthMessage('Correo confirmado exitosamente. Tu cuenta ya está lista. Inicia sesión con tu contraseña.', true);
+    if (confirmedEmail) $('#signInEmail').value = confirmedEmail;
+    showAuthMessage('Correo confirmado exitosamente. Tu cuenta ya está lista. Ahora inicia sesión con tu contraseña.', true);
     $('#authMessage').classList.add('auth-success');
     $('#signInPassword').focus();
     return;
