@@ -20,7 +20,7 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
 @media(max-width:1000px){.catalog-grid{grid-template-columns:repeat(3,1fr)}.stat-grid{grid-template-columns:1fr 1fr}.admin-product-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:760px){.shop-header{align-items:flex-start}.header-actions{justify-content:flex-end}.hero{padding:28px}.hero img{width:120px;height:120px}.catalog-grid{grid-template-columns:1fr 1fr}.checkout-layout{grid-template-columns:1fr}.admin-sidebar{position:static;width:100%;height:auto}.admin-main{margin:0}.product-form-layout{grid-template-columns:1fr}.admin-product-grid{grid-template-columns:1fr}.form-grid{grid-template-columns:1fr}.span2{grid-column:auto}}
 @media(max-width:520px){.brand-inline span{display:none}.header-actions{gap:0}.icon-btn{font-size:12px;padding:8px}.hero img{display:none}.catalog-grid{grid-template-columns:1fr 1fr;gap:10px}.product-info{padding:10px}.shop-main{padding:20px 12px 60px}.catalog-toolbar{flex-direction:column}.catalog-toolbar select{max-width:none}.cart-item,.history-item{grid-template-columns:72px 1fr}.cart-item img,.history-item img{width:72px;height:72px}.cart-item>div:last-child{grid-column:2}.stat-grid{grid-template-columns:1fr 1fr}}
-.text-link{border:0;background:transparent;color:var(--purple);font-weight:700;cursor:pointer;margin-top:12px;padding:6px 0}.text-link:hover{text-decoration:underline}.auth-note{font-size:13px;color:var(--muted);line-height:1.45;margin:4px 0 14px}.password-wrap{position:relative}.password-wrap input{padding-right:76px}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--purple);cursor:pointer;padding:7px;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;font-size:18px;line-height:1}.password-toggle:hover:not(:disabled){background:#f5eef3}.password-toggle:disabled{opacity:.28;cursor:default}.auth-success{background:#eefaf1;border:1px solid #b9e5c3;color:#187333;border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.4}.auth-card h3{margin:4px 0 8px}.security-action{margin-top:12px;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.security-action:hover{background:#f7f7f8}
+.text-link{border:0;background:transparent;color:var(--purple);font-weight:700;cursor:pointer;margin-top:12px;padding:6px 0}.text-link:hover{text-decoration:underline}.auth-note{font-size:13px;color:var(--muted);line-height:1.45;margin:4px 0 14px}.password-wrap{position:relative}.password-wrap input{padding-right:76px}.password-toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--purple);cursor:pointer;padding:7px;border-radius:8px;width:34px;height:34px;display:grid;place-items:center;font-size:18px;line-height:1}.password-toggle:hover:not(:disabled){background:#f5eef3}.password-toggle:disabled{opacity:.28;cursor:default}.auth-success{background:#eefaf1;border:1px solid #b9e5c3;color:#187333;border-radius:12px;padding:12px 14px;margin-top:14px;line-height:1.4}.confirm-success{text-align:center;padding:10px 2px 2px}.confirm-check{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;margin:4px auto 18px;background:#eefaf1;color:#187333;font-size:34px;font-weight:900;border:1px solid #b9e5c3}.confirm-success h3{font-size:22px;margin:0 0 8px}.confirm-success p{color:var(--muted);line-height:1.55;margin:0 auto 18px;max-width:330px}.confirm-email{display:block;background:#f7f7f8;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0 auto 18px;font-size:13px;color:#333;word-break:break-word}.auth-card h3{margin:4px 0 8px}.security-action{margin-top:12px;border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}.security-action:hover{background:#f7f7f8}
 
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -31,6 +31,14 @@ dialog{width:min(920px,94vw);border:0;border-radius:22px;padding:0;box-shadow:0 
       <img src="data:image/jpeg;base64,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" class="brand-logo" alt="Americano Cruz">
       <h1>AMERICANO CRUZ</h1>
       <p class="muted">Moda, calzado y variedad en un solo lugar.</p>
+
+      <div id="confirmationSuccess" class="confirm-success hidden">
+        <div class="confirm-check">✓</div>
+        <h3>¡Correo confirmado!</h3>
+        <p>Tu cuenta fue verificada correctamente. Cuando quieras, puedes continuar al inicio de sesión.</p>
+        <span id="confirmedEmailDisplay" class="confirm-email"></span>
+        <button id="goToLoginBtn" class="black-btn wide" type="button">Ir a iniciar sesión</button>
+      </div>
 
       <div class="auth-tabs">
         <button id="btnSignIn" class="auth-tab active">Iniciar sesión</button>
@@ -338,7 +346,20 @@ function hideAllAuthForms() {
   ['#signInForm','#signUpForm','#forgotPasswordForm','#resetPasswordForm'].forEach(id => $(id)?.classList.add('hidden'));
 }
 
+let confirmedLoginEmail = '';
+
+function showConfirmationSuccess(email='') {
+  confirmedLoginEmail = email || '';
+  hideAllAuthForms();
+  $('.auth-tabs').classList.add('hidden');
+  $('#confirmationSuccess').classList.remove('hidden');
+  $('#authMessage').textContent = '';
+  $('#authMessage').classList.remove('auth-success');
+  $('#confirmedEmailDisplay').textContent = confirmedLoginEmail || 'Correo verificado';
+}
+
 function authTab(mode) {
+  $('#confirmationSuccess')?.classList.add('hidden');
   hideAllAuthForms();
   const login = mode === 'in';
   $('#signInForm').classList.toggle('hidden', !login);
@@ -371,6 +392,12 @@ $('#btnSignIn').onclick = () => authTab('in');
 $('#btnSignUp').onclick = () => authTab('up');
 $('#forgotPasswordBtn').onclick = showForgotPassword;
 $('#backToLoginBtn').onclick = () => authTab('in');
+$('#goToLoginBtn').onclick = () => {
+  $('#confirmationSuccess').classList.add('hidden');
+  authTab('in');
+  if (confirmedLoginEmail) $('#signInEmail').value = confirmedLoginEmail;
+  $('#signInPassword').focus();
+};
 
 $$('[data-toggle-password]').forEach(btn => {
   const input = document.getElementById(btn.dataset.togglePassword);
@@ -1025,11 +1052,7 @@ window.addEventListener('unhandledrejection', e => console.error('Error no contr
     $('#authScreen').classList.remove('hidden');
     $('#shopApp').classList.add('hidden');
     $('#adminApp').classList.add('hidden');
-    authTab('in');
-    if (confirmedEmail) $('#signInEmail').value = confirmedEmail;
-    showAuthMessage('Correo confirmado exitosamente. Tu cuenta ya está lista. Ahora inicia sesión con tu contraseña.', true);
-    $('#authMessage').classList.add('auth-success');
-    $('#signInPassword').focus();
+    showConfirmationSuccess(confirmedEmail);
     return;
   }
 
